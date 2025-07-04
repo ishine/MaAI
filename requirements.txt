@@ -1,6 +1,6 @@
 # For VAP main
 torch>=2.2.0
-# numpy==1.23.5
+numpy
 einops==0.7.0
 
 # For Input
@@ -17,3 +17,5 @@ pyaudio
 matplotlib==3.7.5
 seaborn==0.13.2
 fastapi==0.111.0
+
+huggingface_hub
