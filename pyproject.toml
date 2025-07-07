@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "maai"
-version = "0.0.2"
+dynamic = ["version"]
 description = "Real-time and Continuous Non-verbal Behavior (Maai) Generation Software"
 authors = [
   { name = "MaAI team", email = "inoue@sap.ist.i.kyoto-u.ac.jp" }
@@ -25,6 +25,9 @@ dependencies = [
     "fastapi==0.111.0",
     "huggingface-hub",
 ]
+
+[tool.hatch.version]
+source = "git"
 
 [tool.hatch.build]
 sources = ["src"]
