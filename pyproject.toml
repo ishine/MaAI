@@ -36,7 +36,7 @@ sources = ["src"]
 include = ["src/**"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["maai"]
+packages = ["src/maai"]
 
 [project.urls]
 Homepage = "https://github.com/MaAI-Kyoto/MaAI"
