@@ -28,7 +28,7 @@ jobs:
       #   # sdist（.tar.gz）と wheel（.whl）を dist/ に作成
 
       - name: Install Hatch
-        run: pip install hatch
+        run: pip install hatch hatch-vcs
         # hatch build は `pyproject.toml` を元にパッケージを作成する
 
       - name: Build with Hatch
