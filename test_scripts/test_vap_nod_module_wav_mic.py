@@ -18,7 +18,7 @@ import threading
 # プロジェクトルートをパスに追加
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from vap_realtime import Vap, VapInput
+from maai import Vap, VapInput
 
 TH_S = 0.5
 TH_L = 0.5
