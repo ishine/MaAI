@@ -1,12 +1,13 @@
 <p align="center">
-<img src="img/logo.jpg" width="600">
+<img src="img/logo_ver2.png" width="300">
 </p>
 
 <h1>
 <p align="center">
-Realtime Voice Activity Projection (Realtime-VAP)
+MaAI
 </p>
 </h1>
+<p align="center">A <b>Real-time</b> and <b>Light-weight</b> Software for Generation of <b>Non-Linguistic</b> Behavior Generations for Conversational AIs</p>
 <p align="center">
 README: <a href="README.md">English </a> | <a href="README_JP.md">Japanese (日本語) </a>
 </p>
@@ -22,9 +23,17 @@ The VAP program operates as a program that receives input and outputs processing
 
 <be>
 
+## Quick Start
+
+## Models
+
+## Demo Video
+
 __Demo video on YouTube__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
 
 [![Demo video](http://img.youtube.com/vi/-uwB6yl2WtI/0.jpg)](https://www.youtube.com/watch?v=-uwB6yl2WtI)
+
+
 
 ## Directory
 
