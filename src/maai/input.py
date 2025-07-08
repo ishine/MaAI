@@ -17,6 +17,12 @@ def available_mic_devices():
         info = p.get_device_info_by_index(i)
         if info['maxInputChannels'] > 0:
             device_info[info['index']] = info['name']
+    
+    # Print available devices
+    print("Available microphone devices:")
+    for index, name in device_info.items():
+        print(f"Device {index}: {name}")
+    
     return device_info
 
 class Base:
