@@ -154,7 +154,7 @@ class Vap():
             out = self.vap.ar(o1["x"], o2["x"], attention=False)
 
             # Outputs
-            if self.mode == "vap":
+            if self.mode in ["vap", "vap_MC"]:
                 logits = self.vap.vap_head(out["x"])
                 
                 vad1 = self.vap.va_classifier(o1["x"])
