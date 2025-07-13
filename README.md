@@ -12,20 +12,45 @@ MaAI
 README: <a href="README.md">English </a> | <a href="README_JP.md">Japanese (日本語) </a>
 </p>
 
-A real-time implementation of Voice Activity Projection (VAP) is aimed at controlling behaviors of spoken dialogue systems, such as turn-taking. The VAP model takes stereo audio data (from two dialogue participants) as input and outputs future voice activity (p_now and p_future).
+<b>MaAI</b> is a cutting-edge software solution capable of generating (predicting) non-linguistic behaviors in real-time and continuously.
+It supports essential interaction elements such as <b>turn-taking</b>, <b>backchanneling</b>, and <b>nodding</b>.
+
+Currently optimized for English, Chinese, and Japanese languages, MaAI will continue to expand its linguistic coverage and non-verbal behavior repertoire in the future.
+
+Designed specifically for conversational AI, including spoken dialogue systems and interactive robots, MaAI handles audio input effectively in either dual-party (user-system) or single-party (user-only) interactions.
+
+Thanks to its lightweight design, MaAI operates efficiently, even exclusively on CPU hardware.
+
+MaAIはリアルタイムかつ連続的に非言語的ふるまいを生成（予測）することができるソフトウェアです。
+ターンテイキング、相槌、頷きなどに対応しています。
+言語は英語、中国語、日本語が中心です。
+非言語的ふるまいと言語は、今後追加していく予定です。
+会話AI（音声対話システムや会話ロボット）に搭載することを想定して設計されています。
+入力は音声で、２者（ユーザとシステム）または１者（ユーザ）
+軽量のためCPUのみでも動作します。
+
+<!-- A real-time implementation of Voice Activity Projection (VAP) is aimed at controlling behaviors of spoken dialogue systems, such as turn-taking. The VAP model takes stereo audio data (from two dialogue participants) as input and outputs future voice activity (p_now and p_future).
 
 Details about the VAP model can be found in the following repository:
 https://github.com/ErikEkstedt/VoiceActivityProjection
 
 In this repository, the VAP model can operate in real-time in a CPU environment. Please note that using GPUs can increase the processing speed.
 
-The VAP program operates as a program that receives input and outputs processing results through a TCP/IP connection. It is expected that your program will connect to the VAP program via TCP/IP, input the audio data, and receive the VAP results.
+The VAP program operates as a program that receives input and outputs processing results through a TCP/IP connection. It is expected that your program will connect to the VAP program via TCP/IP, input the audio data, and receive the VAP results. -->
 
 <be>
 
 ## Quick Start
 
-## Models
+pipでインストール
+
+## Behaviors
+
+ここで各ふるまい（モデル）へのリンクを作成
+
+## Input / Output
+
+ここで入出力の説明？
 
 ## Demo Video
 
