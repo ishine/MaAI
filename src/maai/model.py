@@ -9,8 +9,10 @@ import os
 
 from .input import Base
 from .util import load_vap_model
-from .vap_models import VapGPT, VapGPT_bc, VapGPT_nod
-from .vap_models import VapConfig
+from .models.vap import VapGPT
+from .models.vap_bc import VapGPT_bc
+from .models.vap_nod import VapGPT_nod
+from .models.config import VapConfig
 
 class Vap():
     
@@ -133,8 +135,9 @@ class Vap():
         
         with torch.no_grad():
             
-            x1_ = torch.tensor([[x1]], dtype=torch.float32, device=self.device)
-            x2_ = torch.tensor([[x2]], dtype=torch.float32, device=self.device)
+            # Convert to tensors efficiently
+            x1_ = torch.from_numpy(x1).float().view(1, 1, -1).to(self.device)
+            x2_ = torch.from_numpy(x2).float().view(1, 1, -1).to(self.device)
 
             e1, e2 = self.vap.encode_audio(x1_, x2_)
             
