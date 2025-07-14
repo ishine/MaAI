@@ -68,7 +68,8 @@ while True:
 
 ## 🧩 Models
 
-We support the following models (behavior, language, audio setting, etc.), and more models will be added in the future. 🆙
+We support the following models (behavior, language, audio setting, etc.), and more models will be added in the future.
+Currently available models can be found in [our HuggingFace repository](https://huggingface.co/maai-kyoto).
 
 ### Turn-Taking
 
