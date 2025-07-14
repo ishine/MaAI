@@ -28,13 +28,29 @@ def available_mic_devices():
 class Base:
     FRAME_SIZE = 160
     SAMPLING_RATE = 16000
-    def get_audio_data(self):
-        raise NotImplementedError
-    def start_process(self):
-        pass
+    def __init__(self):
+        self._subscriber_queues = []  # List of subscriber queues
+        self._lock = threading.Lock()
+        self._is_thread_started = False
+
+    def subscribe(self):
+        q = queue.Queue()
+        with self._lock:
+            self._subscriber_queues.append(q)
+        return q
+
+    def _put_to_all_queues(self, data):
+        # Put data into all subscriber queues and the default queue
+        with self._lock:
+            for q in self._subscriber_queues:
+                q.put(data)
+
+    def get_audio_data(self, q=None):
+        return q.get()
 
 class Mic(Base):
     def __init__(self, audio_gain=1.0, mic_device_index=0):
+        super().__init__()
         self.p = pyaudio.PyAudio()
         self.audio_gain = audio_gain
         self.mic_device_index = mic_device_index
@@ -44,15 +60,22 @@ class Mic(Base):
                                   input=True,
                                   output=False,
                                   input_device_index=self.mic_device_index)
-        
-    def get_audio_data(self):
-        d = self.stream.read(self.FRAME_SIZE, exception_on_overflow=False)
-        d = np.frombuffer(d, dtype=np.float32)
-        d = [float(a) for a in d]
-        return d
+
+    def _read_mic(self):
+        while True:
+            d = self.stream.read(self.FRAME_SIZE, exception_on_overflow=False)
+            d = np.frombuffer(d, dtype=np.float32)
+            d = [float(a) for a in d]
+            self._put_to_all_queues(d)
+
+    def start_process(self):
+        if not self._is_thread_started:
+            threading.Thread(target=self._read_mic, daemon=True).start()
+            self._is_thread_started = True
 
 class Wav(Base):
     def __init__(self, wav_file_path, audio_gain=1.0):
+        super().__init__()
         self.wav_file_path = wav_file_path
         self.audio_gain = audio_gain
         self.raw_wav_queue = queue.Queue()
@@ -62,8 +85,7 @@ class Wav(Base):
                 break
             d = data[i:i+self.FRAME_SIZE]
             self.raw_wav_queue.put(d)
-        self.wav_queue = queue.Queue()
-        
+
     def _read_wav(self):
         start_time = time.time()
         frame_duration = self.FRAME_SIZE / self.SAMPLING_RATE
@@ -83,54 +105,77 @@ class Wav(Base):
             frame_count += 1
             if data is None:
                 continue
-            self.wav_queue.put(data)
-            
+            self._put_to_all_queues(data)
+
     def start_process(self):
-        threading.Thread(target=self._read_wav, daemon=True).start()
-        
-    def get_audio_data(self):
-        return self.wav_queue.get()
+        if not self._is_thread_started:
+            threading.Thread(target=self._read_wav, daemon=True).start()
+            self._is_thread_started = True
 
 class TCPReceiver(Base):
     def __init__(self, ip, port):
+        super().__init__()
         self.ip = ip
         self.port = port
-        self.wav_queue = queue.Queue()
-        
-    def _start_server(self):
+        self.conn = None
+        self.addr = None
+        self._is_thread_started_process = False
+        self._is_thread_started_server = False
+
+    def _server(self):
         while True:
+            if self.conn is not None:
+                time.sleep(0.1)
+                continue
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.bind((self.ip, self.port))
                 s.listen(1)
                 print('[IN] Waiting for connection of audio input...')
-                conn, addr = s.accept()
-                print('[IN] Connected by', addr)
-                while True:
-                    size_recv = 8 * 2 * self.FRAME_SIZE
-                    data = conn.recv(size_recv)
-                    if len(data) < size_recv:
-                        while True:
-                            data_ = conn.recv(size_recv)
-                            if len(data_) == 0:
-                                break
-                            data += data_
-                            if len(data) == size_recv:
-                                break
-                    if len(data) == 0:
-                        break
-                    x1 = util.conv_bytearray_2_floatarray(data)
-                    self.wav_queue.put(x1)
+                self.conn, self.addr = s.accept()
+                print('[IN] Connected by', self.addr)
             except Exception as e:
-                print('[IN] Disconnected by', addr)
-                print(e)
+                print('[IN] Connection failed:', e)
+                time.sleep(1)
                 continue
-            
+
+    def _process(self):
+        while True:
+            try:
+                if self.conn is None:
+                    time.sleep(0.1)
+                    continue
+                size_recv = 8 * 2 * self.FRAME_SIZE
+                data = self.conn.recv(size_recv)
+                if len(data) < size_recv:
+                    while len(data) < size_recv:
+                        data_ = self.conn.recv(size_recv - len(data))
+                        if len(data_) == 0:
+                            break
+                        data += data_
+                if len(data) == 0:
+                    raise ConnectionError("Connection closed")
+                x1 = util.conv_bytearray_2_floatarray(data)
+                self._put_to_all_queues(x1)
+            except Exception as e:
+                if self.addr is not None:
+                    print('[IN] Disconnected by', self.addr)
+                else:
+                    print('[IN] Disconnected (no connection established)')
+                print(e)
+                self.conn = None
+                self.addr = None
+                continue
+
     def start_process(self):
-        threading.Thread(target=self._start_server, daemon=True).start()
-        
-    def get_audio_data(self):
-        return self.wav_queue.get()
+        if not self._is_thread_started_process:
+            threading.Thread(target=self._process, daemon=True).start()
+            self._is_thread_started_process = True
+
+    def start_server(self):
+        if not self._is_thread_started_server:
+            threading.Thread(target=self._server, daemon=True).start()
+            self._is_thread_started_server = True
 
 class TCPTransmitter(Base):
     def __init__(self, ip, port, audio_gain=1.0, mic_device_index=0):
@@ -149,32 +194,38 @@ class TCPTransmitter(Base):
     def connect_server(self):    
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.ip, self.port))
-        print('Connected to the server')
+        print('[CLIENT] Connected to the server')
 
     def _start_client(self):
-        
-        self.connect_server()
-        
-        self.is_running = True
-
         while True:
-            
             try:
-                d = self.stream.read(self.FRAME_SIZE, exception_on_overflow=False)
-                
-                if self.audio_gain != 1.0:
-                    d = np.frombuffer(d, dtype=np.float32) * self.audio_gain
-                else:
-                    d = np.frombuffer(d, dtype=np.float32)
-                
-                d = [float(a) for a in d]
-                
-                if self.is_running:
-                    data_sent = util.conv_floatarray_2_byte(d)
-                    self.sock.sendall(data_sent)
+                self.connect_server()
+                while True:
+                    try:
+                        d = self.stream.read(self.FRAME_SIZE, exception_on_overflow=False)
+                        if self.audio_gain != 1.0:
+                            d = np.frombuffer(d, dtype=np.float32) * self.audio_gain
+                        else:
+                            d = np.frombuffer(d, dtype=np.float32)
+                        d = [float(a) for a in d]
+                        data_sent = util.conv_floatarray_2_byte(d)
+                        self.sock.sendall(data_sent)
+                    except Exception as e:
+                        print('[CLIENT] Send error:', e)
+                        break  # 送信エラー時は再接続ループへ
             except Exception as e:
-                print(e)
+                print('[CLIENT] Connect error:', e)
+                time.sleep(0.5)
                 continue
-            
+            # 切断時はソケットを閉じて再接続ループへ
+            try:
+                if hasattr(self, 'sock') and self.sock is not None:
+                    self.sock.close()
+            except Exception:
+                pass
+            self.sock = None
+            print('[CLIENT] Disconnected. Reconnecting...')
+            time.sleep(0.5)
+
     def start_process(self):
         threading.Thread(target=self._start_client, daemon=True).start()
