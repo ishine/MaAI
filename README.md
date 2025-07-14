@@ -18,29 +18,26 @@ MaAI
 
 <b>MaAI</b> is a state-of-the-art and light-weight software that can generate (predict) non-linguistic behaviors in real time and continuously.
 It supports essential interaction elements such as <b>turn-taking</b>, <b>backchanneling</b>, and <b>nodding</b>.
-Currently available for English 🇬🇧, Chinese 🇨🇳, and Japanese 🇯🇵 languages, MaAI will continue to expand its language coverage and non-linguistic behavior repertoire in the future.
+Currently available for English, Chinese, and Japanese languages, MaAI will continue to expand its language coverage and non-linguistic behavior repertoire in the future.
 Designed specifically for conversational AI, including spoken dialogue systems and interactive robots, MaAI handles audio input effectively in either two-channels (user-system) or single-channel (user-only) settings. 🎙️
 Thanks to its lightweight design, MaAI operates efficiently, even exclusively on CPU hardware. ⚡
 
+The name <b>MaAI</b> is derived from the Japanese words <b>Ma(間)</b> or <b>Maai(間合い)</b>, which refer to the subtle timing and spacing that humans adjust using various modalities during interactions.  
+The <b>AI</b> in MaAI literally stands for Artificial Intelligence, reflecting the aim to develop AI technologies related to these interactional dynamics.
 
 The currently supported models are mainly based on the Voice Activity Projection (VAP) model and its extensions.
 Details about the VAP model can be found in the following repository:
-🔗 https://github.com/ErikEkstedt/VoiceActivityProjection
-
+https://github.com/ErikEkstedt/VoiceActivityProjection
 
 <br>
-
 
 ## 🆕 Update
 
-- 🚀 We launched the MaAI project and repository here! (July 14th, 2024)
-
+- We launched the MaAI project and repository here! 🚀  (July 14th, 2024)
 
 <br>
 
-
 ## 🚀 Getting Started
-
 
 To quickly get started with MaAI, you can install it using pip:
 
@@ -81,6 +78,7 @@ The turn-taking model uses the original VAP as is and predicts which participant
     - [Japanese](readme/vap-jp.md)
     - [English](readme/vap-eng.md)
     - [Chinese](readme/vap-chn.md)
+    - [Tri-lingual (JPN + ENG + CHN)](readme/vap-tri-jpn-eng-chn.md)
 
 - Noise-Robusst VAP Model (<b>Recommended</b>)
     - [Japanese](readme/vap-mc-jp.md)
