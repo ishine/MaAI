@@ -17,7 +17,7 @@ import threading
 # プロジェクトルートをパスに追加
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from maai import Vap, VapInput
+from maai import Maai, MaaiInput
 
 frame_rate = 10
 context_len_sec = 5
@@ -31,27 +31,27 @@ def test_vap_with_gui():
     TCP_IP2 = "127.0.0.1"
     TCP_PORT2 = 12346
 
-    print(VapInput.available_mic_devices())
+    print(MaaiInput.available_mic_devices())
     
     # マイクの設定
-    mic1 = VapInput.TCPTransmitter(ip=TCP_IP1, port=TCP_PORT1, mic_device_index=0)
-    mic2 = VapInput.TCPTransmitter(ip=TCP_IP2, port=TCP_PORT2, mic_device_index=1)
+    mic1 = MaaiInput.TCPTransmitter(ip=TCP_IP1, port=TCP_PORT1, mic_device_index=0)
+    mic2 = MaaiInput.TCPTransmitter(ip=TCP_IP2, port=TCP_PORT2, mic_device_index=1)
     mic1.start_process()
     mic2.start_process()
     
-    vap = Vap(
+    maai = Maai(
         mode="vap",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        mic1=VapInput.TCPReceiver(ip=TCP_IP1, port=TCP_PORT1),
-        mic2=VapInput.TCPReceiver(ip=TCP_IP2, port=TCP_PORT2),
+        mic1=MaaiInput.TCPReceiver(ip=TCP_IP1, port=TCP_PORT1),
+        mic2=MaaiInput.TCPReceiver(ip=TCP_IP2, port=TCP_PORT2),
         device="cpu"
     )
 
-    vap.start_process()
+    maai.start_process()
 
     while True:
-        result = vap.get_result()
+        result = maai.get_result()
 
         x1 = result['x1']
         wav1 = np.append(wav1, x1)

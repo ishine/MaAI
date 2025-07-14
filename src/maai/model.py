@@ -14,15 +14,15 @@ from .models.vap_bc import VapGPT_bc
 from .models.vap_nod import VapGPT_nod
 from .models.config import VapConfig
 
-class Vap():
+class Maai():
     
     BINS_P_NOW = [0, 1]
     BINS_PFUTURE = [2, 3]
     
     CALC_PROCESS_TIME_INTERVAL = 100
-        
-    def __init__(self, mode, frame_rate, context_len_sec, language: str = "jp", mic1: Base = None, mic2: Base = None, num_channels: int = 2, cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"), device: str = "cpu", cache_dir: str = None, force_download: bool = False):
-        
+
+    def __init__(self, mode, frame_rate, context_len_sec, language: str = "jp", audio_ch1: Base = None, audio_ch2: Base = None, num_channels: int = 2, cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"), device: str = "cpu", cache_dir: str = None, force_download: bool = False):
+
         conf = VapConfig()
         if mode in ["vap", "vap_MC"]:
             self.vap = VapGPT(conf)
@@ -52,8 +52,8 @@ class Vap():
         self.vap = self.vap.eval()
         
         self.mode = mode
-        self.mic1 = mic1
-        self.mic2 = mic2
+        self.mic1 = audio_ch1
+        self.mic2 = audio_ch2
 
         self.audio_contenxt_lim_sec = context_len_sec
         self.frame_rate = frame_rate
@@ -114,7 +114,7 @@ class Vap():
             if len(current_x1) < self.audio_frame_size:
                 continue
             
-            self.process_vap(current_x1, current_x2)
+            self.process(current_x1, current_x2)
             
             # Save the last 320 samples
             current_x1 = current_x1[-self.frame_contxt_padding:]
@@ -125,7 +125,7 @@ class Vap():
         self.mic2.start_process()
         threading.Thread(target=self.worker, daemon=True).start()  
     
-    def process_vap(self, x1, x2):
+    def process(self, x1, x2):
         
         time_start = time.time()
         
