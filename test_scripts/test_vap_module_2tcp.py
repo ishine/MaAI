@@ -19,39 +19,46 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 
 from maai import Maai, MaaiInput
 
-frame_rate = 10
-context_len_sec = 5
+frame_rate = 5
+context_len_sec = 3
 
 def test_vap_with_gui():
-    global wav1, wav2, p_ns, p_ft
+    global wav1, wav2, p_ns, p_ft, p_react, p_emo
 
     # TCP受信の設定
     TCP_IP1 = "127.0.0.1"
     TCP_PORT1 = 12345
     TCP_IP2 = "127.0.0.1"
     TCP_PORT2 = 12346
-
-    print(MaaiInput.available_mic_devices())
     
-    # マイクの設定
-    mic1 = MaaiInput.TCPTransmitter(ip=TCP_IP1, port=TCP_PORT1, mic_device_index=0)
-    mic2 = MaaiInput.TCPTransmitter(ip=TCP_IP2, port=TCP_PORT2, mic_device_index=1)
-    mic1.start_process()
-    mic2.start_process()
+    mic1_receiver = MaaiInput.TCPReceiver(ip=TCP_IP1, port=TCP_PORT1)
+    mic2_receiver = MaaiInput.TCPReceiver(ip=TCP_IP2, port=TCP_PORT2)
+    
+    mic1_receiver.start_server()
+    mic2_receiver.start_server()
     
     maai = Maai(
         mode="vap",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        audio_ch1=MaaiInput.TCPReceiver(ip=TCP_IP1, port=TCP_PORT1),
-        audio_ch2=MaaiInput.TCPReceiver(ip=TCP_IP2, port=TCP_PORT2),
+        audio_ch1=mic1_receiver,
+        audio_ch2=mic2_receiver,
         device="cpu"
     )
+    vap_bc = Vap(
+        mode="bc",
+        frame_rate=frame_rate,
+        context_len_sec=context_len_sec,
+        mic1=mic1_receiver,
+        mic2=mic2_receiver,
+    )
 
-    maai.start_process()
+    vap.start_process()
+    vap_bc.start_process()
 
     while True:
-        result = maai.get_result()
+        result = vap.get_result()
+        result_bc = vap_bc.get_result()
 
         x1 = result['x1']
         wav1 = np.append(wav1, x1)
@@ -67,6 +74,12 @@ def test_vap_with_gui():
         p_ft = np.append(p_ft, result['p_future'][0])
         p_ft = p_ft[-MAX_CONTEXT_LEN:]
 
+        # バックチャンネル出力
+        p_react = np.append(p_react, result_bc['p_bc_react'][0])
+        p_react = p_react[-MAX_CONTEXT_LEN:]
+        p_emo = np.append(p_emo, result_bc['p_bc_emo'][0])
+        p_emo = p_emo[-MAX_CONTEXT_LEN:]
+
 if __name__ == "__main__":
 
     SHOWN_CONTEXT_LEN_SEC = 10
@@ -81,50 +94,36 @@ if __name__ == "__main__":
         ax2_sub.set_data(time_x2, wav2)
 
         ax3_sub1 = ax3.fill_between(
-            time_x3,
-            y1=0.5,
-            y2=p_ns,
-            where=p_ns > 0.5,
-            color='y',
-        )
+            time_x3, y1=0.5, y2=p_ns, where=p_ns > 0.5, color='y')
         ax3_sub2 = ax3.fill_between(
-            time_x3,
-            y1=p_ns,
-            y2=0.5,
-            where=p_ns < 0.5,
-            color='b',
-        )
+            time_x3, y1=p_ns, y2=0.5, where=p_ns < 0.5, color='b')
 
         ax4_sub1 = ax4.fill_between(
-            time_x4,
-            y1=0.5,
-            y2=p_ft,
-            where=p_ft > 0.5,
-            color='y',
-        )
+            time_x4, y1=0.5, y2=p_ft, where=p_ft > 0.5, color='y')
         ax4_sub2 = ax4.fill_between(
-            time_x4,
-            y1=p_ft,
-            y2=0.5,
-            where=p_ft < 0.5,
-            color='b',
-        )
+            time_x4, y1=p_ft, y2=0.5, where=p_ft < 0.5, color='b')
 
-        return ax1_sub, ax2_sub, ax3_sub1, ax3_sub2, ax4_sub1, ax4_sub2
+        ax5_sub1 = ax5.fill_between(
+            time_x5, y1=0.0, y2=p_react, color='tomato')
+        ax5.axhline(y=0.5, color='black', linestyle='--')
+
+        ax6_sub1 = ax6.fill_between(
+            time_x6, y1=0.0, y2=p_emo, color='violet')
+        ax6.axhline(y=0.5, color='black', linestyle='--')
+
+        return ax1_sub, ax2_sub, ax3_sub1, ax3_sub2, ax4_sub1, ax4_sub2, ax5_sub1, ax6_sub1
 
     root = tkinter.Tk()
-    root.wm_title("Real-time VAP demo (TCP input)")
+    root.wm_title("Real-time VAP + BC demo (TCP input)")
 
-    fig, ax = plt.subplots(4, 1, tight_layout=True, figsize=(18,13))
+    fig, ax = plt.subplots(6, 1, tight_layout=True, figsize=(18,18))
 
     # Wave 1
     ax1 = ax[0]
     ax1.set_title('Input waveform 1 (TCP)')
     ax1.set_xlabel('Time [s]')
-
     time_x1 = np.linspace(-SHOWN_CONTEXT_LEN_SEC, 0, MAX_CONTEXT_WAV_LEN)
     wav1 = np.zeros(len(time_x1))
-
     ax1.set_ylim(-1, 1)
     ax1.set_xlim(-SHOWN_CONTEXT_LEN_SEC, 0)
     ax1_sub, = ax1.plot(time_x1, wav1, c='y')
@@ -134,10 +133,8 @@ if __name__ == "__main__":
     ax2.set_title('Input waveform 2 (TCP)')
     ax2.set_xlim(-SHOWN_CONTEXT_LEN_SEC, 0)
     ax2.set_xlabel('Time [s]')
-
     time_x2 = np.linspace(-SHOWN_CONTEXT_LEN_SEC, 0, MAX_CONTEXT_WAV_LEN)
     wav2 = np.zeros(len(time_x2))
-
     ax2.set_ylim(-1, 1)
     ax2_sub, = ax2.plot(time_x2, wav2, c='b')
 
@@ -149,43 +146,33 @@ if __name__ == "__main__":
     ax3.set_ylim(0, 1)
     time_x3 = np.linspace(0, MAX_CONTEXT_LEN, MAX_CONTEXT_LEN)
     p_ns = np.ones(len(time_x3)) * 0.5
-    ax3_sub1 = ax3.fill_between(
-        time_x3,
-        y1=0.5,
-        y2=p_ns,
-        where=p_ns > 0.5,
-        color='y',
-    )
-    ax3_sub2 = ax3.fill_between(
-        time_x3,
-        y1=p_ns,
-        y2=0.5,
-        where=p_ns < 0.5,
-        color='b',
-    )
 
     # p_future
     ax4 = ax[3]
     ax4.set_title('Output p_future (long-term turn-taking prediction)')
-    ax3.set_xlabel('Sample')
+    ax4.set_xlabel('Sample')
     ax4.set_xlim(0, MAX_CONTEXT_LEN)
     ax4.set_ylim(0, 1)
     time_x4 = np.linspace(0, MAX_CONTEXT_LEN, MAX_CONTEXT_LEN)
     p_ft = np.ones(len(time_x4)) * 0.5
-    ax4_sub1 = ax4.fill_between(
-        time_x4,
-        y1=0.5,
-        y2=p_ft,
-        where=p_ft > 0.5,
-        color='y',
-    )
-    ax4_sub2 = ax4.fill_between(
-        time_x4,
-        y1=p_ft,
-        y2=0.5,
-        where=p_ft < 0.5,
-        color='b',
-    )
+
+    # p_react
+    ax5 = ax[4]
+    ax5.set_title('Output p_bc_react (reactive backchannel prediction)')
+    ax5.set_xlabel('Sample')
+    ax5.set_xlim(0, MAX_CONTEXT_LEN)
+    ax5.set_ylim(0, 1)
+    time_x5 = np.linspace(0, MAX_CONTEXT_LEN, MAX_CONTEXT_LEN)
+    p_react = np.ones(len(time_x5)) * 0.0
+
+    # p_emo
+    ax6 = ax[5]
+    ax6.set_title('Output p_bc_emo (emotional backchannel prediction)')
+    ax6.set_xlabel('Sample')
+    ax6.set_xlim(0, MAX_CONTEXT_LEN)
+    ax6.set_ylim(0, 1)
+    time_x6 = np.linspace(0, MAX_CONTEXT_LEN, MAX_CONTEXT_LEN)
+    p_emo = np.ones(len(time_x6)) * 0.0
 
     ani = animation.FuncAnimation(
         fig,

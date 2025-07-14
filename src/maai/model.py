@@ -55,6 +55,10 @@ class Maai():
         self.mic1 = audio_ch1
         self.mic2 = audio_ch2
 
+        # Always subscribe a dedicated queue for each mic if possible
+        self._mic1_queue = self.mic1.subscribe()
+        self._mic2_queue = self.mic2.subscribe()
+
         self.audio_contenxt_lim_sec = context_len_sec
         self.frame_rate = frame_rate
         
@@ -102,9 +106,9 @@ class Maai():
         
         while True:
             
-            # Get audio data from mic1 and mic2 (160 samples)
-            x1 = self.mic1.get_audio_data()
-            x2 = self.mic2.get_audio_data()
+            # Always use get_audio_data(q) if queue is available
+            x1 = self.mic1.get_audio_data(self._mic1_queue)
+            x2 = self.mic2.get_audio_data(self._mic2_queue)
             
             current_x1 = np.concatenate([current_x1, x1])
             current_x2 = np.concatenate([current_x2, x2])
