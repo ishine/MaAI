@@ -1,395 +1,151 @@
 <p align="center">
-<img src="img/logo.jpg" width="600">
+<img src="img/logo_ver2.png" width="300">
 </p>
 
 <h1>
 <p align="center">
-Realtime Voice Activity Projection (Realtime-VAP)
+MaAI
 </p>
 </h1>
+<p align="center"><b>リアルタイム</b>かつ<b>軽量</b>な会話AI向け<b>非言語的ふるまい生成</b>ソフトウェア</p>
+<p align="center">（Voice Activity Projectionのリアルタイム実装）</p>
 <p align="center">
-README: <a href="README.md">English </a> | <a href="README_JP.md">Japanese (日本語) </a>
+📄 README: <a href="README.md">English </a> | <a href="README_JP.md">Japanese (日本語) </a>
 </p>
 
-Voice Activity Projection (VAP)のリアルタイム実装は、音声対話システムのターンテイキングなどへの応用を目的としています。VAP モデルは、ステレオ音声データ（対話参加者の 2 人分）を入力とし、直後の発話予測（p_now および p_future）を出力します。
+<b>MaAI</b>は、非言語的ふるまい（ターンテイキング、相槌、頷き等）をリアルタイムかつ連続的に予測・生成できる、最先端かつ軽量なソフトウェアです。
+英語・中国語・日本語に対応しており、今後も対応言語やふるまいの種類を拡大予定です。
+会話AI（対話システムやロボット等）向けに設計されており、2チャンネル（ユーザ・システム）または1チャンネル（ユーザのみ）の音声入力に対応します。🎙️
+軽量設計のため、CPUのみでも高速に動作します。⚡
 
-VAP モデルに関する詳細は、以下のリポジトリでご確認ください。
+プロジェクトの名称の<b>MaAI</b>は、日本語の<b>間（ま）</b>や<b>間合い</b>に由来し、会話におけるタイミングや間合いの調整をAIで実現することを目指しています。
+
+現在サポートしているモデルは主にVoice Activity Projection（VAP）およびその拡張です。
+VAPモデルの詳細は以下のリポジトリを参照してください：
 https://github.com/ErikEkstedt/VoiceActivityProjection
 
-このリポジトリでは、VAP モデルを CPU環境下でリアルタイムに動作させることができます。GPUを使用すると処理速度を高めることもできます。
-
-このVAPプログラムは、TCP/IP接続を介して入力を受け取り、処理結果をTCP/IP接続で出力するプログラムとして動作します。したがって、あなた自身のプログラムは、TCP/IP経由でVAPプログラムに接続し、音声データを入力し、VAPの結果を受信することが典型的な使い方です。
-<be>
-
-__デモ動画（YouTube）__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
-
-[![Demo video](http://img.youtube.com/vi/-uwB6yl2WtI/0.jpg)](https://www.youtube.com/watch?v=-uwB6yl2WtI)
-
-## ディレクトリ構成
-
-- __rvap__
-  - __vap_main__ - VAPメインディレクトリ
-  - __vap_bc__ - 相槌予測用VAPのメインディレクトリ
-  - __vap_nod__ - 頷き予測用VAPのメインディレクトリ
-  - __common__ - 通信用のデータのエンコードとデコード方法など
-- __input__ - 入力用サンプルプログラム
-- __output__ - 出力用サンプルプログラム
-- __asset__ - VAPおよびCPC用のモデルファイル
-  - __vap__ - VAPモデル
-  - __cpc__ - 事前学習済みのCPCモデル
-  
 <br>
 
-## 動作環境
+## 🆕 アップデート
 
-- __Windows__ - WSLは対象外
-- __Mac__ - `output/gui.py`は対象外
-- __Linux__
-  
-<br>
-
-## インストール
-
-このソフトウェアにはPython環境（バージョン 3.10 以上）が必要です。
-`requirements.txt` に記載されている必要なライブラリを参照してください。
-
-以下のコマンドを使用して、ライブラリを直接インストールできます。
-
-```bash
-$ pip install -r requirements.txt
-$ pip install -e .
-```
-
-GPUを使用したい場合は `requirements-gpu.txt` を用いてください。
+- MaAIプロジェクトおよびリポジトリを公開しました！🚀（2024年7月14日）
 
 <br>
 
-## 使用方法
+## 🚀 インストール
 
-このシステムは3つのステップで使用できます。最初のステップはVAPモデルの主要部分であり、2番目と3番目のステップは入力と出力のためのオプションです。つまり、2番目と3番目のステップは自身で実装し、VAPに任意の音声データを入力し、VAPから処理結果を受け取ることができるように設計しています。
-
-### Step 1: VAPを起動
-
-VAPプログラムを起動する際には、学習済みVAPモデルとCPCモデルの両方を指定します。入力と出力のTCP/IPのポート番号も指定できます。
-使用するモデルのパラメータとして、`vap_process_rate` と `context_len_sec` を正しく設定する必要があります。
-詳しくは、[モデルの説明](#モデル) を確認してください。
+MaAIはpipで簡単にインストールできます：
 
 ```bash
-$ cd rvap/vap_main
-
-$ python vap_main.py ^
-    --vap_model ../../asset/vap/vap_state_dict_jp_20hz_2500msec.pt ^
-    --cpc_model ../../asset/cpc/60k_epoch4-d0f474de.pt ^
-    --port_num_in 50007 ^
-    --port_num_out 50008 ^
-    --vap_process_rate 20 ^
-    --context_len_sec 2.5
+pip install maai
 ```
 
-GPUを使用したい場合は、オプション `--gpu` を引数に追加してください。
+> 💡 **注意:** デフォルトではPyTorchのCPU版がインストールされます。GPUで利用したい場合は、事前にCUDA環境に合ったPyTorchのGPU版をインストールしてください。
 
-次のようなメッセージが表示されます。
+以下のように実行できます。🏃‍♂️
+タスク（mode）に応じたモデルやパラメータは自動でダウンロードされます。
+下記は2つのwavファイル（ユーザ・システム）をターンテイキングモデル（VAP）に入力する例です。
 
-~~~shell-session
-[IN] Waiting for connection of audio input...
-~~~
+```python
+from maai import Maai, MaaiInput
 
-### Step 2: 入力プログラムを起動
+wav1 = MaaiInput.Wav(wav_file_path="path_to_your_user_wav_file")
+wav2 = MaaiInput.Wav(wav_file_path="path_to_your_system_wav_file")
 
-サンプルデータのWavデータを入力するには、`input/wav.py`を起動します。入力wavファイル名を指定できます。注意点として、このサンプル入力プログラムは、モデルの入力として個々のオーディオファイルと再生用の混合2チャンネルオーディオデータの両方を必要とします。また、VAPプログラムのTCP/IPのIPとポート番号も指定する必要があります。
+maai = Maai(mode="vap", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
 
-
-```bash
-$ cd input
-
-$ python wav.py ^
-    --server_ip 127.0.0.1 ^
-    --port_num 50007 ^
-    --input_wav_left wav_sample/jpn_inoue_16k.wav ^
-    --input_wav_right wav_sample/jpn_sumida_16k.wav ^
-    --play_wav_stereo wav_sample/jpn_mix_16k.wav
+maai.start_process()
+while True:
+    result = maai.get_result()
 ```
-
-マイクからの入力オーディオをキャプチャするには、サンプルプログラム`input/mic.py`を参照してください。このプログラムは、デフォルトのマイクからのモノラルオーディオデータを取得し、それをVAPの入力形式に合わせてゼロデータと連結します。これは、一方の参加者が話している間にもう一方が沈黙していることを意味します。この方法は、音声対話システムにVAPモデルを実装するための１つの方法です。
-
-```bash
-$ cd input
-
-$ python mic.py ^
-    --server_ip 127.0.0.1 ^
-    --port_num 50007
-```
-
-### Step 3: 出力プログラムを起動
-
-VAPプログラムの処理結果をTCP/IP経由で取得できます。サンプルプログラム`output/console.py`は、データを受信してコンソールに表示します。VAPプログラムのサーバーIPとポート番号を指定する必要があります。
-
-```bash
-$ cd output
-
-$ python console.py ^
-    --server_ip 127.0.0.1 ^
-    --port_num 50008
-```
-
-受信データを可視化するためのサンプルも`output/gui.py`として用意されています。このGUIプログラムはMac環境では動作しません。
-
-```bash
-$ cd output
-
-$ python gui.py ^
-    --server_ip 127.0.0.1 ^
-    --port_num 50008
-```
-
-次のようなGUIが表示されます。
-
-![vap_output_image](img/gui_example.png)
 
 <br>
 
-## データ形式
+## 🧩 モデル
 
-このリポジトリのユーザーは、`input`および`output`ディレクトリにあるサンプルプログラムを参照して、各自の目的に応じた入力および出力プログラムを実装することを想定しています。
+対応モデル（ふるまい・言語・設定など）は今後も追加予定です。
+現在利用可能なモデルは[HuggingFaceリポジトリ](https://huggingface.co/maai-kyoto)をご覧ください。
 
-### 入力
+### ターンテイキング
 
-16,000 Hzの音声で、フレームサイズは160サンプルです。さらに2人分のデータを同時に送信してください。各サンプルは、リトルエンディアンの8バイト倍精度浮動小数点数で-1.0から+1.0の範囲で表現してください。
+ターンテイキングモデルはVAPを用い、次の瞬間にどちらが発話するかを予測します。
 
-__送信順序__:
+- VAPモデル
+    - [日本語モデル](readme/vap-jp.md)
+    - [英語モデル](readme/vap-eng.md)
+    - [中国語モデル](readme/vap-chn.md)
+    - [トリリンガルモデル（JPN+ENG+CHN）](readme/vap-tri-jpn-eng-chn.md)
 
-各サンプルは16バイトで、最初の8バイトは１人目の音声、後半の8倍とは２人目の音声をそれぞれ表します。
+- ノイズロバストVAPモデル（<b>推奨</b>）
+    - [日本語モデル](readme/vap-mc-jp.md)
 
-__データフレームの構成__:
+- 1チャンネルVAPモデル
+    - 準備中 ...
 
-各データフレームのサイズは2,560バイトです。
+### 相槌
 
-| バイトオフセット | データ型 | 説明 |
-| ---- | ---- | --- |
-| 0 - 7 | Double | 音声データ (1人目) - サンプル 1 |
-| 8 - 15 | Double | 音声データ (2人目) - サンプル 1 |
-| 16 - 23 | Double | 音声データ (1人目) - サンプル 2 |
-| 24 - 31 | Double | 音声データ (2人目) - サンプル 2 |
-| ... | ... | ... |
-| 2544 - 2551 | Double | 音声データ (1人目) - サンプル 160 |
-| 2552 - 2559 | Double | 音声データ (2人目) - サンプル 160 |
+相槌は「うん」「はい」などの短い聞き手反応で、ターンテイキングとも関連します。
 
-具体的な実装例については、`input/wav.py`や`input/mic.py`などのサンプルプログラムを参照してください。
+- VAPベースの相槌予測モデル
+    - [日本語 - タイミングのみ](readme/vap-jp-bc-timing.md)
+    - [日本語 - 2種のタイミング](readme/vap-jp-bc-timing-2type.md)
 
-### 出力
+- ノイズロバストVAP-BC
+    - 準備中 ...
 
-出力データには、入力オーディオデータとVAP出力（p_nowおよびp_future）が含まれます。VAP処理のフレームレートは入力オーディオとは異なることに注意してください。例えば、20HzのVAPモデルでは、VAPにおけるオーディオデータのフレームサイズは800です。また、すべてのデータはリトルエンディアン形式です。
+- 1チャンネルVAP-BC
+    - 準備中 ...
 
-__データフレームの構成__:
+### 頷き
 
-上記の条件下では、各出力データのサイズは12,860バイトとなります。このデータは、各VAPフレームの処理後に送信されます。
+頷きは頭の上下運動で、相槌と関連します。発声を伴わず非言語的に聞き手反応を示すことができます。
 
-| バイトオフセット | データ型 | 説明 |
-| --- | --- | --- |
-| 0 - 3 | Int | 送信データ長 (12,860) |
-| 4 - 11 | Double | Unix タイムスタンプ |
-| 12 - 15 | Int | 音声データ (1人目) のデータ長 (800) |
-| 16 - 23 | Double | 音声データ (1人目) - サンプル 1 |
-| 24 - 31 | Double | 音声データ (1人目) - サンプル 2 |
-| ... | ... | ... |
-| 6408 - 6415 | Double | 音声データ (1人目) - サンプル 800 |
-| 6416 - 6419 | Int | 音声データ (2人目) のデータ長 (800) |
-| 6420 - 6427 | Double | 音声データ (2人目) - サンプル 1 |
-| 6428 - 6435 | Double | 音声データ (2人目) - サンプル 2 |
-| ... | ... | ... |
-| 12812 - 12819 | Double | 音声データ (2人目) - サンプル 800 |
-| 12820 - 12823 | Int | p_now のデータ長 (2) |
-| 12824 - 12831 | Double | p_now (1人目) |
-| 12832 - 12839 | Double | p_now (2人目) |
-| 12840 - 12843 | Int | p_future のデータ長 (2) |
-| 12844 - 12851 | Double | p_future (1人目) |
-| 12852 - 12859 | Double | p_future (2人目) |
-| 12860 - 12863 | Int | VAD のデータ長 (2) |
-| 12864 - 12871 | Double | VAD (1人目) |
-| 12872 - 12879 | Double | VAD (2人目) |
+- VAPベースの頷き予測モデル
+    - [日本語](readme/vap-jp-nodd.md)
 
 <br>
 
-## オフライン (バッチ) 処理
+## 🎚️ 入出力
 
-`rvap/vap_main/vap_offline.py` を使用して、録音済みの wav ファイルをバッチ処理することもできます。
+MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メソッドを直接呼び出せます。
+`MaaiInput`クラスにより、WAVファイル・マイク・TCP通信など柔軟な音声入力が可能です。
 
-```bash
-$ cd rvap/vap_main
+- WAVファイル入力: `Wav`クラス 📁
+- マイク入力: `Mic`クラス 🎙️
+- TCP通信: `TCPReceiver` / `TCPTransmitter`クラス 🌐
 
-$ python vap_offline.py ^
-    --vap_model '../../asset/vap/vap_state_dict_20hz_jpn.pt' ^
-    --cpc_model ../../asset/cpc/60k_epoch4-d0f474de.pt ^
-    --input_wav_left ../../input/wav_sample/jpn_inoue_16k.wav ^
-    --input_wav_right ../../input/wav_sample/jpn_sumida_16k.wav ^
-    --filename_output 'output_offline.txt'
-```
+これらのクラスを使うことで、用途に応じた音声入力方法を簡単に切り替えられます。
 
-出力データは `output_offline.txt` に保存されます。各行には、wavファイルにおけるタイムスタンプ（秒単位）、p_now（2 つの浮動小数点値）と p_future（2 つの浮動小数点値）がカンマで区切られて含まれます。
+出力については`MaaiOutput`クラスを開発中です。
+現状は`Maai`クラスインスタンスの`get_result`メソッドで結果を取得できます。
 
-```
-time_sec,p_now(0=left),p_now(1=right),p_future(0=left),p_future(1=right)
-0.07,0.29654383659362793,0.7034487724304199,0.3714706599712372,0.6285228729248047
-0.12,0.6943456530570984,0.30564749240875244,0.5658637881278992,0.4341297447681427
-0.17,0.8920691013336182,0.10792573541402817,0.7332779169082642,0.26671621203422546
-0.22,0.8698683977127075,0.13012604415416718,0.6923539042472839,0.3076401650905609
-0.27,0.870344340801239,0.12964950501918793,0.730902373790741,0.26909157633781433
-0.32,0.9062888622283936,0.09370578080415726,0.7462385892868042,0.2537555992603302
-0.37,0.8965250849723816,0.10346963256597519,0.6949127912521362,0.30508118867874146
-0.42,0.9331467151641846,0.06684830039739609,0.7633994221687317,0.2365950644016266
-0.47,0.9440065026283264,0.05598851293325424,0.7653886675834656,0.2346058338880539
-```
-
-### 可視化
-
-可視化ツールを使って、オフライン予測結果を音声と共に閲覧することができます。
-```shell
-python output/offline_prediction_visualizer/main.py --left_audio input/wav_sample/jpn_inoue_16k.wav --right_audio input/wav_sample/jpn_sumida_16k.wav  --prediction rvap/vap_main/output_offline.txt
-```
-
-## 相槌予測
-
-相槌予測（生成）用にファインチューニングされたモデルもあります。
-以下のメインプログラムを使用してください。
-
-```bash
-$ cd rvap/vap_bc
-
-$ python vap_bc_main.py ^
-    --vap_model ../../asset/vap_bc/vap-bc_state_dict_erica_20hz_5000msec.pt ^
-    --cpc_model ../../asset/cpc/60k_epoch4-d0f474de.pt ^
-    --port_num_in 50007 ^
-    --port_num_out 50008 ^
-    --vap_process_rate 20 ^
-    --context_len_sec 5
-```
-
-入出力のフォーマットは同じで、出力の`p_now`と`p_future`がそれぞれ`p_bc_react`と`p_bc_emo`に置き換わります。
-`p_bc_react`は応答系（「うん」など）、`p_bc_emo`は感情表出系（「へー」など）の相槌の生起確率を表します。
-このモデルは500ミリ秒後の相槌の生起確率を予測するものです。
-また、モデルの入力は2チャンネルの音声ですが、1チャンネル目の話者の相槌を予測する、つまり2チャンネル目がユーザの音声に対応することに注意してください。
-
-可視化のサンプルプログラムは`output/console_bc.py`や`output/gui_bc.py`です。
-
-## 頷き予測
-
-さらに、頷き予測（生成）用にファインチューニングされたモデルもあります。
-以下のメインプログラムを使用してください。
-
-```bash
-$ cd rvap/vap_nod
-
-$ python vap_nod_main.py ^
-    --vap_model ../../asset/vap_nod/vap-nod_state_dict_erica_10hz_10000msec.pt ^
-    --cpc_model ../../asset/cpc/60k_epoch4-d0f474de.pt ^
-    --port_num_in 50007 ^
-    --port_num_out 50008 ^
-    --vap_process_rate 10 ^
-    --context_len_sec 10
-```
-
-入出力のフォーマットは同じで、出力の`p_now`と`p_future`がそれぞれ`p_nod_short`、`p_nod_long`、`p_nod_long_p`に置き換わります。
-`p_nod_short`は移動範囲が小さい頷きを表し、`p_nod_long`と`p_nod_long_p`はそれぞれ移動範囲が大きく、振り上げがない/ある頷きの生起確率を表します。
-このモデルは500ミリ秒後の頷きの生起確率を予測するものです。
-また、モデルの入力は2チャンネルの音声ですが、1チャンネル目の話者の頷きを予測する、つまり2チャンネル目がユーザの音声に対応することに注意してください。
-
-可視化のサンプルプログラムは`output/console_nod.py`や`output/gui_nod.py`です。
-
-## モデル
-
-このリポジトリには、VAPとCPCのモデルがいくつか含まれています。これらのモデルを使用する場合は、[ライセンス](#lisence)に従ってください。
-モデルのパラメータには、`vap_process_rate` と `context_len_sec` があります。
-前者は VAP モデルで処理される１秒あたりのサンプル数、後者はVAPモデルに入力されるコンテキストの長さ(秒)に対応します。
-これらはトレーニング中に固定されるため、これらのパラメータを変更したい場合は、モデルを再トレーニングする必要があります。
-
-### VAP
-
-日本語モデル ([旅行代理店対話 (Inaba 2022)](https://aclanthology.org/2022.lrec-1.619/) の Zoom 会議の対話を用いて学習された日本語モデル)
-| 配置場所 | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap/vap_state_dict_jp_20hz_2500msec.pt` | 20 | 2.5 |
-| `asset/vap/vap_state_dict_jp_10hz_5000msec.pt` | 10 | 5 |
-| `asset/vap/vap_state_dict_jp_10hz_3000msec.pt` | 10 | 3 |
-| `asset/vap/vap_state_dict_jp_5hz_5000msec.pt` | 5 | 5 |
-| `asset/vap/vap_state_dict_jp_5hz_3000msec.pt` | 5 | 3 |
-
-英語モデル ([Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62) を使用してトレーニングされた英語モデル)
-| 配置場所 | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap/vap_state_dict_eng_20hz_2500msec.pt` | 20 | 2.5 |
-| `asset/vap/vap_state_dict_eng_10hz_5000msec.pt` | 10 | 5 |
-| `asset/vap/vap_state_dict_eng_10hz_3000msec.pt` | 10 | 3 |
-| `asset/vap/vap_state_dict_eng_5hz_5000msec.pt` | 5 | 5 |
-| `asset/vap/vap_state_dict_eng_5hz_3000msec.pt` | 5 | 3 |
-
-マルチリンガルモデル ([Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S 62）、[HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)、[Travel agency dialogue (Inaba 2022)](https://aclanthology.org/2022.lrec-1.619/)を使用してトレーニングされた、英語、中国語、日本語のマルチリンガルモデル)
-| 配置場所 | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap/vap_state_dict_tri_ecj_20hz_2500msec.pt` | 20 | 2.5 |
-| `asset/vap/vap_state_dict_tri_ecj_10hz_5000msec.pt` | 10 | 5 |
-| `asset/vap/vap_state_dict_tri_ecj_10hz_3000msec.pt` | 10 | 3 |
-| `asset/vap/vap_state_dict_tri_ecj_10hz_5000msec.pt` | 5 | 5 |
-| `asset/vap/vap_state_dict_tri_ecj_10hz_3000msec.pt` | 5 | 3 |
-
-### ノイズ対応VAP
-
-ロボットとの対話などの用途に適した、ノイズ耐性を持つVAPモデルの学習も行いました。
-学習データにはさまざまな種類のノイズを追加し、さらにオーディオゲインをランダムに調整することで、さまざまな使用環境をシミュレートしています。
-詳細については、[Inoue 2025](https://www.arxiv.org/abs/2503.06241)をご覧ください。
-
-日本語モデル ([旅行代理店対話 (Inaba 2022)](https://aclanthology.org/2022.lrec-1.619/) の Zoom 会議の対話と独自対話データを用いて学習された日本語モデル)
-| Location | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap/vap_state_dict_jp_10hz_5000msec_MC.pt` | 10 | 5 |
-
-英語モデル ([Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62) を使用してトレーニングされた英語モデル)
-| 配置場所 | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap/vap_state_dict_eng_10hz_5000msec_MC.pt` | 10 | 5 |
-
-マルチリンガルモデル ([Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S 62）、[HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)、[Travel agency dialogue (Inaba 2022)](https://aclanthology.org/2022.lrec-1.619/)を使用してトレーニングされた、英語、中国語、日本語のマルチリンガルモデル)
-| 配置場所 | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap/vap_state_dict_tri_10hz_5000msec_MC.pt` | 10 | 5 |
-
-### 相槌予測VAP
-
-日本語相槌モデル (ERICAの傾聴対話データ（WoZ）でファインチューニングされた相槌予測モデル)
-| 配置場所 | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap-bc/vap-bc_state_dict_erica_20hz_5000msec.pt` | 20 | 5 |
-| `asset/vap-bc/vap-bc_state_dict_erica_20hz_3000msec.pt` | 20 | 3 |
-| `asset/vap-bc/vap-bc_state_dict_erica_10hz_5000msec.pt` | 10 | 5 |
-| `asset/vap-bc/vap-bc_state_dict_erica_10hz_3000msec.pt` | 10 | 3 |
-| `asset/vap-bc/vap-bc_state_dict_erica_5hz_5000msec.pt` | 5 | 5 |
-| `asset/vap-bc/vap-bc_state_dict_erica_5hz_3000msec.pt` | 5 | 3 |
-
-### 頷き予測VAP
-
-日本語頷きモデル (ERICAの傾聴対話データ（WoZ）でファインチューニングされた頷き予測モデル)
-| 配置場所 | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| `asset/vap-nod/vap-nod_state_dict_erica_20hz_10000msec.pt` | 20 | 10 |
-| `asset/vap-nod/vap-nod_state_dict_erica_20hz_5000msec.pt` | 20 | 5 |
-| `asset/vap-nod/vap-nod_state_dict_erica_20hz_3000msec.pt` | 20 | 3 |
-| `asset/vap-nod/vap-nod_state_dict_erica_10hz_10000msec.pt` | 10 | 10 |
-| `asset/vap-nod/vap-nod_state_dict_erica_10hz_5000msec.pt` | 10 | 5 |
-| `asset/vap-nod/vap-nod_state_dict_erica_10hz_3000msec.pt` | 10 | 3 |
-| `asset/vap-nod/vap-nod_state_dict_erica_5hz_10000msec.pt` | 5 | 10 |
-| `asset/vap-nod/vap-nod_state_dict_erica_5hz_5000msec.pt` | 5 | 5 |
-| `asset/vap-nod/vap-nod_state_dict_erica_5hz_3000msec.pt` | 5 | 3 |
-
-### CPC
-
-| 種類 | 配置場所 | 説明 |
-| --- | --- | --- |
-| オリジナルCPC | `asset/cpc/60k_epoch4-d0f474de.pt` |  [オリジナルCPCモデル](https://github.com/facebookresearch/CPC_audio)は、Libri-lightの60k時間の音声データで学習 |
+詳細は以下のREADMEもご参照ください：
+- [入力について](readme/input.md)
+- [出力について](readme/output.md)
 
 <br>
 
-## 引用
+## 💡 実装例
 
-このリポジトリを利用した成果に関して論文などを発表した場合は、以下の論文を引用してください。
+`test_scripts`ディレクトリにMaAIモデルの実装例があります。
+
+- ターンテイキング（VAP）
+    - [2つのwavファイル入力](test_scripts/test_vap_module_2wav.py) 🎧
+    - [2つのマイク入力](test_scripts/test_vap_module_2mic.py) 🎤
+    - [TCP経由2マイク入力](test_scripts/test_vap_module_2tcp.py) 🌐
+    - [1wav+1マイク入力](test_scripts/test_vap_module_wav_mic.py) 🎧🎤
+
+- 相槌
+    - [1wav+1マイク入力](test_scripts/test_vap_bc_module_wav_mic.py) 🎧🎤
+
+- 頷き
+  - [1wav+1マイク入力](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
+
+<br>
+
+## 📚 論文・参考文献
+
+本リポジトリを利用した成果を発表する際は、以下の論文を引用してください。🙏
 
 Koji Inoue, Bing'er Jiang, Erik Ekstedt, Tatsuya Kawahara, Gabriel Skantze<br>
 __Real-time and Continuous Turn-taking Prediction Using Voice Activity Projection__<br>
@@ -406,7 +162,7 @@ https://arxiv.org/abs/2401.04868<br>
 }
 ```
 
-マルチリンガルVAPモデルを使用する場合は、以下の論文も引用してください。
+トリリンガルVAPモデルを利用する場合は、以下も引用してください。
 
 Koji Inoue, Bing'er Jiang, Erik Ekstedt, Tatsuya Kawahara, Gabriel Skantze<br>
 __Multilingual Turn-taking Prediction Using Voice Activity Projection__<br>
@@ -424,7 +180,7 @@ https://aclanthology.org/2024.lrec-main.1036/<br>
 }
 ```
 
-ノイズ対応VAPモデルを使用する場合は、以下の論文も引用してください。
+ノイズロバストVAPモデルを利用する場合は、以下も引用してください。
 
 Koji Inoue, Yuki Okafuji, Jun Baba, Yoshiki Ohira, Katsuya Hyodo, Tatsuya Kawahara<br>
 __A Noise-Robust Turn-Taking System for Real-World Dialogue Robots: A Field Experiment__<br>
@@ -440,12 +196,30 @@ https://www.arxiv.org/abs/2503.06241<br>
 }
 ```
 
+相槌VAPモデルを利用する場合は、以下も引用してください。
+
+Koji Inoue, Divesh Lala, Gabriel Skantze, Tatsuya Kawaharaa<br>
+__Yeah, Un, Oh: Continuous and Real-time Backchannel Prediction with Fine-tuning of Voice Activity Projection__<br>
+https://aclanthology.org/2025.naacl-long.367/<br>
+
+```
+@inproceedings{inoue2025vapbc,
+    author = {Koji Inoue and Divesh Lala and Gabriel Skantze and Tatsuya Kawahara},
+    title = {Yeah, Un, Oh: Continuous and Real-time Backchannel Prediction with Fine-tuning of Voice Activity Projection},
+    booktitle = {Proceedings of the Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL)},
+    pages = {7171--7181},
+    year = {2025},
+    url = {https://aclanthology.org/2025.naacl-long.367/},
+}
+```
+
 <br>
 
-## ライセンス
+## 📝 ライセンス
 
-このリポジトリ内のソースコードは MITライセンスです。
-assetディレクトリにある学習済みモデルは、学術目的のみに使用可能です。
+本リポジトリのソースコードはMITライセンスです。
+学習済みモデルは学術目的のみに利用可能です。
 
-`asset/cpc/60k_epoch4-d0f474de.pt` に置かれている事前学習済み CPC モデルは、オリジナルの CPC プロジェクトからダウンロードしたものであり、そのライセンスに従ってください。
-詳細は、https://github.com/facebookresearch/CPC_audio のオリジナルリポジトリを参照してください。
+CPCモデルはオリジナルCPCプロジェクト由来です。
+ライセンスの詳細は以下を参照してください：
+https://github.com/facebookresearch/CPC_audio
