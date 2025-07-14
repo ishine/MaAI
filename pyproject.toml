@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "maai"
 dynamic = ["version"]
-description = "Real-time and Continuous Non-verbal Behavior (Maai) Generation Software"
+description = "Real-time and Continuous Non-Linguistic Behavior (Maai) Generation Software"
 authors = [
   { name = "MaAI team", email = "inoue@sap.ist.i.kyoto-u.ac.jp" }
 ]

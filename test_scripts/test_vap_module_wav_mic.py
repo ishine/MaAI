@@ -17,7 +17,7 @@ import threading
 # プロジェクトルートをパスに追加
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from maai import Vap, VapInput
+from maai import Maai, MaaiInput
 
 wav_file_path1 = "input/wav_sample/jpn_inoue_16k.wav"
 
@@ -26,21 +26,21 @@ context_len_sec = 5
 
 def test_vap_with_gui():
     global wav1, wav2, p_ns, p_ft
-    
-    vap = Vap(
+
+    maai = Maai(
         mode="vap",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        mic1=VapInput.Wav(wav_file_path=wav_file_path1),
-        mic2=VapInput.Mic(mic_device_index=0),
+        mic1=MaaiInput.Wav(wav_file_path=wav_file_path1),
+        mic2=MaaiInput.Mic(mic_device_index=0),
         device="cpu"
     )
-    
-    vap.start_process()
-    
+
+    maai.start_process()
+
     while True:
-        result = vap.get_result()
-        
+        result = maai.get_result()
+
         x1 = result['x1']
         wav1 = np.append(wav1, x1)
         wav1 = wav1[-MAX_CONTEXT_WAV_LEN:]

@@ -15,9 +15,9 @@ from matplotlib import animation
 import threading
 
 # プロジェクトルートをパスに追加
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
-from maai import Vap, VapInput
+from maai import Maai, MaaiInput
 
 frame_rate = 5
 context_len_sec = 3
@@ -31,18 +31,18 @@ def test_vap_with_gui():
     TCP_IP2 = "127.0.0.1"
     TCP_PORT2 = 12346
     
-    mic1_receiver = VapInput.TCPReceiver(ip=TCP_IP1, port=TCP_PORT1)
-    mic2_receiver = VapInput.TCPReceiver(ip=TCP_IP2, port=TCP_PORT2)
+    mic1_receiver = MaaiInput.TCPReceiver(ip=TCP_IP1, port=TCP_PORT1)
+    mic2_receiver = MaaiInput.TCPReceiver(ip=TCP_IP2, port=TCP_PORT2)
     
     mic1_receiver.start_server()
     mic2_receiver.start_server()
     
-    vap = Vap(
+    maai = Maai(
         mode="vap",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        mic1=mic1_receiver,
-        mic2=mic2_receiver,
+        audio_ch1=mic1_receiver,
+        audio_ch2=mic2_receiver,
         device="cpu"
     )
     vap_bc = Vap(
