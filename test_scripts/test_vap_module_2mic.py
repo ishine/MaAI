@@ -15,9 +15,9 @@ from matplotlib import animation
 import threading
 
 # プロジェクトルートをパスに追加
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
-from maai import Vap, VapInput
+from maai import Maai, MaaiInput
 from maai.input import available_mic_devices
 
 wav_file_path1 = "input/wav_sample/jpn_inoue_16k.wav"
@@ -32,12 +32,12 @@ def test_vap_with_gui():
     available_mic_devices()
 
 
-    vap = Vap(
+    vap = Maai(
         mode="vap_MC",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        mic1=VapInput.Mic(mic_device_index=1),
-        mic2=VapInput.Mic(mic_device_index=0),
+        audio_ch1=MaaiInput.Mic(mic_device_index=1),
+        audio_ch2=MaaiInput.Mic(mic_device_index=0),
         device="cpu"
     )
     

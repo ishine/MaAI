@@ -56,6 +56,15 @@ class Wav(Base):
         self.wav_file_path = wav_file_path
         self.audio_gain = audio_gain
         self.raw_wav_queue = queue.Queue()
+
+        if not os.path.exists(self.wav_file_path):
+            raise FileNotFoundError(f"WAV file not found: {self.wav_file_path}")
+        
+        # Check the frame rate of the WAV file
+        self.SAMPLING_RATE = sf.info(self.wav_file_path).samplerate
+        if self.SAMPLING_RATE != 16000:
+            raise ValueError(f"Unsupported sample rate: {self.SAMPLING_RATE}. Expected 16000 Hz.")
+        
         data, _ = sf.read(file=self.wav_file_path, dtype='float32')
         for i in range(0, len(data), self.FRAME_SIZE):
             if i + self.FRAME_SIZE > len(data):

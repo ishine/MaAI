@@ -15,12 +15,12 @@ from matplotlib import animation
 import threading
 
 # プロジェクトルートをパスに追加
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
-from maai import Vap, VapInput
+from maai import Maai, MaaiInput
 
-wav_file_path1 = "input/wav_sample/jpn_inoue_16k.wav"
-wav_file_path2 = "input/wav_sample/jpn_sumida_16k.wav"
+wav_file_path1 = "../input/wav_sample/jpn_inoue_16k.wav"
+wav_file_path2 = "../input/wav_sample/jpn_sumida_16k.wav"
 
 frame_rate = 10
 context_len_sec = 5
@@ -28,12 +28,12 @@ context_len_sec = 5
 def test_vap_with_gui():
     global wav1, wav2, p_ns, p_ft
     
-    vap = Vap(
+    vap = Maai(
         mode="vap",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        mic1=VapInput.Wav(wav_file_path=wav_file_path1),
-        mic2=VapInput.Wav(wav_file_path=wav_file_path2),
+        audio_ch1=MaaiInput.Wav(wav_file_path=wav_file_path1),
+        audio_ch2=MaaiInput.Wav(wav_file_path=wav_file_path2),
         device="cpu"
     )
     

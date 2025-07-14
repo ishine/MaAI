@@ -13,12 +13,13 @@ from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg, NavigationToolbar2Tk)
 import matplotlib.pyplot as plt
 from matplotlib import animation
+import seaborn as sns
 import threading
 
 # プロジェクトルートをパスに追加
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
-from maai import Vap, VapInput
+from maai import Maai, MaaiInput
 
 frame_rate = 10
 context_len_sec = 5
@@ -26,14 +27,14 @@ context_len_sec = 5
 def test_vap_with_gui():
     global wav1, wav2, p_bc_react, p_bc_emo
     
-    wav_file_path1 = "input/wav_sample/jpn_sumida_16k.wav"
+    wav_file_path1 = "../input/wav_sample/jpn_sumida_16k.wav"
     
-    vap = Vap(
+    vap = Maai(
         mode="bc",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        mic1=VapInput.Mic(mic_device_index=0),
-        mic2=VapInput.Wav(wav_file_path=wav_file_path1),
+        audio_ch1=MaaiInput.Mic(mic_device_index=0),
+        audio_ch2=MaaiInput.Wav(wav_file_path=wav_file_path1),
         device="cpu"
     )
     
