@@ -45,20 +45,21 @@ def test_vap_with_gui():
         audio_ch2=mic2_receiver,
         device="cpu"
     )
-    vap_bc = Vap(
+    maai_bc = Maai(
         mode="bc",
         frame_rate=frame_rate,
         context_len_sec=context_len_sec,
-        mic1=mic1_receiver,
-        mic2=mic2_receiver,
+        audio_ch1=mic1_receiver,
+        audio_ch2=mic2_receiver,
+        device="cpu"
     )
 
-    vap.start_process()
-    vap_bc.start_process()
+    maai.start_process()
+    maai_bc.start_process()
 
     while True:
-        result = vap.get_result()
-        result_bc = vap_bc.get_result()
+        result = maai.get_result()
+        result_bc = maai_bc.get_result()
 
         x1 = result['x1']
         wav1 = np.append(wav1, x1)
