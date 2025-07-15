@@ -39,7 +39,7 @@ __Demo video on YouTube__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
 
 ## 🆕 Update
 
-- We launched the MaAI project and repository here! 🚀  (July 21st, 2024)
+- We launched the MaAI project and repository here! 🚀  (July 21st, 2025)
 
 <br>
 
