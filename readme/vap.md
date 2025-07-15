@@ -43,7 +43,7 @@ This model is trained on the following three-language datasets:
 
 </br>
 
-## Sample
+## Example
 
 ```python
 from maai import Maai, MaaiInput
