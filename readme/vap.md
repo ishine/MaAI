@@ -10,6 +10,7 @@ README: <a href="vap.md">English </a> | <a href="vap_JP.md">Japanese (日本語)
 Set the `mode` parameter of the `Maai` class to `vap`.
 
 The input should be two-channel 16kHz audio.
+
 The outputs are `p_now`, which represents the probability of voice activity between two speakers in the next 0–600 milliseconds, and `p_future`, which corresponds to 600–2000 milliseconds in the future.
 For typical turn-taking implementations, it is recommended to use `p_now`.
 Both outputs are returned as dictionaries.

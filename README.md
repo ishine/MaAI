@@ -31,6 +31,12 @@ https://github.com/ErikEkstedt/VoiceActivityProjection
 
 <br>
 
+__Demo video on YouTube__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
+
+[![Demo video](http://img.youtube.com/vi/-uwB6yl2WtI/0.jpg)](https://www.youtube.com/watch?v=-uwB6yl2WtI)
+
+<br>
+
 ## 🆕 Update
 
 - We launched the MaAI project and repository here! 🚀  (July 14th, 2024)
