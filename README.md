@@ -39,7 +39,7 @@ __Demo video on YouTube__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
 
 ## 🆕 Update
 
-- We launched the MaAI project and repository here! 🚀  (July 14th, 2024)
+- We launched the MaAI project and repository here! 🚀  (July 21st, 2024)
 
 <br>
 
@@ -84,29 +84,23 @@ Currently available models can be found in [our HuggingFace repository](https://
 The turn-taking model uses the original VAP as is and predicts which participant will speak in the next moment.
 
 - [VAP Model](readme/vap.md)
-- [Noise-Robusst VAP Model (<b>Recommended</b>)](readme/vap-mc.md)
-- Single-Channel VAP Model (In Preparation ...)
+- [Noise-Robusst VAP Model (<b>Recommended</b>)] (In Preparation ...)
+- [Single-Channel VAP Model] (In Preparation ...)
 
 ### Backchannel
 
 Backchannels are short listener responses such as `yeah` and `oh`, that are also related to turn-taking.
 
-- VAP-based Backchannel Prediction Model
-    - [Japanese - Timing Only](readme/vap-jp-bc-timing.md)
-    - [Japanese - Timing for Two types](readme/vap-jp-bc-timing-2type.md)
-
-- Noise-Robusst VAP-BC
-    - In Preparation ...
-
-- Single-Channel VAP-BC
-    - In Preparation ...
+- [VAP-based Backchannel Prediction Model - Timing Only] (In Preparation ...)
+- [VAP-based Backchannel Prediction Model - Timing for Two types] (In Preparation ...)
+- [Noise-Robusst VAP-BC] (In Preparation ...)
+- [Single-Channel VAP-BC] (In Preparation ...)
 
 ### Nodding
 
 Nodding refers to the up-and-down movement of the head and is closely related to backchanneling. Unlike backchannels that involve vocal responses, nodding allows the listener to express their reaction non-verbally.
 
-- VAP-based Nodding Prediction Model
-    - [Japanese](readme/vap-jp-nodd.md)
+- [VAP-based Nodding Prediction Model] (In Preparation ...)
 
 <br>
 
