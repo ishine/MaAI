@@ -95,7 +95,7 @@ def _get_bar_for_value(key: str, value: Any, bar_length: int = 30, bar_type: str
         return "N/A", 0.0
 
 
-class Console_bar:
+class ConsoleBar:
     """
     maai.get_result()の内容をバーグラフで可視化するクラス
     """

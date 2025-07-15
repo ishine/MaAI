@@ -52,16 +52,18 @@ The appropriate model for the task (mode) and parameters will be downloaded auto
 Below is an example where two wav files (user and system) are input to the turn-taking model (VAP).
 
 ```python
-from maai import Maai, MaaiInput
+from maai import Maai, MaaiInput, MaaiOutput
 
 wav1 = MaaiInput.Wav(wav_file_path="path_to_your_user_wav_file")
 wav2 = MaaiInput.Wav(wav_file_path="path_to_your_system_wav_file")
 
-maai = Maai(mode="vap", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
+maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
+maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
 
 maai.start_process()
 while True:
     result = maai.get_result()
+    maai_output_bar.update(result)
 ```
 
 <br>
@@ -75,17 +77,9 @@ Currently available models can be found in [our HuggingFace repository](https://
 
 The turn-taking model uses the original VAP as is and predicts which participant will speak in the next moment.
 
-- VAP Model
-    - [Japanese](readme/vap-jp.md)
-    - [English](readme/vap-eng.md)
-    - [Chinese](readme/vap-chn.md)
-    - [Tri-lingual (JPN + ENG + CHN)](readme/vap-tri-jpn-eng-chn.md)
-
-- Noise-Robusst VAP Model (<b>Recommended</b>)
-    - [Japanese](readme/vap-mc-jp.md)
-
-- Single-Channel VAP Model
-    - In Preparation ...
+- [VAP Model](readme/vap.md)
+- [Noise-Robusst VAP Model (<b>Recommended</b>)](readme/vap-mc.md)
+- Single-Channel VAP Model (In Preparation ...)
 
 ### Backchannel
 
@@ -121,8 +115,11 @@ The `MaaiInput` class also provides flexible input options, supporting audio fro
 
 By using these classes, you can easily adapt the audio input method to your specific use case.
 
-For output, the `MaaiOutput` class is currently under development.  
-At present, you can retrieve the processing results using the `get_result` method of the `Maai` class instance.
+For output, you can retrieve the processing results using the `get_result` method of the `Maai` class instance.
+The `MaaiOutput` class also supports several ways of visualization and also TCP communication.
+
+- Console Dynamic Output: `ConsoleBar` class 📊
+- TCP communication: `TCPReceiver` / `TCPTransmitter` classes 🌐
 
 For more details, please refer to the following README files:
 - [Input Readme](readme/input.md)
@@ -145,6 +142,9 @@ You can find example implementations of MaAI models in the [test_scripts](test_s
 
 - Nodding
   - [With 1 wav file adn 1 mic inputs](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
+
+- Input/Output
+ - TBA
 
 <br>
 
