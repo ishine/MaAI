@@ -53,16 +53,19 @@ pip install maai
 下記は2つのwavファイル（ユーザ・システム）をターンテイキングモデル（VAP）に入力する例です。
 
 ```python
-from maai import Maai, MaaiInput
+from maai import Maai, MaaiInput, MaaiOutput
 
 wav1 = MaaiInput.Wav(wav_file_path="path_to_your_user_wav_file")
 wav2 = MaaiInput.Wav(wav_file_path="path_to_your_system_wav_file")
 
-maai = Maai(mode="vap", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
+maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
+maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
 
 maai.start_process()
 while True:
     result = maai.get_result()
+    maai_output_bar.update(result)
+```
 ```
 
 <br>
@@ -108,8 +111,11 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
 
 これらのクラスを使うことで、用途に応じた音声入力方法を簡単に切り替えられます。
 
-出力については`MaaiOutput`クラスを開発中です。
-現状は`Maai`クラスインスタンスの`get_result`メソッドで結果を取得できます。
+処理結果は、`Maai`クラスインスタンスの`get_result`メソッドで取得できます。
+また、`MaaiOutput`クラスを使うことで、さまざまな可視化やTCP通信による出力も可能です。
+
+- コンソール動的出力: `ConsoleBar`クラス 📊
+- TCP通信: `TCPReceiver` / `TCPTransmitter`クラス 🌐
 
 詳細は以下のREADMEもご参照ください：
 - [入力について](readme/input.md)
