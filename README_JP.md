@@ -66,7 +66,6 @@ while True:
     result = maai.get_result()
     maai_output_bar.update(result)
 ```
-```
 
 <br>
 
