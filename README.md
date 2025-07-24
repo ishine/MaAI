@@ -17,7 +17,7 @@ MaAI
 
 
 <b>MaAI</b> is a state-of-the-art and light-weight software that can generate (predict) non-linguistic behaviors in real time and continuously.
-It supports essential interaction elements such as <b>turn-taking</b>, <b>backchanneling</b>, and <b>nodding</b>.
+It supports essential interaction elements such as <b>(1) Turn-Taking</b>, <b>(2) Backchanneling</b>, and <b>(3) Head Nodding</b>.
 Currently available for English, Chinese, and Japanese languages, MaAI will continue to expand its language coverage and non-linguistic behavior repertoire in the future.
 Designed specifically for conversational AI, including spoken dialogue systems and interactive robots, MaAI handles audio input effectively in either two-channels (user-system) or single-channel (user-only) settings. 🎙️
 Thanks to its lightweight design, MaAI operates efficiently, even exclusively on CPU hardware. ⚡
