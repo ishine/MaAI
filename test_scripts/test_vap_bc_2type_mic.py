@@ -33,7 +33,8 @@ def test_vap_bc_with_bar():
     vap = Maai(mode="bc_2type", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
     
     # Create an output instance for bar visualization (console bar with length 30)
-    bar = MaaiOutput.ConsoleBar(bar_length=30, bar_type="normal")
+    # bar = MaaiOutput.ConsoleBar(bar_length=30, bar_type="normal")
+    bar = MaaiOutput.GuiBar(bar_type="normal")
     
     # Start the VAP model process
     vap.start_process()

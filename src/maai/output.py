@@ -9,6 +9,7 @@ import time
 import pickle
 import queue
 from . import util
+import matplotlib.pyplot as plt
 
 def _draw_bar(value: float, length: int = 30) -> str:
     """基本的なバーグラフを描画"""
@@ -244,3 +245,57 @@ class TCPTransmitter:
         
     def update(self, result: Dict[str, Any]):
         self.result_queue.put(result)
+
+# 新規追加: GUIでバーグラフを表示するクラス
+class GuiBar:
+    """matplotlibを用いて結果をバーグラフでGUI表示するクラス"""
+    def __init__(self, bar_type: str = "normal"):
+        self.bar_type = bar_type
+        self.plt = plt
+        self.fig, self.ax = plt.subplots()
+        plt.ion()
+        plt.show()
+        # バーアーティストを保持してリアルタイム更新
+        self.bars = None
+
+    def update(self, result: Dict[str, Any]):
+        """resultのキーと値をバーグラフで更新表示する"""
+        labels = []
+        values = []
+        for key, value in result.items():
+            if key == 't':
+                continue
+            # 配列やリストは適切にスカラー化
+            if not isinstance(value, (int, float)):
+                value = np.squeeze(np.array(value)).tolist()
+            if isinstance(value, (list, tuple)):
+                if len(value) > 2 and isinstance(value[0], (int, float)):
+                    val = _rms(value) * 3
+                elif len(value) == 2:
+                    total = value[0] + value[1]
+                    val = (value[1] / total) if total != 0 else 0.0
+                else:
+                    val = 0.0
+            else:
+                try:
+                    val = float(value)
+                except Exception:
+                    continue
+            labels.append(key)
+            values.append(val)
+        # 初回描画またはラベル数が変わった場合は新規描画
+        if self.bars is None or len(self.bars) != len(values):
+            self.ax.clear()
+            self.bars = self.ax.bar(labels, values, color='skyblue')
+            self.ax.set_ylim(0, 1)
+            self.ax.set_xticks(range(len(labels)))
+            self.ax.set_xticklabels(labels)
+            self.ax.set_title('Result Bar Graph')
+        else:
+            # 既存のバーを更新
+            for bar, v in zip(self.bars, values):
+                bar.set_height(v)
+        # 描画を反映
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+        self.plt.pause(0.001)
