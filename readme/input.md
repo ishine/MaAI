@@ -1,6 +1,6 @@
 <h1>
 <p align="center">
-How to use the MaaiInput module
+How to use the <b>MaaiInput</b> module
 </p>
 </h1>
 <p align="center">

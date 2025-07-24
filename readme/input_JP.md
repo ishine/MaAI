@@ -1,6 +1,6 @@
 <h1>
 <p align="center">
-MaaiInput モジュールの使い方
+<b>MaaiInput</b> モジュールの使い方
 </p>
 </h1>
 <p align="center">
