@@ -55,15 +55,15 @@ pip install maai
 
 You can run it as follows. 🏃‍♂️
 The appropriate model for the task (mode) and parameters will be downloaded automatically.  
-Below is an example where two wav files (user and system) are input to the turn-taking model (VAP).
+Below is an example of using the turn-taking model (VAP) with the first channel as microphone input (user) and the second channel as silence (system).
 
 ```python
 from maai import Maai, MaaiInput, MaaiOutput
 
-wav1 = MaaiInput.Wav(wav_file_path="path_to_your_user_wav_file")
-wav2 = MaaiInput.Wav(wav_file_path="path_to_your_system_wav_file")
+mic = MaaiInput.Mic(mic_device_index=0)
+zero = MaaiInput.Zero() 
 
-maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
+maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
 maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
 
 maai.start_process()
@@ -91,10 +91,8 @@ The turn-taking model uses the original VAP as is and predicts which participant
 
 Backchannels are short listener responses such as `yeah` and `oh`, that are also related to turn-taking.
 
+- [VAP-based Backchannel Prediction Model - Timing for Two types](readme/vap_bc_2type.md)
 - [VAP-based Backchannel Prediction Model - Timing Only] (In Preparation ...)
-- [VAP-based Backchannel Prediction Model - Timing for Two types] (In Preparation ...)
-- [Noise-Robusst VAP-BC] (In Preparation ...)
-- [Single-Channel VAP-BC] (In Preparation ...)
 
 ### Nodding
 

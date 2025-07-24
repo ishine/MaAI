@@ -50,15 +50,15 @@ pip install maai
 
 以下のように実行できます。🏃‍♂️
 タスク（mode）に応じたモデルやパラメータは自動でダウンロードされます。
-下記は2つのwavファイル（ユーザ・システム）をターンテイキングモデル（VAP）に入力する例です。
+下記は１チャネル目はマイク入力（ユーザ）、２チャネル目は無音（システム）をターンテイキングモデル（VAP）に入力する例です。
 
 ```python
 from maai import Maai, MaaiInput, MaaiOutput
 
-wav1 = MaaiInput.Wav(wav_file_path="path_to_your_user_wav_file")
-wav2 = MaaiInput.Wav(wav_file_path="path_to_your_system_wav_file")
+mic = MaaiInput.Mic(mic_device_index=0)
+zero = MaaiInput.Zero() 
 
-maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
+maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
 maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
 
 maai.start_process()
@@ -86,10 +86,8 @@ while True:
 
 相槌は「うん」「はい」などの短い聞き手反応で、ターンテイキングとも関連します。
 
+- [VAPベースの相槌予測モデル - 2種類のタイミング](readme/vap_bc_2type_JP.md)
 - [VAPベースの相槌予測モデル - タイミングのみ]  (準備中)
-- [VAPベースの相槌予測モデル - 2種類のタイミング]  (準備中)
-- [ノイズロバストVAP-BC]  (準備中)
-- [1チャンネルVAP-BC]  (準備中)
 
 ### 頷き
 

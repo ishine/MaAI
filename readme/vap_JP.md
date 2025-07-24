@@ -97,7 +97,7 @@ while True:
 
 ## 📚 論文・参考文献
 
-本リポジトリを利用した成果を発表する際は、以下の論文を引用してください。🙏
+このモデルを利用した成果を発表する際は、以下の論文を引用してください。🙏
 
 Koji Inoue, Bing'er Jiang, Erik Ekstedt, Tatsuya Kawahara, Gabriel Skantze<br>
 __Real-time and Continuous Turn-taking Prediction Using Voice Activity Projection__<br>
