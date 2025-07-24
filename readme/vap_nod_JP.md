@@ -20,6 +20,8 @@ README: <a href="vap_nod.md">English </a> | <a href="vap_nod_JP.md">Japanese (�
 | short | 移動範囲が小さい | <img src="../img/short.gif" width="200"> |
 | long | 移動範囲が大きく、振り上げがない | <img src="../img/long.gif" width="200"> |
 | long_p | 移動範囲が大きく、振り上げがある | <img src="../img/long_p.gif" width="200"> |
+
+CG-CA Gene (c) 2023 by Nagoya Institute of Technology, Moonshot R&D Goal 1 Avatar Symbiotic Society
 </p>
 
 </br>

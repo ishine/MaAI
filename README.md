@@ -98,7 +98,7 @@ Backchannels are short listener responses such as `yeah` and `oh`, that are also
 
 Nodding refers to the up-and-down movement of the head and is closely related to backchanneling. Unlike backchannels that involve vocal responses, nodding allows the listener to express their reaction non-verbally.
 
-- [VAP-based Nodding Prediction Model] (In Preparation ...)
+- [VAP-based Nodding Prediction Model](readme/vap_nod.md)
 
 <br>
 

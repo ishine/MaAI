@@ -20,6 +20,8 @@ It predicts the following three types of nods in real time and continuously, ret
 | short | Small movement range | <img src="../img/short.gif" width="200"> |
 | long | Large movement range, no upward swing | <img src="../img/long.gif" width="200"> |
 | long_p | Large movement range, with upward swing | <img src="../img/long_p.gif" width="200"> |
+
+CG-CA Gene (c) 2023 by Nagoya Institute of Technology, Moonshot R&D Goal 1 Avatar Symbiotic Society
 </p>
 
 </br>
