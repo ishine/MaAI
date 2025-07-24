@@ -84,7 +84,7 @@ Currently available models can be found in [our HuggingFace repository](https://
 The turn-taking model uses the original VAP as is and predicts which participant will speak in the next moment.
 
 - [VAP Model](readme/vap.md)
-- [Noise-Robusst VAP Model (<b>Recommended</b>)] (In Preparation ...)
+- [Noise-Robust VAP Model (<b>Recommended</b>)](readme/vap_mc.md)
 - [Single-Channel VAP Model] (In Preparation ...)
 
 ### Backchannel
