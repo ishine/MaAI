@@ -64,7 +64,6 @@ Please adjust these values according to your computing environment.
 | `language` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | jp | 10 | 5 |
-| --- | --- | --- |
 
 <br>
 

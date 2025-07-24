@@ -76,19 +76,22 @@ while True:
 | jp | 10 | 3 |
 | jp | 10 | 5 |
 | jp | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | en | 5 | 3 |
 | en | 5 | 5 |
 | en | 10 | 3 |
 | en | 10 | 5 |
 | en | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | tri | 5 | 3 |
 | tri | 5 | 5 |
 | tri | 10 | 3 |
 | tri | 10 | 5 |
 | tri | 20 | 2.5 |
-| --- | --- | --- |
 
 <br>
 

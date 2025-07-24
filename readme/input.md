@@ -16,6 +16,7 @@ It supports audio input via WAV files, microphone, and TCP communication.
 - `Wav`: WAV file input
 - `TCPReceiver`: Receive audio data via TCP
 - `TCPTransmitter`: Transmit microphone audio data via TCP
+- `Zero`: Generates silent (zero-filled) audio data (intended for temporarily filling system-side audio)
 
 ### Basic Usage
 
@@ -37,13 +38,17 @@ mic2 = MaaiInput.Mic(mic_device_index=1)
 ```python
 tcp_receiver = MaaiInput.TCPReceiver(ip="0.0.0.0", port=12345)
 tcp_receiver.start_server()
-tcp_receiver.start_process()
 ```
 
 #### TCP Transmission
 ```python
 tcp_transmitter = MaaiInput.TCPTransmitter(ip="Destination IP", port=12345, mic_device_index=0)
 tcp_transmitter.start_process()
+```
+
+#### Silent (Zero-filled) Input
+```python
+zero_input = MaaiInput.Zero()
 ```
 
 ## Audio Data Format for TCP Communication
