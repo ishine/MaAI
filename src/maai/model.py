@@ -100,30 +100,11 @@ class Maai():
         self.result_dict_queue = queue.Queue()
     
     def worker(self):
-        
-        current_x1 = np.zeros(self.frame_contxt_padding)
-        current_x2 = np.zeros(self.frame_contxt_padding)
-        
         while True:
-            
-            # Always use get_audio_data(q) if queue is available
             x1 = self.mic1.get_audio_data(self._mic1_queue)
             x2 = self.mic2.get_audio_data(self._mic2_queue)
-            
-            current_x1 = np.concatenate([current_x1, x1])
-            current_x2 = np.concatenate([current_x2, x2])
+            self.process(x1, x2)
 
-            # Continue to receive data until the size of the data is
-            # less that the size of the VAP frame
-            if len(current_x1) < self.audio_frame_size:
-                continue
-            
-            self.process(current_x1, current_x2)
-            
-            # Save the last 320 samples
-            current_x1 = current_x1[-self.frame_contxt_padding:]
-            current_x2 = current_x2[-self.frame_contxt_padding:]
-        
     def start_process(self):
         self.mic1.start_process()
         self.mic2.start_process()
@@ -132,16 +113,29 @@ class Maai():
     def process(self, x1, x2):
         
         time_start = time.time()
-        
-        # Save the current audio data
-        self.current_x1_audio = x1[self.frame_contxt_padding:]
-        self.current_x2_audio = x2[self.frame_contxt_padding:]
-        
+
+        # Initialize buffer if empty
+        if len(self.current_x1_audio) == 0:
+            self.current_x1_audio = np.zeros(self.frame_contxt_padding)
+        if len(self.current_x2_audio) == 0:
+            self.current_x2_audio = np.zeros(self.frame_contxt_padding)
+        # Add to buffer
+        self.current_x1_audio = np.concatenate([self.current_x1_audio, x1])
+        self.current_x2_audio = np.concatenate([self.current_x2_audio, x2])
+
+        # Return if the buffer does not have enough length
+        if len(self.current_x1_audio) < self.audio_frame_size:
+            return
+
+        # Extract data for inference
+        x1_proc = self.current_x1_audio.copy()
+        x2_proc = self.current_x2_audio.copy()
+
         with torch.no_grad():
             
             # Convert to tensors efficiently
-            x1_ = torch.from_numpy(x1).float().view(1, 1, -1).to(self.device)
-            x2_ = torch.from_numpy(x2).float().view(1, 1, -1).to(self.device)
+            x1_ = torch.from_numpy(x1_proc).float().view(1, 1, -1).to(self.device)
+            x2_ = torch.from_numpy(x2_proc).float().view(1, 1, -1).to(self.device)
 
             e1, e2 = self.vap.encode_audio(x1_, x2_)
             
@@ -195,7 +189,7 @@ class Maai():
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
-                    "x1": copy.copy(self.current_x1_audio), "x2": copy.copy(self.current_x2_audio),
+                    "x1": copy.copy(x1_proc), "x2": copy.copy(x2_proc),
                     "p_now": copy.copy(self.result_p_now), "p_future": copy.copy(self.result_p_future),
                     "vad": copy.copy(self.result_vad)
                 })
@@ -215,7 +209,7 @@ class Maai():
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
-                    "x1": copy.copy(self.current_x1_audio), "x2": copy.copy(self.current_x2_audio),
+                    "x1": copy.copy(x1_proc), "x2": copy.copy(x2_proc),
                     "p_bc_react": copy.copy(self.result_p_bc_react), "p_bc_emo": copy.copy(self.result_p_bc_emo)
                 })
             
@@ -242,7 +236,7 @@ class Maai():
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
-                    "x1": copy.copy(self.current_x1_audio), "x2": copy.copy(self.current_x2_audio),
+                    "x1": copy.copy(x1_proc), "x2": copy.copy(x2_proc),
                     "p_bc": copy.copy(self.result_p_bc), "p_nod_short": copy.copy(self.result_p_nod_short), "p_nod_long": copy.copy(self.result_p_nod_long), "p_nod_long_p": copy.copy(self.result_p_nod_long_p)
                 })
                 
@@ -262,6 +256,10 @@ class Maai():
                 self.list_process_time_context = []
             
             self.process_time_abs = time.time()
+
+        # Keep only the last samples in the buffer
+        self.current_x1_audio = self.current_x1_audio[-self.frame_contxt_padding:]
+        self.current_x2_audio = self.current_x2_audio[-self.frame_contxt_padding:]
     
     def get_result(self):
         return self.result_dict_queue.get()
