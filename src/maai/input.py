@@ -9,20 +9,47 @@ import pygame
 import time
 from . import util
 import numpy as np
+import sys
+import locale
 
-def available_mic_devices():
+def available_mic_devices(print_out=True):
     p = pyaudio.PyAudio()
     device_info = {}
+    
+    encoding = locale.getpreferredencoding()
+    
     for i in range(p.get_device_count()):
         info = p.get_device_info_by_index(i)
         if info['maxInputChannels'] > 0:
-            device_info[info['index']] = info['name']
-    
-    # Print available devices
-    print("Available microphone devices:")
-    for index, name in device_info.items():
-        print(f"Device {index}: {name}")
-    
+            # Avoid mojibake by encoding/decoding device name
+            name = info['name']
+
+            if isinstance(name, bytes):
+                try:
+                    name = name.decode(encoding, errors='replace')
+                except Exception:
+                    name = name.decode('utf-8', errors='replace')
+            
+            # str型ならそのまま
+            elif isinstance(name, str):
+                try:
+                    name = name.encode(encoding).decode('utf-8')
+                except Exception:
+                    name = name.encode('utf-8').decode('utf-8')
+            
+            # 改行文字をスペースに置換
+            name = str(name).replace('\r', ' ').replace('\n', ' ')
+            device_info[info['index']] = {
+                'name': name,
+                'maxInputChannels': info['maxInputChannels'],
+                'maxOutputChannels': info['maxOutputChannels']
+            }
+
+    if print_out:
+        print("Available microphone devices:")
+        for index, info in device_info.items():
+            print(f"Device {index}: {info['name']} (In: {info['maxInputChannels']}, Out: {info['maxOutputChannels']})")
+
     return device_info
 
 class Base:
@@ -47,6 +74,10 @@ class Base:
 
     def get_audio_data(self, q=None):
         return q.get()
+    
+    def _get_queue_size(self):
+        with self._lock:
+            return sum([len(q.queue) for q in self._subscriber_queues])
 
 class Mic(Base):
     def __init__(self, audio_gain=1.0, mic_device_index=0):
@@ -238,3 +269,41 @@ class TCPTransmitter(Base):
 
     def start_process(self):
         threading.Thread(target=self._start_client, daemon=True).start()
+
+
+class Zero(Base):
+    def __init__(self):
+        super().__init__()
+        self.max_queue_size = 10
+        self._is_thread_started_process = False
+        self.data_added = [0.] * self.FRAME_SIZE  # Initialize with zeros
+
+        # self.subscribe()  # Subscribe to the queue to ensure it exists
+
+        # while self._get_queue_size() < self.max_queue_size:
+        #     self._put_to_all_queues(self.data_added)
+        #     # print(self._get_queue_size())
+
+    def _process(self):
+
+        # data_added = [0.] * self.FRAME_SIZE  # Initialize with zeros
+        while True:
+            try:
+                # print(self._get_queue_size())
+                if self._get_queue_size() >= self.max_queue_size:
+                    time.sleep(0.01)
+                    continue
+                # print([0.] * self.FRAME_SIZE)
+                # print(len([0.] * self.FRAME_SIZE))
+                self._put_to_all_queues(self.data_added)
+                # print('added zero data')
+
+            except Exception as e:
+                print('[ZERO] Error:', e)
+                #time.sleep(0.001)
+                continue
+
+    def start_process(self):
+        if not self._is_thread_started_process:
+            threading.Thread(target=self._process, daemon=True).start()
+            self._is_thread_started_process = True

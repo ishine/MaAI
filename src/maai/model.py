@@ -10,7 +10,7 @@ import os
 from .input import Base
 from .util import load_vap_model
 from .models.vap import VapGPT
-from .models.vap_bc import VapGPT_bc
+from .models.vap_bc_2type import VapGPT_bc_2type
 from .models.vap_nod import VapGPT_nod
 from .models.config import VapConfig
 
@@ -24,10 +24,10 @@ class Maai():
     def __init__(self, mode, frame_rate, context_len_sec, language: str = "jp", audio_ch1: Base = None, audio_ch2: Base = None, num_channels: int = 2, cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"), device: str = "cpu", cache_dir: str = None, force_download: bool = False):
 
         conf = VapConfig()
-        if mode in ["vap", "vap_MC"]:
+        if mode in ["vap", "vap_mc"]:
             self.vap = VapGPT(conf)
-        elif mode == "bc":
-            self.vap = VapGPT_bc(conf)
+        elif mode == "bc_2type":
+            self.vap = VapGPT_bc_2type(conf)
         elif mode == "nod":
             self.vap = VapGPT_nod(conf)
 
@@ -161,7 +161,7 @@ class Maai():
             out = self.vap.ar(o1["x"], o2["x"], attention=False)
 
             # Outputs
-            if self.mode in ["vap", "vap_MC"]:
+            if self.mode in ["vap", "vap_mc"]:
                 logits = self.vap.vap_head(out["x"])
                 
                 vad1 = self.vap.va_classifier(o1["x"])
@@ -200,7 +200,7 @@ class Maai():
                     "vad": copy.copy(self.result_vad)
                 })
                 
-            elif self.mode == "bc":
+            elif self.mode == "bc_2type":
                 bc = self.vap.bc_head(out["x"])
                 
                 p_bc_react = bc.softmax(dim=-1)[:, -1, 1]

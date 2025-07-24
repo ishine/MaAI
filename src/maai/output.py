@@ -109,10 +109,14 @@ class ConsoleBar:
             sys.stdout.write("\x1b[2J")  # 初期クリア
             self._first = False
         sys.stdout.write("\x1b[H")  # カーソルを左上に移動
+        
         # 時刻の表示
         if 't' in result:
-            print(f"Time: {result['t']:.3f}")
+            dt = time.localtime(result['t'])
+            ms = int((result['t'] - int(result['t'])) * 1000)
+            print(f"Time: {dt.tm_year:04d}/{dt.tm_mon:02d}/{dt.tm_mday:02d} {dt.tm_hour:02d}:{dt.tm_min:02d}:{dt.tm_sec:02d}.{ms:03d}")
             print("-" * (self.bar_length + 30))
+        
         # bar_typeがbalanceのとき、x1/x2の値とバーを2行で横並び表示
         if self.bar_type == "balance" and 'x1' in result and 'x2' in result:
             x1 = np.squeeze(np.array(result['x1'])).tolist()
@@ -145,8 +149,8 @@ class TCPReceiver():
     def _bytearray_2_vapresult(self, data: bytes) -> Dict[str, Any]:
         if self.mode == 'vap':
             vap_result = util.conv_bytearray_2_vapresult(data)
-        elif self.mode == 'bc':
-            vap_result = util.conv_bytearray_2_vapresult_bc(data)
+        elif self.mode == 'bc-2type':
+            vap_result = util.conv_bytearray_2_vapresult_bc_2type(data)
         elif self.mode == 'nod':
             vap_result = util.conv_bytearray_2_vapresult_nod(data)
         else:
@@ -204,8 +208,8 @@ class TCPTransmitter:
     def _vapresult_2_bytearray(self, result_dict: Dict[str, Any]) -> bytes:
         if self.mode == 'vap':
             data_sent = util.conv_vapresult_2_bytearray(result_dict)
-        elif self.mode == 'bc':
-            data_sent = util.conv_vapresult_2_bytearray_bc(result_dict)
+        elif self.mode == 'bc-2type':
+            data_sent = util.conv_vapresult_2_bytearray_bc_2type(result_dict)
         elif self.mode == 'nod':
             data_sent = util.conv_vapresult_2_bytearray_nod(result_dict)
         else:

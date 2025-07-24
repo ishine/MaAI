@@ -6,7 +6,7 @@ repo_ids = {
     "vap_en": "maai-kyoto/vap_en",
     "vap_tri": "maai-kyoto/vap_tri",
     "vap_mc": "maai-kyoto/vap_mc",
-    "vap_bc_jp": "maai-kyoto/vap_bc_jp",
+    "vap_bc_2type_jp": "maai-kyoto/vap_bc_2type_jp",
     # "vap_bc_jp_only_timing": "maai-kyoto/vap_bc_jp_only_timing",
     "vap_nod_jp": "maai-kyoto/vap_nod_jp",
     # "vap_nod_jp_only_timing": "maai-kyoto/vap_nod_jp_only_timing",
@@ -38,15 +38,20 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
             file_path = f"vap_state_dict_tri_{frame_rate}hz_{int(context_len_sec*1000)}msec_MC.pt"
         else:
             raise ValueError(f"Invalid language: {language}")
-    elif mode == "bc":
+    
+    elif mode == "bc_2type":
+        
         if language == "jp":
-            repo_id = repo_ids["vap_bc_jp"]
-            file_path = f"vap-bc_state_dict_erica_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
-        elif language == "en":
-            repo_id = repo_ids["vap_bc_en"]
-            file_path = f"vap-bc_state_dict_erica_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+            repo_id = repo_ids["vap_bc_2type_jp"]
+            file_path = f"vap-bc-2type_state_dict_jp_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+
+        # elif language == "en":
+        #     repo_id = repo_ids["vap_bc_2type_en"]
+        #     file_path = f"vap-bc_2type_state_dict_erica_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+
         else:
             raise ValueError(f"Invalid language: {language}")
+    
     elif mode == "nod":
         if language == "jp":
             repo_id = repo_ids["vap_nod_jp"]
@@ -61,6 +66,7 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
     
     try:
         sd = hf_hub_download(repo_id=repo_id, filename=file_path, cache_dir=cache_dir, force_download=force_download)
+    
     except Exception as e:
         raise ValueError(f"Invalid model: mode: {mode}, frame_rate: {frame_rate}, context_len_sec: {context_len_sec}, language: {language}. Run get_available_models() for available models.")
     
@@ -263,7 +269,7 @@ def conv_bytearray_2_vapresult(barr):
 #
 # VAP result -> Byte
 #
-def conv_vapresult_2_bytearray_bc(vap_result):
+def conv_vapresult_2_bytearray_bc_2type(vap_result):
     
     b = b''
     #print(type(vap_result['t']))
@@ -312,7 +318,7 @@ def conv_vapresult_2_bytearray_nod(vap_result):
 #
 # Byte -> VAP result
 #
-def conv_bytearray_2_vapresult_bc(barr):
+def conv_bytearray_2_vapresult_bc_2type(barr):
     
     idx = 0
     t = struct.unpack('<d', barr[idx:8])[0]

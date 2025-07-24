@@ -9,7 +9,7 @@ from ..encoder import EncoderCPC
 from ..modules import GPT, GPTStereo
 from ..objective import ObjectiveVAP
 
-class VapGPT_bc(nn.Module):
+class VapGPT_bc_2type(nn.Module):
     
     def __init__(self, conf: Optional[VapConfig] = None):
         super().__init__()
@@ -90,8 +90,9 @@ class VapGPT_bc(nn.Module):
 
     def encode_audio(self, audio1: torch.Tensor, audio2: torch.Tensor) -> Tuple[Tensor, Tensor]:
         
-        x1 = self.encoder1(audio1)  # speaker 1
-        x2 = self.encoder2(audio2)  # speaker 2
+        # Channel swap for temporal consistency
+        x1 = self.encoder1(audio2)  # speaker 1 (User)
+        x2 = self.encoder2(audio1)  # speaker 2 (System)
 
         return x1, x2
 
