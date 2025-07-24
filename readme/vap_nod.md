@@ -4,7 +4,7 @@ Nod Prediction Model
 </p>
 </h1>
 <p align="center">
-README: <a href="vap_nod.md">English </a> | <a href="vap_nod_jp.md">Japanese (日本語) </a>
+README: <a href="vap_nod.md">English </a> | <a href="vap_nod_JP.md">Japanese (日本語) </a>
 </p>
 
 Set the `mode` parameter of the `Maai` class to `nod`.

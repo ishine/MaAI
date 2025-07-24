@@ -4,7 +4,7 @@
 </p>
 </h1>
 <p align="center">
-README: <a href="vap_nod.md">English </a> | <a href="vap_nod_jp.md">Japanese (日本語) </a>
+README: <a href="vap_nod.md">English </a> | <a href="vap_nod_JP.md">Japanese (日本語) </a>
 </p>
 
 `Maai` クラスの `mode` パラメータは `nod` に設定してください。
