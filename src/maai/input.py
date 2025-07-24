@@ -80,11 +80,30 @@ class Base:
             return sum([len(q.queue) for q in self._subscriber_queues])
 
 class Mic(Base):
-    def __init__(self, audio_gain=1.0, mic_device_index=0):
+
+    def __init__(self, audio_gain=1.0, mic_device_index=-1, device_name=None):
+        
         super().__init__()
+        
         self.p = pyaudio.PyAudio()
         self.audio_gain = audio_gain
-        self.mic_device_index = mic_device_index
+
+        if device_name is not None and mic_device_index == -1:
+            # If a specific device name is provided, find the index of that device
+            device_info = available_mic_devices(print_out=False)
+            found = False
+            for idx, info in device_info.items():
+                if device_name in info['name']:
+                    mic_device_index = idx
+                    found = True
+                    break
+            if found:
+                print(f"Using microphone device: {device_name} (Index: {mic_device_index})")
+            else:
+                print(f"Device with name '{device_name}' not found. Using default device.")
+                mic_device_index = -1
+            
+        self.mic_device_index = mic_device_index if mic_device_index >= 0 else None
         self.stream = self.p.open(format=pyaudio.paFloat32,
                                   channels=1,
                                   rate=self.SAMPLING_RATE,

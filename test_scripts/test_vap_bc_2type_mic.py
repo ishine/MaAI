@@ -23,7 +23,7 @@ def test_vap_bc_with_bar():
     MaaiInput.available_mic_devices()
     
     # Select the first microphone device
-    mic = MaaiInput.Mic(mic_device_index=0)  # Use the first microphone device
+    mic = MaaiInput.Mic(device_name='マイク (Logicool Webcam C925e)')  # Use the default microphone device
     
     # Use silence for the second channel
     zero = MaaiInput.Zero()  # Use silence for the second channel

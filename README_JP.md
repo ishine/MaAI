@@ -57,7 +57,7 @@ pip install maai
 ```python
 from maai import Maai, MaaiInput, MaaiOutput
 
-mic = MaaiInput.Mic(mic_device_index=0)
+mic = MaaiInput.Mic()
 zero = MaaiInput.Zero() 
 
 maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
