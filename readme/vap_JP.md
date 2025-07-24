@@ -31,13 +31,13 @@ README: <a href="vap.md">English </a> | <a href="vap_JP.md">Japanese (日本語)
 ### 英語（`language=en`）
 
 本モデルは以下の英語データセットで学習されています：
-- [Switchboard コーパス](https://catalog.ldc.upenn.edu/LDC97S62)
+- [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
 
 ### 3言語対応（日本語＋英語＋中国語）（`language=tri`）
 
 本モデルは以下の3言語データセットで学習されています：
-- [Switchboard コーパス](https://catalog.ldc.upenn.edu/LDC97S62)
-- [HKUST マンダリン電話音声コーパス](https://catalog.ldc.upenn.edu/LDC2005S15)
+- [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
+- [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
 - [旅行代理店タスク対話コーパス](https://aclanthology.org/2022.lrec-1.619/)
 
 </br>
