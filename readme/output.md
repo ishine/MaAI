@@ -7,8 +7,8 @@ How to use the <b>MaaiOutput</b> module
 README: <a href="output.md">English </a> | <a href="output_JP.md">Japanese (日本語) </a>
 </p>
 
-MaaiOutput (`output.py`) is a module for handling audio output, visualization, and TCP communication output in MaAI.
-It provides features to display inference results such as turn-taking, backchannels, and nods as bar graphs, or send them via TCP.
+MaaiOutput (`output.py`) is a module for handling the output of MaAI.
+It provides features to visualize inference results such as turn-taking, backchanneling, and nodding as bar graphs, and to send or receive these results via TCP.
 
 ## Class List
 

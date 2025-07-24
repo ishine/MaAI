@@ -7,8 +7,8 @@
 README: <a href="output.md">English </a> | <a href="output_JP.md">Japanese (日本語) </a>
 </p>
 
-MaaiOutput (`output.py`) は MaAI の音声出力や可視化、TCP通信による出力を扱うためのモジュールです。
-ターンテイキングや相槌、頷きなどの推論結果をバーグラフで表示したり、TCP経由で送信する機能を持っています。
+MaaiOutput (`output.py`) は MaAI の出力を扱うためのモジュールです。
+ターンテイキングや相槌、頷きなどの推論結果をバーグラフで表示したり、TCP経由で送受信する機能を持っています。
 
 ## クラス一覧
 

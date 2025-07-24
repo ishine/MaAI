@@ -125,16 +125,16 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
 `test_scripts`ディレクトリにMaAIモデルの実装例があります。
 
 - ターンテイキング（VAP）
-    - [2つのwavファイル入力](test_scripts/test_vap_module_2wav.py) 🎧
-    - [2つのマイク入力](test_scripts/test_vap_module_2mic.py) 🎤
-    - [TCP経由2マイク入力](test_scripts/test_vap_module_2tcp.py) 🌐
-    - [1wav+1マイク入力](test_scripts/test_vap_module_wav_mic.py) 🎧🎤
+    - [2wavファイル](test_scripts/test_vap_module_2wav.py) 🎧
+    - [2マイク入力](test_scripts/test_vap_module_2mic.py) 🎤
+    - [2マイク入力(TCP経由)](test_scripts/test_vap_module_2tcp.py) 🌐
+    - [1wavファイル と 1マイク入力](test_scripts/test_vap_module_wav_mic.py) 🎧🎤
 
 - 相槌
-    - [1wav+1マイク入力](test_scripts/test_vap_bc_module_wav_mic.py) 🎧🎤
+    - [1マイク入力 と 無音](test_scripts/test_vap_bc_2type_mic.py) 🎤
 
 - 頷き
-  - [1wav+1マイク入力](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
+    - [1wavファイル と 1マイク入力](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
 
 <br>
 

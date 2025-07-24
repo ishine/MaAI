@@ -133,13 +133,13 @@ You can find example implementations of MaAI models in the [test_scripts](test_s
     - [With 2 wav file inputs](test_scripts/test_vap_module_2wav.py) 🎧
     - [With 2 mic inputs](test_scripts/test_vap_module_2mic.py) 🎤
     - [With 2 mic inputs via TCP networks](test_scripts/test_vap_module_2tcp.py) 🌐
-    - [With 1 wav file adn 1 mic inputs](test_scripts/test_vap_module_wav_mic.py) 🎧🎤
+    - [With 1 wav file and 1 mic input](test_scripts/test_vap_module_wav_mic.py) 🎧🎤
 
 - Backchannel
-    - [With 1 wav file adn 1 mic inputs](test_scripts/test_vap_bc_module_wav_mic.py) 🎧🎤
+    - [With 1 mic input and silence](test_scripts/test_vap_bc_2type_mic.py) 🎤
 
 - Nodding
-  - [With 1 wav file adn 1 mic inputs](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
+    - [With 1 wav file and 1 mic input](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
 
 - Input/Output
  - TBA
