@@ -29,6 +29,8 @@ The currently supported models are mainly based on the Voice Activity Projection
 Details about the VAP model can be found in the following repository:
 https://github.com/ErikEkstedt/VoiceActivityProjection
 
+For <b>system development or collaborative research using MaAI software</b>, please contact [Koji Inoue](https://inokoj.github.io/) at Kyoto University.
+
 <br>
 
 __Demo video on YouTube__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
