@@ -117,8 +117,8 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
 - TCP通信: `TCPReceiver` / `TCPTransmitter`クラス 🌐
 
 詳細は以下のREADMEもご参照ください：
-- [入力について](readme/input.md)
-- [出力について](readme/output.md)
+- [入力について](readme/input_JP.md)
+- [出力について](readme/output_JP.md)
 
 <br>
 
