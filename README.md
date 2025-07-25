@@ -9,12 +9,16 @@
 MaAI
 </p>
 </h1>
+
+<p align="center">
+<img src="https://img.shields.io/pypi/v/maai" alt="PyPI - Version">
+</p>
+
 <p align="center">A <b>Real-time</b> and <b>Light-weight</b> Software for Generation of <b>Non-Linguistic</b> Behavior Generations for Conversational AIs</p>
 <p align="center">(Real-time Implementation of Voice Activity Projection)</p>
 <p align="center">
 📄 README: <a href="README.md">English </a> | <a href="README_JP.md">Japanese (日本語) </a>
 </p>
-
 
 <b>MaAI</b> is a state-of-the-art and light-weight software that can generate (predict) non-linguistic behaviors in real time and continuously.
 It supports essential interaction elements such as <b>(1) Turn-Taking</b>, <b>(2) Backchanneling</b>, and <b>(3) Head Nodding</b>.
