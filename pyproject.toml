@@ -15,14 +15,14 @@ requires-python = ">=3.10"
 dependencies = [
     "torch>=2.2.0",
     "numpy",
-    "einops==0.7.0",
+    "einops>=0.7.0",
     "soundfile",
     "pygame",
     "pydub",
     "pyaudio",
     "matplotlib",
     "seaborn",
-    "fastapi==0.111.0",
+    "fastapi>=0.111.0",
     "huggingface-hub",
 ]
 
