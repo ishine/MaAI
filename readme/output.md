@@ -18,6 +18,8 @@ It provides features to visualize inference results such as turn-taking, backcha
 - `TCPReceiver`: Receives inference results via TCP
 - `TCPTransmitter`: Sends inference results via TCP
 
+</br>
+
 ### Basic Usage
 
 #### Bar Graph Display
@@ -61,61 +63,62 @@ transmitter.start_server()
 transmitter.update(result)
 ```
 
+</br>
+
 ## Output Data Format via TCP Communication
 
-### For Turn-Taking (VAP)
-
-The output data includes input audio data and VAP outputs (`p_now` and `p_future`).  
-Note that the VAP processing frame rate differs from the input audio.  
-For example, with a 10Hz VAP model, the audio frame size for VAP is 1600 samples.  
+Data is transmitted after each frame is processed.
+Note that the frame rate of MaAI processing differs from the input audio.
+For example, with a 10Hz model, the audio frame size is 1600 samples.
 All data is in little-endian format.
 
-__Data Frame Structure__:
-
 ### For Turn-Taking (VAP)
 
-Data is sent after each VAP frame is processed.
+The output data includes input audio (`x1`, `x2`), VAP outputs (`p_now` and `p_future`), and VAD outputs.
 
-#### Data Structure (Example: 10Hz = 1600 samples/frame)
+__Data Structure (Example: 10Hz = 1600 samples/frame)__
 
-| Item               | Byte Range         | Type   | Description                    |
-|--------------------|-------------------|--------|--------------------------------|
-| Data Length        | 0 - 3             | Int    | Total byte size (25,676)       |
-| Timestamp          | 4 - 11            | Double | Unix timestamp                 |
-| Audio 1 Length     | 12 - 15           | Int    | Number of samples (1600)       |
-| Audio 1 Samples    | 16 - 12815        | Double | 1600 samples                   |
-| Audio 2 Length     | 12816 - 12819     | Int    | Number of samples (1600)       |
-| Audio 2 Samples    | 12820 - 25619     | Double | 1600 samples                   |
-| p_now Length       | 25620 - 25623     | Int    | Number of elements (2)         |
-| p_now Values       | 25624 - 25639     | Double | 2 values                       |
-| p_future Length    | 25640 - 25643     | Int    | Number of elements (2)         |
-| p_future Values    | 25644 - 25659     | Double | 2 values                       |
-| VAD Length         | 25660 - 25663     | Int    | Number of elements (2)         |
-| VAD Values         | 25664 - 25679     | Double | 2 values                       |
+| Item               | Byte Range         | Type   | Description                      |
+|--------------------|-------------------|--------|----------------------------------|
+| Data Length        | 0 - 3             | Int    | Total byte size (25,676)         |
+| Timestamp          | 4 - 11            | Double | Unix timestamp                   |
+| Audio 1 Length     | 12 - 15           | Int    | Number of samples (1600)         |
+| Audio 1 Samples    | 16 - 12815        | Double | 1600 samples                     |
+| Audio 2 Length     | 12816 - 12819     | Int    | Number of samples (1600)         |
+| Audio 2 Samples    | 12820 - 25619     | Double | 1600 samples                     |
+| p_now Length       | 25620 - 25623     | Int    | Number of elements (2)           |
+| p_now Values       | 25624 - 25639     | Double | 2 values                         |
+| p_future Length    | 25640 - 25643     | Int    | Number of elements (2)           |
+| p_future Values    | 25644 - 25659     | Double | 2 values                         |
+| VAD Length         | 25660 - 25663     | Int    | Number of elements (2)           |
+| VAD Values         | 25664 - 25679     | Double | 2 values                         |
+
+> * Data lengths may vary depending on frame rate and model settings.
 
 ---
 
-### For Backchanneling
+### For Backchannel
 
-Includes input audio (`x1`, `x2`) and inference results (`p_bc_react`, `p_bc_emo`).  
-All data is in little-endian format.
+Includes input audio (`x1`, `x2`) and inference results (`p_bc_react`, `p_bc_emo`).
 
-#### Data Structure (Example: 10Hz = 1600 samples/frame)
+__Data Structure (Example: 10Hz = 1600 samples/frame)__
 
-| Item               | Byte Range         | Type   | Description                    |
-|--------------------|-------------------|--------|--------------------------------|
-| Data Length        | 0 - 3             | Int    | Total byte size (25,640)       |
-| Timestamp          | 4 - 11            | Double | Unix timestamp                 |
-| x1 Length          | 12 - 15           | Int    | Number of samples (1600)       |
-| x1 Samples         | 16 - 12815        | Double | 1600 samples                   |
-| x2 Length          | 12816 - 12819     | Int    | Number of samples (1600)       |
-| x2 Samples         | 12820 - 25619     | Double | 1600 samples                   |
-| p_bc_react Length  | 25620 - 25623     | Int    | Number of samples (1)          |
-| p_bc_react Value   | 25624 - 25631     | Double | 1 value                        |
-| p_bc_emo Length    | 25632 - 25635     | Int    | Number of samples (1)          |
-| p_bc_emo Value     | 25636 - 25643     | Double | 1 value                        |
+| Item               | Byte Range         | Type   | Description                      |
+|--------------------|-------------------|--------|----------------------------------|
+| Data Length        | 0 - 3             | Int    | Total byte size (25,640)         |
+| Timestamp          | 4 - 11            | Double | Unix timestamp                   |
+| x1 Length          | 12 - 15           | Int    | Number of samples (1600)         |
+| x1 Samples         | 16 - 12815        | Double | 1600 samples                     |
+| x2 Length          | 12816 - 12819     | Int    | Number of samples (1600)         |
+| x2 Samples         | 12820 - 25619     | Double | 1600 samples                     |
+| p_bc_react Length  | 25620 - 25623     | Int    | Number of samples (1)            |
+| p_bc_react Value   | 25624 - 25631     | Double | 1 value                          |
+| p_bc_emo Length    | 25632 - 25635     | Int    | Number of samples (1)            |
+| p_bc_emo Value     | 25636 - 25643     | Double | 1 value                          |
 
 > * Data lengths may vary depending on frame rate and model settings.
+
+</br>
 
 ## Notes
 
