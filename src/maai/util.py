@@ -19,15 +19,19 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
         if language == "jp":
             repo_id = repo_ids["vap_jp"]
             file_path = f"vap_state_dict_jp_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
         elif language == "en":
             repo_id = repo_ids["vap_en"]
             file_path = f"vap_state_dict_eng_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
         elif language == "tri":
             repo_id = repo_ids["vap_tri"]
             file_path = f"vap_state_dict_tri_ecj_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
         else:
-            raise ValueError(f"Invalid language: {language}")
-    
+            supported_languages = ["jp", "en", "tri"]
+            raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
+
     elif mode == "vap_mc":
         if language == "jp":
             repo_id = repo_ids["vap_mc_jp"]
@@ -42,7 +46,8 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
             file_path = f"vap_mc_state_dict_tri_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
         
         else:
-            raise ValueError(f"Invalid language: {language}")
+            supported_languages = ["jp", "en", "tri"]
+            raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
     
     elif mode == "bc_2type":
         
@@ -55,8 +60,9 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
         #     file_path = f"vap-bc_2type_state_dict_erica_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
 
         else:
-            raise ValueError(f"Invalid language: {language}")
-    
+            supported_languages = ["jp", "en", "tri"]
+            raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
+
     elif mode == "nod":
         if language == "jp":
             repo_id = repo_ids["vap_nod_jp"]
@@ -65,10 +71,12 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
             repo_id = repo_ids["vap_nod_en"]
             file_path = f"vap-nod_state_dict_erica_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
         else:
-            raise ValueError(f"Invalid language: {language}")
+            supported_languages = ["jp", "en", "tri"]
+            raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
     else:
-        raise ValueError(f"Invalid mode: {mode}")
-    
+        supported_modes = ["vap", "vap_mc", "bc_2type", "nod"]
+        raise ValueError(f"Invalid mode: {mode}. Supported modes are: {supported_modes}")
+
     try:
         sd = hf_hub_download(repo_id=repo_id, filename=file_path, cache_dir=cache_dir, force_download=force_download)
     

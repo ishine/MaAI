@@ -131,6 +131,9 @@ class Maai():
         x1_proc = self.current_x1_audio.copy()
         x2_proc = self.current_x2_audio.copy()
 
+        x1_dist = x1_proc[self.frame_contxt_padding:]
+        x2_dist = x2_proc[self.frame_contxt_padding:]
+
         with torch.no_grad():
             
             # Convert to tensors efficiently
@@ -189,7 +192,7 @@ class Maai():
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
-                    "x1": copy.copy(x1_proc), "x2": copy.copy(x2_proc),
+                    "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
                     "p_now": copy.copy(self.result_p_now), "p_future": copy.copy(self.result_p_future),
                     "vad": copy.copy(self.result_vad)
                 })
@@ -209,7 +212,7 @@ class Maai():
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
-                    "x1": copy.copy(x1_proc), "x2": copy.copy(x2_proc),
+                    "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
                     "p_bc_react": copy.copy(self.result_p_bc_react), "p_bc_emo": copy.copy(self.result_p_bc_emo)
                 })
             
@@ -236,7 +239,7 @@ class Maai():
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
-                    "x1": copy.copy(x1_proc), "x2": copy.copy(x2_proc),
+                    "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
                     "p_bc": copy.copy(self.result_p_bc), "p_nod_short": copy.copy(self.result_p_nod_short), "p_nod_long": copy.copy(self.result_p_nod_long), "p_nod_long_p": copy.copy(self.result_p_nod_long_p)
                 })
                 

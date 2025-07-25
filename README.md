@@ -119,6 +119,8 @@ For output, you can retrieve the processing results using the `get_result` metho
 The `MaaiOutput` class also supports several ways of visualization and also TCP communication.
 
 - Console Dynamic Output: `ConsoleBar` class 📊
+- GUI bar graph output: `GuiBar` class 🖼️
+- GUI plot output: `GuiPlot` class 📈
 - TCP communication: `TCPReceiver` / `TCPTransmitter` classes 🌐
 
 For more details, please refer to the following README files:

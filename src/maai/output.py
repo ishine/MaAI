@@ -149,9 +149,9 @@ class TCPReceiver():
         self.result_queue = queue.Queue()
     
     def _bytearray_2_vapresult(self, data: bytes) -> Dict[str, Any]:
-        if self.mode == 'vap':
+        if self.mode in ['vap', 'vap_mc']:
             vap_result = util.conv_bytearray_2_vapresult(data)
-        elif self.mode == 'bc-2type':
+        elif self.mode == 'bc_2type':
             vap_result = util.conv_bytearray_2_vapresult_bc_2type(data)
         elif self.mode == 'nod':
             vap_result = util.conv_bytearray_2_vapresult_nod(data)
@@ -208,9 +208,9 @@ class TCPTransmitter:
         self.result_queue = queue.Queue()
     
     def _vapresult_2_bytearray(self, result_dict: Dict[str, Any]) -> bytes:
-        if self.mode == 'vap':
+        if self.mode in ['vap', 'vap_mc']:
             data_sent = util.conv_vapresult_2_bytearray(result_dict)
-        elif self.mode == 'bc-2type':
+        elif self.mode == 'bc_2type':
             data_sent = util.conv_vapresult_2_bytearray_bc_2type(result_dict)
         elif self.mode == 'nod':
             data_sent = util.conv_vapresult_2_bytearray_nod(result_dict)
@@ -302,7 +302,7 @@ class GuiBar:
         self.plt.pause(0.001)
         
 class GuiPlot:
-    def __init__(self, shown_context_sec: int = 10, frame_rate: int = 10, sample_rate: int = 16000, figsize=(18, 16), use_fixed_draw_rate: bool = False):
+    def __init__(self, shown_context_sec: int = 10, frame_rate: int = 10, sample_rate: int = 16000, figsize=(14, 10), use_fixed_draw_rate: bool = True):
         self.figsize = figsize
         self.shown_context_sec = shown_context_sec
         self.frame_rate = frame_rate

@@ -13,6 +13,8 @@ It provides features to visualize inference results such as turn-taking, backcha
 ## Class List
 
 - `ConsoleBar`: Visualizes inference results as bar graphs
+- `GuiBar`: Visualizes inference results as GUI bar graphs
+- `GuiPlot`: Visualizes inference results as time-series plots
 - `TCPReceiver`: Receives inference results via TCP
 - `TCPTransmitter`: Sends inference results via TCP
 
@@ -25,6 +27,24 @@ from maai import MaaiOutput
 bar = MaaiOutput.ConsoleBar(bar_length=30, bar_type="normal")
 result = {"x1": 0.7, "x2": 0.3, "t": 1.23}
 bar.update(result)
+```
+
+#### GUI Bar Graph Display
+```python
+from maai import MaaiOutput
+
+gui_bar = MaaiOutput.GuiBar(bar_type="normal")
+result = {"x1": 0.7, "x2": 0.3, "t": 1.23}
+gui_bar.update(result)
+```
+
+#### GUI Plot Display (Time Series)
+```python
+from maai import MaaiOutput
+
+gui_plot = MaaiOutput.GuiPlot(shown_context_sec=10, frame_rate=10, sample_rate=16000)
+result = {"x1": [...], "x2": [...], "p_now": [...], "p_future": [...], "vad": [...], "t": 1.23}
+gui_plot.update(result)
 ```
 
 #### TCP Receiving
@@ -43,35 +63,59 @@ transmitter.update(result)
 
 ## Output Data Format via TCP Communication
 
-The output data includes input audio data and VAP output (p_now and p_future). Note that the VAP processing frame rate differs from the input audio. For example, with a 20Hz VAP model, the audio frame size for VAP is 800. All data is in little-endian format.
+### For Turn-Taking (VAP)
+
+The output data includes input audio data and VAP outputs (`p_now` and `p_future`).  
+Note that the VAP processing frame rate differs from the input audio.  
+For example, with a 10Hz VAP model, the audio frame size for VAP is 1600 samples.  
+All data is in little-endian format.
 
 __Data Frame Structure__:
 
-Under these conditions, each output data size is 12,860 bytes. This data is sent after processing each VAP frame.
+### For Turn-Taking (VAP)
 
-| Byte Offset | Data Type | Description |
-| --- | --- | --- |
-| 0 - 3 | Int | Data length (12,860) |
-| 4 - 11 | Double | Unix timestamp |
-| 12 - 15 | Int | Audio data (Person 1) length (800) |
-| 16 - 23 | Double | Audio data (Person 1) - Sample 1 |
-| 24 - 31 | Double | Audio data (Person 1) - Sample 2 |
-| ... | ... | ... |
-| 6408 - 6415 | Double | Audio data (Person 1) - Sample 800 |
-| 6416 - 6419 | Int | Audio data (Person 2) length (800) |
-| 6420 - 6427 | Double | Audio data (Person 2) - Sample 1 |
-| 6428 - 6435 | Double | Audio data (Person 2) - Sample 2 |
-| ... | ... | ... |
-| 12812 - 12819 | Double | Audio data (Person 2) - Sample 800 |
-| 12820 - 12823 | Int | p_now data length (2) |
-| 12824 - 12831 | Double | p_now (Person 1) |
-| 12832 - 12839 | Double | p_now (Person 2) |
-| 12840 - 12843 | Int | p_future data length (2) |
-| 12844 - 12851 | Double | p_future (Person 1) |
-| 12852 - 12859 | Double | p_future (Person 2) |
-| 12860 - 12863 | Int | VAD data length (2) |
-| 12864 - 12871 | Double | VAD (Person 1) |
-| 12872 - 12879 | Double | VAD (Person 2) |
+Data is sent after each VAP frame is processed.
+
+#### Data Structure (Example: 10Hz = 1600 samples/frame)
+
+| Item               | Byte Range         | Type   | Description                    |
+|--------------------|-------------------|--------|--------------------------------|
+| Data Length        | 0 - 3             | Int    | Total byte size (25,676)       |
+| Timestamp          | 4 - 11            | Double | Unix timestamp                 |
+| Audio 1 Length     | 12 - 15           | Int    | Number of samples (1600)       |
+| Audio 1 Samples    | 16 - 12815        | Double | 1600 samples                   |
+| Audio 2 Length     | 12816 - 12819     | Int    | Number of samples (1600)       |
+| Audio 2 Samples    | 12820 - 25619     | Double | 1600 samples                   |
+| p_now Length       | 25620 - 25623     | Int    | Number of elements (2)         |
+| p_now Values       | 25624 - 25639     | Double | 2 values                       |
+| p_future Length    | 25640 - 25643     | Int    | Number of elements (2)         |
+| p_future Values    | 25644 - 25659     | Double | 2 values                       |
+| VAD Length         | 25660 - 25663     | Int    | Number of elements (2)         |
+| VAD Values         | 25664 - 25679     | Double | 2 values                       |
+
+---
+
+### For Backchanneling
+
+Includes input audio (`x1`, `x2`) and inference results (`p_bc_react`, `p_bc_emo`).  
+All data is in little-endian format.
+
+#### Data Structure (Example: 10Hz = 1600 samples/frame)
+
+| Item               | Byte Range         | Type   | Description                    |
+|--------------------|-------------------|--------|--------------------------------|
+| Data Length        | 0 - 3             | Int    | Total byte size (25,640)       |
+| Timestamp          | 4 - 11            | Double | Unix timestamp                 |
+| x1 Length          | 12 - 15           | Int    | Number of samples (1600)       |
+| x1 Samples         | 16 - 12815        | Double | 1600 samples                   |
+| x2 Length          | 12816 - 12819     | Int    | Number of samples (1600)       |
+| x2 Samples         | 12820 - 25619     | Double | 1600 samples                   |
+| p_bc_react Length  | 25620 - 25623     | Int    | Number of samples (1)          |
+| p_bc_react Value   | 25624 - 25631     | Double | 1 value                        |
+| p_bc_emo Length    | 25632 - 25635     | Int    | Number of samples (1)          |
+| p_bc_emo Value     | 25636 - 25643     | Double | 1 value                        |
+
+> * Data lengths may vary depending on frame rate and model settings.
 
 ## Notes
 

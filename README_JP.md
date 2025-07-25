@@ -114,6 +114,8 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
 また、`MaaiOutput`クラスを使うことで、さまざまな可視化やTCP通信による出力も可能です。
 
 - コンソール動的出力: `ConsoleBar`クラス 📊
+- GUIバーグラフ表示: `GuiBar`クラス 🖼️
+- GUIプロット表示: `GuiPlot`クラス 📈
 - TCP通信: `TCPReceiver` / `TCPTransmitter`クラス 🌐
 
 詳細は以下のREADMEもご参照ください：
