@@ -10,6 +10,7 @@ import pickle
 import queue
 from . import util
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 def _draw_bar(value: float, length: int = 30) -> str:
     """基本的なバーグラフを描画"""
@@ -299,3 +300,244 @@ class GuiBar:
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()
         self.plt.pause(0.001)
+        
+class GuiPlot:
+    def __init__(self, shown_context_sec: int = 10, frame_rate: int = 10, sample_rate: int = 16000, figsize=(18, 16), use_fixed_draw_rate: bool = False):
+        self.figsize = figsize
+        self.shown_context_sec = shown_context_sec
+        self.frame_rate = frame_rate
+        self.sample_rate = sample_rate
+        self.MAX_CONTEXT_LEN = frame_rate * shown_context_sec
+        self.MAX_CONTEXT_WAV_LEN = sample_rate * shown_context_sec
+        self.plt = plt
+        self.fig = None
+        self.axes = dict()
+        self.lines = dict()
+        self.fills = dict()
+        self.keys = []
+        self.initialized = False
+        self.data_buffer = dict()  # key: list or float
+        self.use_fixed_draw_rate = use_fixed_draw_rate
+        self._last_draw_time = 0.0
+
+    def _init_fig(self, result: Dict[str, any]):
+        special_keys = ['x1', 'x2', 'p_now', 'p_future', 'vad']
+        self.keys = [k for k in special_keys if k in result] + [k for k in result.keys() if k not in special_keys and k != 't']
+        n = len(self.keys)
+        self.fig, axs = self.plt.subplots(n, 1, figsize=self.figsize, squeeze=False, tight_layout=True)
+        axs = axs.flatten()
+        self.axes = {}
+        self.lines = {}
+        self.fills = {}
+        self.data_buffer = {}
+        tab_colors = list(mcolors.TABLEAU_COLORS.values())
+        p_keys = [k for k in self.keys if k.startswith('p_') and k not in ('p_now', 'p_future')]
+        color_map = {k: tab_colors[i % len(tab_colors)] for i, k in enumerate(p_keys)}
+        th_map = {k: 0.5 for k in p_keys}
+        for i, key in enumerate(self.keys):
+            ax = axs[i]
+            self.axes[key] = ax
+            val = result[key]
+            if not isinstance(val, (int, float)):
+                val = np.squeeze(np.array(val))
+            if key == 'x1':
+                time_x1 = np.linspace(-self.shown_context_sec, 0, self.MAX_CONTEXT_WAV_LEN)
+                buf = np.zeros(len(time_x1))
+                line, = ax.plot(time_x1, buf, c='y')
+                self.lines[key] = line
+                self.data_buffer[key] = list(buf)
+                ax.set_title('Input waveform 1')
+                ax.set_xlabel('Time [s]')
+                ax.set_ylim(-1, 1)
+                ax.set_xlim(-self.shown_context_sec, 0)
+            elif key == 'x2':
+                time_x2 = np.linspace(-self.shown_context_sec, 0, self.MAX_CONTEXT_WAV_LEN)
+                buf = np.zeros(len(time_x2))
+                line, = ax.plot(time_x2, buf, c='b')
+                self.lines[key] = line
+                self.data_buffer[key] = list(buf)
+                ax.set_title('Input waveform 2')
+                ax.set_xlabel('Time [s]')
+                ax.set_ylim(-1, 1)
+                ax.set_xlim(-self.shown_context_sec, 0)
+            elif key == 'p_now':
+                time_x3 = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
+                buf = np.ones(len(time_x3)) * 0.5
+                fill1 = ax.fill_between(time_x3, y1=0.5, y2=buf, where=buf > 0.5, color='y', interpolate=True)
+                fill2 = ax.fill_between(time_x3, y1=buf, y2=0.5, where=buf < 0.5, color='b', interpolate=True)
+                self.fills[key] = (fill1, fill2)
+                self.data_buffer[key] = list(buf)
+                ax.set_title('Output p_now (short-term turn-taking prediction)')
+                ax.set_xlabel('Sample')
+                ax.set_xlim(0, self.MAX_CONTEXT_LEN)
+                ax.set_ylim(0, 1)
+            elif key == 'p_future':
+                time_x4 = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
+                buf = np.ones(len(time_x4)) * 0.5
+                fill1 = ax.fill_between(time_x4, y1=0.5, y2=buf, where=buf > 0.5, color='y', interpolate=True)
+                fill2 = ax.fill_between(time_x4, y1=buf, y2=0.5, where=buf < 0.5, color='b', interpolate=True)
+                self.fills[key] = (fill1, fill2)
+                self.data_buffer[key] = list(buf)
+                ax.set_title('Output p_future (long-term turn-taking prediction)')
+                ax.set_xlabel('Sample')
+                ax.set_xlim(0, self.MAX_CONTEXT_LEN)
+                ax.set_ylim(0, 1)
+            elif key.startswith('p_'):
+                color = color_map.get(key, 'green')
+                th = th_map.get(key, 0.5)
+                time_x = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
+                buf = np.zeros(len(time_x))
+                fill = ax.fill_between(time_x, y1=0.0, y2=buf, color=color, interpolate=True)
+                self.fills[key] = fill
+                self.data_buffer[key] = list(buf)
+                ax.set_title(key)
+                ax.set_xlabel('Sample')
+                ax.set_xlim(0, self.MAX_CONTEXT_LEN)
+                ax.set_ylim(0, th*2)
+                ax.axhline(y=th, color='black', linestyle='--')
+            elif key == 'vad':
+                time_x = np.arange(self.MAX_CONTEXT_LEN)
+                buf1 = np.zeros(self.MAX_CONTEXT_LEN)
+                buf2 = np.zeros(self.MAX_CONTEXT_LEN)
+                fill1 = ax.fill_between(time_x, y1=0, y2=buf1, where=buf1>0, color='y', alpha=0.7, label='VAD1', interpolate=True)
+                fill2 = ax.fill_between(time_x, y1=0, y2=-buf2, where=buf2>0, color='b', alpha=0.7, label='VAD2', interpolate=True)
+                self.fills[key] = (fill1, fill2)
+                self.data_buffer[key] = [list(buf1), list(buf2)]
+                ax.set_title('Voice Activity Detection (VAD)')
+                ax.set_xlabel('Frame')
+                ax.set_ylabel('VAD1 (上), VAD2 (下)')
+                ax.set_ylim(-1, 1)
+                ax.set_xlim(0, self.MAX_CONTEXT_LEN)
+                ax.axhline(0, color='black', linestyle='--', linewidth=1)
+                ax.legend(loc='upper right')
+            elif isinstance(val, (np.ndarray, list, tuple)) and np.array(val).ndim == 1 and len(val) > 1:
+                x = np.arange(len(val))
+                line, = ax.plot(x, val, c='g')
+                self.lines[key] = line
+                self.data_buffer[key] = list(val)
+                ax.set_title(key)
+                ax.set_xlim(0, len(val))
+            elif isinstance(val, (int, float, np.floating, np.integer)):
+                bar = ax.bar([key], [val], color='orange')
+                self.lines[key] = bar
+                self.data_buffer[key] = float(val)
+                ax.set_title(key)
+                ax.set_ylim(0, 1)
+            else:
+                ax.text(0.5, 0.5, str(val), ha='center', va='center')
+                ax.set_title(key)
+        self.fig.tight_layout()
+        self.plt.ion()
+        self.plt.show()
+        self.initialized = True
+
+    def update(self, result: Dict[str, any]):
+        import time
+        if self.use_fixed_draw_rate:
+            now = time.time()
+            if now - self._last_draw_time < 0.2:
+                return
+            self._last_draw_time = now
+        if not self.initialized:
+            self._init_fig(result)
+        tab_colors = list(mcolors.TABLEAU_COLORS.values())
+        p_keys = [k for k in self.keys if k.startswith('p_') and k not in ('p_now', 'p_future')]
+        color_map = {k: tab_colors[i % len(tab_colors)] for i, k in enumerate(p_keys)}
+        th_map = {k: 0.5 for k in p_keys}
+        for key in self.keys:
+            if key not in result:
+                continue
+            val = result[key]
+            if not isinstance(val, (int, float)):
+                val = np.squeeze(np.array(val))
+            if key in ['x1', 'x2'] and key in self.lines:
+                buf = self.data_buffer[key]
+                if isinstance(val, (np.ndarray, list, tuple)) and len(val) > 1:
+                    val = val[-self.sample_rate // self.frame_rate:]
+                    buf = list(buf) + list(val)
+                    if len(buf) > self.MAX_CONTEXT_WAV_LEN:
+                        buf = buf[-self.MAX_CONTEXT_WAV_LEN:]
+                    self.data_buffer[key] = buf
+                    time_x = np.linspace(-self.shown_context_sec, 0, self.MAX_CONTEXT_WAV_LEN)
+                    self.lines[key].set_data(time_x, buf)
+            elif (key == 'p_now' or key == 'p_future') and key in self.fills:
+                buf = self.data_buffer[key]
+                if isinstance(val, (np.ndarray, list, tuple)):
+                    buf = list(buf) + [float(val[0])] if np.array(val).ndim > 0 else buf + [float(val)]
+                    if len(buf) > self.MAX_CONTEXT_LEN:
+                        buf = buf[-self.MAX_CONTEXT_LEN:]
+                    self.data_buffer[key] = buf
+                    time_x = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
+                    ax = self.axes[key]
+                    arr = np.array(buf)
+                    fills = self.fills[key]
+                    for f in fills:
+                        if f is not None:
+                            f.remove()
+                    fill1 = ax.fill_between(time_x, y1=0.5, y2=arr, where=arr > 0.5, color='y', interpolate=True)
+                    fill2 = ax.fill_between(time_x, y1=arr, y2=0.5, where=arr < 0.5, color='b', interpolate=True)
+                    self.fills[key] = [fill1, fill2]
+            elif key.startswith('p_') and key in self.fills:
+                buf = self.data_buffer[key]
+                th = th_map.get(key, 0.5)
+                color = color_map.get(key, 'green')
+                if isinstance(val, (np.ndarray, list, tuple)):
+                    buf = list(buf) + [float(val[0])] if np.array(val).ndim > 0 else buf + [float(val)]
+                    if len(buf) > self.MAX_CONTEXT_LEN:
+                        buf = buf[-self.MAX_CONTEXT_LEN:]
+                    self.data_buffer[key] = buf
+                    time_x = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
+                    ax = self.axes[key]
+                    arr = np.array(buf)
+                    f = self.fills[key]
+                    if f is not None:
+                        f.remove()
+                    fill = ax.fill_between(time_x, y1=0.0, y2=arr, color=color, interpolate=True)
+                    self.fills[key] = fill
+            elif key == 'vad' and key in self.fills:
+                buf1, buf2 = self.data_buffer[key]
+                vad1, vad2 = result[key]
+                vad1_arr = np.squeeze(np.array(vad1))
+                vad2_arr = np.squeeze(np.array(vad2))
+                if vad1_arr.ndim == 0:
+                    buf1 = list(buf1) + [float(vad1_arr)]
+                else:
+                    buf1 = list(buf1) + list(vad1_arr)
+                if vad2_arr.ndim == 0:
+                    buf2 = list(buf2) + [float(vad2_arr)]
+                else:
+                    buf2 = list(buf2) + list(vad2_arr)
+                if len(buf1) > self.MAX_CONTEXT_LEN:
+                    buf1 = buf1[-self.MAX_CONTEXT_LEN:]
+                if len(buf2) > self.MAX_CONTEXT_LEN:
+                    buf2 = buf2[-self.MAX_CONTEXT_LEN:]
+                self.data_buffer[key] = [buf1, buf2]
+                time_x = np.arange(self.MAX_CONTEXT_LEN)
+                ax = self.axes[key]
+                arr1 = np.array(buf1)
+                arr2 = np.array(buf2)
+                fills = self.fills[key]
+                for f in fills:
+                    if f is not None:
+                        f.remove()
+                fill1 = ax.fill_between(time_x, y1=0, y2=arr1, where=arr1>0, color='y', alpha=0.7, label='VAD1', interpolate=True)
+                fill2 = ax.fill_between(time_x, y1=0, y2=-arr2, where=arr2>0, color='b', alpha=0.7, label='VAD2', interpolate=True)
+                self.fills[key] = [fill1, fill2]
+            elif key in self.lines:
+                buf = self.data_buffer[key]
+                if isinstance(val, (np.ndarray, list, tuple)) and len(val) > 1:
+                    buf = list(buf) + list(val)
+                    if len(buf) > self.MAX_CONTEXT_WAV_LEN: # Changed from self.maxlen to self.MAX_CONTEXT_WAV_LEN
+                        buf = buf[-self.MAX_CONTEXT_WAV_LEN:]
+                    self.data_buffer[key] = buf
+                    x = np.arange(len(buf))
+                    self.lines[key].set_data(x, buf)
+                    self.axes[key].set_xlim(0, len(buf))
+                    self.axes[key].relim()
+                    self.axes[key].autoscale_view()
+            elif key in self.lines:
+                v = float(val)
+                self.data_buffer[key] = v
+                self.lines[key][0].set_height(v)
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
