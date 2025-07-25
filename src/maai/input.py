@@ -204,7 +204,7 @@ class TCPReceiver(Base):
                 if self.conn is None:
                     time.sleep(0.1)
                     continue
-                size_recv = 8 * 2 * self.FRAME_SIZE
+                size_recv = 8 * self.FRAME_SIZE
                 data = self.conn.recv(size_recv)
                 if len(data) < size_recv:
                     while len(data) < size_recv:
