@@ -6,6 +6,9 @@
 <p align="center">
 MaAI
 </p>
+<p align="center">
+<img src="https://img.shields.io/pypi/v/maai" alt="PyPI - Version">
+</p>
 </h1>
 <p align="center"><b>リアルタイム</b>かつ<b>軽量</b>な会話AI向け<b>非言語的ふるまい生成</b>ソフトウェア</p>
 <p align="center">（Voice Activity Projectionのリアルタイム実装）</p>
