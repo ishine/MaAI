@@ -8,11 +8,11 @@
 <p align="center">
 MaAI
 </p>
-</h1>
-
+    
 <p align="center">
 <img src="https://img.shields.io/pypi/v/maai" alt="PyPI - Version">
 </p>
+</h1>
 
 <p align="center">A <b>Real-time</b> and <b>Light-weight</b> Software for Generation of <b>Non-Linguistic</b> Behavior Generations for Conversational AIs</p>
 <p align="center">(Real-time Implementation of Voice Activity Projection)</p>
