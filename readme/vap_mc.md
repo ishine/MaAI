@@ -69,7 +69,7 @@ Please adjust these values according to your computing environment.
 
 ## 📚 Papers and References
 
-When publishing results using this repository, please cite the following paper. 🙏
+When publishing results using this model, please cite the following paper. 🙏
 
 Koji Inoue, Yuki Okafuji, Jun Baba, Yoshiki Ohira, Katsuya Hyodo, Tatsuya Kawahara<br>
 __A Noise-Robust Turn-Taking System for Real-World Dialogue Robots: A Field Experiment__<br>

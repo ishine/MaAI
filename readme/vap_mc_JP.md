@@ -69,7 +69,7 @@ while True:
 
 ## 📚 論文・参考文献
 
-本リポジトリを利用した成果を発表する際は、以下の論文を引用してください。🙏
+このモデルを利用した成果を発表する際は、以下の論文を引用してください。🙏
 
 Koji Inoue, Yuki Okafuji, Jun Baba, Yoshiki Ohira, Katsuya Hyodo, Tatsuya Kawahara<br>
 __A Noise-Robust Turn-Taking System for Real-World Dialogue Robots: A Field Experiment__<br>
