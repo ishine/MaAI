@@ -51,32 +51,24 @@ tcp_transmitter.start_process()
 zero_input = MaaiInput.Zero()
 ```
 
-## Audio Data Format for TCP Communication
+## TCP Audio Data Format
 
-When connecting with your own original system, send audio data to an instance of the `TCPReceiver` class.
-The data format is as follows:
+When connecting with your own original system, send audio data to an instance of the `TCPReceiver` class. The data format is as follows:
 
 - Sampling rate: 16,000 Hz
-- 1 frame: 160 samples (each sample contains audio data for two people)
-- Each sample: 8 bytes double-precision floating point (double, little endian, -1.0 to +1.0)
-- Data size per frame: 2,560 bytes
+- 1 frame: 160 samples
+- Each sample: 8-byte double-precision floating point (double, little endian, -1.0 to +1.0)
+- 1 frame data size: 1,280 bytes
 
-### Transmission Order
-
-- Each sample is sent in the order: "8 bytes for person 1" → "8 bytes for person 2"
-- 1 frame contains 160 samples (pairs for person 1 and person 2) sent consecutively
-
-#### Data Packet Example
+### Data Packet Example
 
 | Byte Offset | Data Type | Description |
 | ---- | ---- | --- |
-| 0 - 7 | Double | Audio data (Person 1) - Sample 1 |
-| 8 - 15 | Double | Audio data (Person 2) - Sample 1 |
-| 16 - 23 | Double | Audio data (Person 1) - Sample 2 |
-| 24 - 31 | Double | Audio data (Person 2) - Sample 2 |
+| 0 - 7 | Double | Audio Data - Sample 1 |
+| 8 - 15 | Double | Audio Data - Sample 2 |
 | ... | ... | ... |
-| 2544 - 2551 | Double | Audio data (Person 1) - Sample 160 |
-| 2552 - 2559 | Double | Audio data (Person 2) - Sample 160 |
+| 1264 - 1271 | Double | Audio Data - Sample 159 |
+| 1272 - 1279 | Double | Audio Data - Sample 160 |
 
 ## Get Device List
 
