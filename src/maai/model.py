@@ -150,97 +150,47 @@ class Maai():
             if len(self.e2_context) > self.audio_context_len:
                 self.e2_context = self.e2_context[-self.audio_context_len:]
             
-            x1_ = torch.cat(self.e1_context, dim=1).to(self.device)
-            x2_ = torch.cat(self.e2_context, dim=1).to(self.device)
+            x1_context_ = torch.cat(self.e1_context, dim=1).to(self.device)
+            x2_context_ = torch.cat(self.e2_context, dim=1).to(self.device)
 
-            o1 = self.vap.ar_channel(x1_, attention=False)  # ["x"]
-            o2 = self.vap.ar_channel(x2_, attention=False)  # ["x"]
-            out = self.vap.ar(o1["x"], o2["x"], attention=False)
+            # o1 = self.vap.ar_channel(x1_context_, attention=False)  # ["x"]
+            # o2 = self.vap.ar_channel(x2_context_, attention=False)  # ["x"]
+            # out = self.vap.ar(o1["x"], o2["x"], attention=False)
 
             # Outputs
             if self.mode in ["vap", "vap_mc"]:
-                logits = self.vap.vap_head(out["x"])
-                
-                vad1 = self.vap.va_classifier(o1["x"])
-                vad2 = self.vap.va_classifier(o2["x"])
-                
-                probs = logits.softmax(dim=-1)
-                
-                p_now = self.vap.objective.probs_next_speaker_aggregate(
-                    probs,
-                    from_bin=self.BINS_P_NOW[0],
-                    to_bin=self.BINS_P_NOW[-1]
-                )
-                
-                p_future = self.vap.objective.probs_next_speaker_aggregate(
-                    probs,
-                    from_bin=self.BINS_PFUTURE[0],
-                    to_bin=self.BINS_PFUTURE[1]
-                )
-                
-                # Get back to the CPU
-                p_now = p_now.to('cpu')
-                p_future = p_future.to('cpu')
-                
-                vad1 = vad1.sigmoid().to('cpu')[::,-1]
-                vad2 = vad2.sigmoid().to('cpu')[::,-1]
-                
-                self.result_p_now = p_now.tolist()[0][-1]
-                self.result_p_future = p_future.tolist()[0][-1]
-                
-                self.result_vad = [vad1, vad2]
+
+                out = self.vap.forward(x1_context_, x2_context_)
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
                     "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
-                    "p_now": copy.copy(self.result_p_now), "p_future": copy.copy(self.result_p_future),
-                    "vad": copy.copy(self.result_vad)
+                    "p_now": copy.copy(out['p_now']), "p_future": copy.copy(out['p_future']),
+                    "vad": copy.copy(out['vad'])
                 })
                 
             elif self.mode == "bc_2type":
-                bc = self.vap.bc_head(out["x"])
                 
-                p_bc_react = bc.softmax(dim=-1)[:, -1, 1]
-                p_bc_emo = bc.softmax(dim=-1)[:, -1, 2]
-                
-                # Get back to the CPU
-                p_bc_react = p_bc_react.to('cpu')
-                p_bc_emo = p_bc_emo.to('cpu')
-                
-                self.result_p_bc_react = [p_bc_react]#.tolist()[0][-1]
-                self.result_p_bc_emo = [p_bc_emo]#.tolist()[0][-1]
+                out = self.vap.forward(x1_context_, x2_context_)
                 
                 self.result_dict_queue.put({
                     "t": time.time(),
                     "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
-                    "p_bc_react": copy.copy(self.result_p_bc_react), "p_bc_emo": copy.copy(self.result_p_bc_emo)
+                    "p_bc_react": copy.copy(out['p_bc_react']),
+                    "p_bc_emo": copy.copy(out['p_bc_emo'])
                 })
             
             elif self.mode == "nod":
                 
-                p_bc = self.vap.bc_head(out["x"])
-                nod = self.vap.nod_head(out["x"])
-                
-                p_bc = p_bc.sigmoid()[-1]
-                p_nod_short = nod.softmax(dim=-1)[:, -1, 1]
-                p_nod_long = nod.softmax(dim=-1)[:, -1, 2]
-                p_nod_long_p = nod.softmax(dim=-1)[:, -1, 3]
-                
-                # Get back to the CPU
-                p_bc = p_bc.to('cpu')
-                p_nod_short = p_nod_short.to('cpu')
-                p_nod_long = p_nod_long.to('cpu')
-                p_nod_long_p = p_nod_long_p.to('cpu')
-                
-                self.result_p_bc = p_bc#.tolist()[0][-1]
-                self.result_p_nod_short = [p_nod_short]#.tolist()[0][-1]
-                self.result_p_nod_long = [p_nod_long]#.tolist()[0][-1]
-                self.result_p_nod_long_p = [p_nod_long_p]#.tolist()[0][-1]
-                
+                out = self.vap.forward(x1_context_, x2_context_)
+
                 self.result_dict_queue.put({
                     "t": time.time(),
                     "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
-                    "p_bc": copy.copy(self.result_p_bc), "p_nod_short": copy.copy(self.result_p_nod_short), "p_nod_long": copy.copy(self.result_p_nod_long), "p_nod_long_p": copy.copy(self.result_p_nod_long_p)
+                    "p_bc": copy.copy(out['p_bc']),
+                    "p_nod_short": copy.copy(out['p_nod_short']),
+                    "p_nod_long": copy.copy(out['p_nod_long']),
+                    "p_nod_long_p": copy.copy(out['p_nod_long_p'])
                 })
                 
             # self.result_last_time = time.time()
@@ -266,4 +216,30 @@ class Maai():
     
     def get_result(self):
         return self.result_dict_queue.get()
+    
+    def set_prompt_ch1(self, prompt: str):
+        """
+        Set the prompt text for speaker 1. This method is only available for the 'vap_prompt' mode.
+        
+        Args:
+            prompt (str): The prompt text for speaker 1.
+        """
+        
+        if self.mode != "vap_prompt":
+            raise ValueError("This method is only available for the 'vap_prompt' mode.")
+        
+        self.vap.set_prompt_ch1(prompt)
+    
+    def set_prompt_ch2(self, prompt: str):
+        """
+        Set the prompt text for speaker 2. This method is only available for the 'vap_prompt' mode.
+        
+        Args:
+            prompt (str): The prompt text for speaker 2.
+        """
+        
+        if self.mode != "vap_prompt":
+            raise ValueError("This method is only available for the 'vap_prompt' mode.")
+        
+        self.vap.set_prompt_ch2(prompt)
     

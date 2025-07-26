@@ -11,6 +11,9 @@ from ..objective import ObjectiveVAP
 
 class VapGPT(nn.Module):
     
+    BINS_P_NOW = [0, 1]
+    BINS_PFUTURE = [2, 3]
+    
     def __init__(self, conf: Optional[VapConfig] = None):
         super().__init__()
         if conf is None:
@@ -98,3 +101,55 @@ class VapGPT(nn.Module):
 
     def vad_loss(self, vad_output, vad):
         return F.binary_cross_entropy_with_logits(vad_output, vad)
+    
+    def forward(self, x1: Tensor, x2: Tensor) -> Tuple[Tensor, Tensor, list[Tensor]]:
+        """
+        Forward pass for the VapGPT model.
+        
+        Args:
+            x1 (Tensor): Input audio embedded tensor for speaker 1.
+            x2 (Tensor): Input audio embedded tensor for speaker 2.
+        
+        Returns:
+            Tuple[Tensor, Tensor, List[Tensor]]: A tuple containing:
+                - p_now (Tensor): Probability of the next current speaker.
+                - p_future (Tensor): Probability of the future speaker.
+                - vad (list[Tensor]): List containing VAD outputs for both speakers.
+        """
+        # Autoregressive
+        o1 = self.ar_channel(x1)  # ["x"]
+        o2 = self.ar_channel(x2)  # ["x"]
+        out = self.ar(o1["x"], o2["x"])
+
+        # Outputs
+        vad1 = self.va_classifier(o1["x"])
+        vad2 = self.va_classifier(o2["x"])
+        logits = self.vap_head(out["x"])
+
+        probs = logits.softmax(dim=-1)
+                
+        p_now = self.objective.probs_next_speaker_aggregate(
+            probs,
+            from_bin=self.BINS_P_NOW[0],
+            to_bin=self.BINS_P_NOW[-1]
+        )
+        
+        p_future = self.objective.probs_next_speaker_aggregate(
+            probs,
+            from_bin=self.BINS_PFUTURE[0],
+            to_bin=self.BINS_PFUTURE[1]
+        )
+        
+        # Get back to the CPU
+        p_now = p_now.to('cpu')
+        p_future = p_future.to('cpu')
+        
+        vad1 = vad1.sigmoid().to('cpu')[::,-1]
+        vad2 = vad2.sigmoid().to('cpu')[::,-1]
+        
+        result_p_now = p_now.tolist()[0][-1]
+        result_p_future = p_future.tolist()[0][-1]
+
+        ret = {"p_now": result_p_now, "p_future": result_p_future, "vad": [vad1, vad2]}
+
+        return ret

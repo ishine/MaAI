@@ -9,7 +9,7 @@ from ..encoder import EncoderCPC
 from ..modules import GPT, GPTStereo
 from ..objective import ObjectiveVAP
 
-class VapGPT_bc_2type(nn.Module):
+class VapGPT_prompt(nn.Module):
     
     def __init__(self, conf: Optional[VapConfig] = None):
         super().__init__()
@@ -46,30 +46,27 @@ class VapGPT_bc_2type(nn.Module):
         # Outputs
         # Voice activity objective -> x1, x2 -> logits ->  BCE
         self.va_classifier = nn.Linear(conf.dim, 1)
-        
-        if self.conf.lid_classify == 1:
-            self.lid_classifier = nn.Linear(conf.dim, conf.lid_classify_num_class)
-        
-        elif self.conf.lid_classify == 2:
-            self.lid_classifier_middle = nn.Linear(conf.dim*2, conf.lid_classify_num_class)
-        
-        if self.conf.lang_cond == 1:
-            self.lang_condition = nn.Linear(conf.lid_classify_num_class, conf.dim)
-        
         self.vap_head = nn.Linear(conf.dim, self.objective.n_classes)
+        self.prompt_head = nn.Linear(conf.dim, conf.dim_prompt)
 
-        # For Backchannel
-        self.bc_head = nn.Linear(conf.dim, 3)
+        self.prompt_embed1 = nn.Linear(self.conf.dim_prompt, self.conf.dim_prompt_2)
+        self.prompt_embed2 = nn.Linear(self.conf.dim_prompt, self.conf.dim_prompt_2)
+
+        self.prompt_dim_red1 = nn.Linear(self.conf.dim + self.conf.dim_prompt_2, self.conf.dim)
+        self.prompt_dim_red2 = nn.Linear(self.conf.dim + self.conf.dim_prompt_2, self.conf.dim)
 
     def load_encoder(self, cpc_model):
         
         # Audio Encoder
+        #if self.conf.encoder_type == "cpc":
         self.encoder1 = EncoderCPC(
             load_pretrained=True if self.conf.load_pretrained == 1 else False,
             freeze=self.conf.freeze_encoder,
             cpc_model=cpc_model
         )
         self.encoder1 = self.encoder1.eval()
+        #print(self.encoder1)
+        #self.encoder1 = self.encoder1.half()
         
         self.encoder2 = EncoderCPC(
             load_pretrained=True if self.conf.load_pretrained == 1 else False,
@@ -78,6 +75,7 @@ class VapGPT_bc_2type(nn.Module):
         )
 
         self.encoder2 = self.encoder2.eval()
+        #self.encoder2 = self.encoder2.half()
         
         if self.conf.freeze_encoder == 1:
             print('freeze encoder')
@@ -90,42 +88,36 @@ class VapGPT_bc_2type(nn.Module):
 
     def encode_audio(self, audio1: torch.Tensor, audio2: torch.Tensor) -> Tuple[Tensor, Tensor]:
         
-        # Channel swap for temporal consistency
-        x1 = self.encoder1(audio2)  # speaker 1 (User)
-        x2 = self.encoder2(audio1)  # speaker 2 (System)
-
+        x1 = self.encoder1(audio1)  # speaker 1
+        x2 = self.encoder2(audio2)  # speaker 2
+        
         return x1, x2
 
     def vad_loss(self, vad_output, vad):
         return F.binary_cross_entropy_with_logits(vad_output, vad)
     
+    def set_prompt_ch1(self, prmpt: str):
+
+        pass
+
+    def set_prompt_ch2(self, prmpt: str):
+
+        pass
+
     def forward(self, x1: Tensor, x2: Tensor) -> Tuple[Tensor, Tensor, list[Tensor]]:
         """
         Forward pass for the VapGPT model.
         
         Args:
-            x1 (Tensor): Input audio embedded tensor for speaker 1.
-            x2 (Tensor): Input audio embedded tensor for speaker 2.
-
+            x1 (Tensor): Input audio tensor for speaker 1.
+            x2 (Tensor): Input audio tensor for speaker 2.
+        
         Returns:
-            dict: A dictionary containing:
-                - p_bc_react (list[Tensor]): Probability of reactive backchannel.
-                - p_bc_emo (list[Tensor]): Probability of emotional backchannel.
+            Tuple[Tensor, Tensor, list[Tensor]]: Output tensors and additional information.
         """
-        # Autoregressive
-        o1 = self.ar_channel(x1)  # ["x"]
-        o2 = self.ar_channel(x2)  # ["x"]
-        out = self.ar(o1["x"], o2["x"])
-
-        bc = self.bc_head(out["x"])
         
-        p_bc_react = bc.softmax(dim=-1)[:, -1, 1]
-        p_bc_emo = bc.softmax(dim=-1)[:, -1, 2]
-        
-        # Get back to the CPU
-        p_bc_react = [p_bc_react.to('cpu')]
-        p_bc_emo = [p_bc_emo.to('cpu')]
+        # Encode audio
+        x1, x2 = self.encode_audio(x1, x2)
 
-        ret = {"p_bc_react": p_bc_react, "p_bc_emo": p_bc_emo}
-
-        return ret
+        # Channel swap for temporal consistency
+        x1_context_ = self.ar_channel(x1)

@@ -33,6 +33,10 @@ class VapConfig:
     lid_classify_adversarial: int = 0
     lang_cond: int = 0
 
+    # For prompt
+    dim_prompt: int = 1792
+    dim_prompt_2: int = 256
+
     @staticmethod
     def add_argparse_args(parser, fields_added=[]):
         for k, v in VapConfig.__dataclass_fields__.items():
