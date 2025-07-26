@@ -10,6 +10,8 @@ README: <a href="input.md">English </a> | <a href="input_JP.md">Japanese (日本
 MaaiInput (`input.py`) は MaAI の音声入力を柔軟に扱うためのモジュールです。
 WAVファイル、マイク、TCP通信による音声入力をサポートしています。
 
+</br>
+
 ## クラス一覧
 
 - `Mic` : マイク入力（リアルタイム）
@@ -18,9 +20,11 @@ WAVファイル、マイク、TCP通信による音声入力をサポートし�
 - `TCPTransmitter` : TCP経由でマイク入力される音声データを送信
 - `Zero` : 無音（ゼロ埋め）データを生成（システム側の音声を一時的に埋めることを想定）
 
-### 基本的な使い方
+</br>
 
-#### WAVファイル入力
+## 基本的な使い方
+
+### WAVファイル入力
 ```python
 from maai import MaaiInput
 
@@ -28,28 +32,30 @@ wav1 = MaaiInput.Wav(wav_file_path="user.wav")
 wav2 = MaaiInput.Wav(wav_file_path="system.wav")
 ```
 
-#### マイク入力
+### マイク入力
 ```python
 mic1 = MaaiInput.Mic(mic_device_index=0)
 mic2 = MaaiInput.Mic(mic_device_index=1)
 ```
 
-#### TCP入力
+### TCP入力
 ```python
 tcp_receiver = MaaiInput.TCPReceiver(ip="0.0.0.0", port=12345)
 tcp_receiver.start_server()
 ```
 
-#### TCP送信
+### TCP送信
 ```python
 tcp_transmitter = MaaiInput.TCPTransmitter(ip="送信先IP", port=12345, mic_device_index=0)
 tcp_transmitter.start_process()
 ```
 
-#### 無音（ゼロ埋め）入力
+### 無音（ゼロ埋め）入力
 ```python
 zero_input = MaaiInput.Zero()
 ```
+
+</br>
 
 ## TCP通信による音声データフォーマット
 
@@ -70,6 +76,8 @@ zero_input = MaaiInput.Zero()
 | ... | ... | ... |
 | 1264 - 1271 | Double | 音声データ - サンプル 159 |
 | 1272 - 1279 | Double | 音声データ - サンプル 160 |
+
+</br>
 
 ## デバイス一覧取得
 

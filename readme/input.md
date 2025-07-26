@@ -10,6 +10,8 @@ README: <a href="input.md">English </a> | <a href="input_JP.md">Japanese (日本
 MaaiInput (`input.py`) is a module for flexible handling of audio input in MaAI.
 It supports audio input via WAV files, microphone, and TCP communication.
 
+</br>
+
 ## Class List
 
 - `Mic`: Microphone input (real-time)
@@ -18,9 +20,11 @@ It supports audio input via WAV files, microphone, and TCP communication.
 - `TCPTransmitter`: Transmit microphone audio data via TCP
 - `Zero`: Generates silent (zero-filled) audio data (intended for temporarily filling system-side audio)
 
-### Basic Usage
+</br>
 
-#### WAV File Input
+## Basic Usage
+
+### WAV File Input
 ```python
 from maai import MaaiInput
 
@@ -28,28 +32,30 @@ wav1 = MaaiInput.Wav(wav_file_path="user.wav")
 wav2 = MaaiInput.Wav(wav_file_path="system.wav")
 ```
 
-#### Microphone Input
+### Microphone Input
 ```python
 mic1 = MaaiInput.Mic(mic_device_index=0)
 mic2 = MaaiInput.Mic(mic_device_index=1)
 ```
 
-#### TCP Input
+### TCP Input
 ```python
 tcp_receiver = MaaiInput.TCPReceiver(ip="0.0.0.0", port=12345)
 tcp_receiver.start_server()
 ```
 
-#### TCP Transmission
+### TCP Transmission
 ```python
 tcp_transmitter = MaaiInput.TCPTransmitter(ip="Destination IP", port=12345, mic_device_index=0)
 tcp_transmitter.start_process()
 ```
 
-#### Silent (Zero-filled) Input
+### Silent (Zero-filled) Input
 ```python
 zero_input = MaaiInput.Zero()
 ```
+
+</br>
 
 ## TCP Audio Data Format
 
@@ -70,6 +76,8 @@ When connecting with your own original system, send audio data to an instance of
 | 1264 - 1271 | Double | Audio Data - Sample 159 |
 | 1272 - 1279 | Double | Audio Data - Sample 160 |
 
+</br>
+
 ## Get Device List
 
 You can get a list of microphone devices with `available_mic_devices()`.
@@ -79,6 +87,8 @@ from maai import MaaiInput
 
 MaaiInput.available_mic_devices()
 ```
+
+</br>
 
 ## Notes
 

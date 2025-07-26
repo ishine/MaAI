@@ -10,6 +10,8 @@ README: <a href="output.md">English </a> | <a href="output_JP.md">Japanese (æ—¥æ
 MaaiOutput (`output.py`) is a module for handling the output of MaAI.
 It provides features to visualize inference results such as turn-taking, backchanneling, and nodding as bar graphs, and to send or receive these results via TCP.
 
+</br>
+
 ## Class List
 
 - `ConsoleBar`: Visualizes inference results as bar graphs
@@ -20,9 +22,9 @@ It provides features to visualize inference results such as turn-taking, backcha
 
 </br>
 
-### Basic Usage
+## Basic Usage
 
-#### Bar Graph Display
+### Bar Graph Display
 ```python
 from maai import MaaiOutput
 
@@ -31,7 +33,7 @@ result = {"x1": 0.7, "x2": 0.3, "t": 1.23}
 bar.update(result)
 ```
 
-#### GUI Bar Graph Display
+### GUI Bar Graph Display
 ```python
 from maai import MaaiOutput
 
@@ -40,7 +42,7 @@ result = {"x1": 0.7, "x2": 0.3, "t": 1.23}
 gui_bar.update(result)
 ```
 
-#### GUI Plot Display (Time Series)
+### GUI Plot Display (Time Series)
 ```python
 from maai import MaaiOutput
 
@@ -49,14 +51,14 @@ result = {"x1": [...], "x2": [...], "p_now": [...], "p_future": [...], "vad": [.
 gui_plot.update(result)
 ```
 
-#### TCP Receiving
+### TCP Receiving
 ```python
 receiver = MaaiOutput.TCPReceiver(ip="0.0.0.0", port=12345, mode="vap")
 receiver.start_process()
 result = receiver.get_result()
 ```
 
-#### TCP Sending
+### TCP Sending
 ```python
 transmitter = MaaiOutput.TCPTransmitter(ip="Destination IP", port=12345, mode="vap")
 transmitter.start_server()

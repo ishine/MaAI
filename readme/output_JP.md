@@ -10,6 +10,8 @@ README: <a href="output.md">English </a> | <a href="output_JP.md">Japanese (日�
 MaaiOutput (`output.py`) は MaAI の出力を扱うためのモジュールです。
 ターンテイキングや相槌、頷きなどの推論結果をバーグラフで表示したり、TCP経由で送受信する機能を持っています。
 
+</br>
+
 ## クラス一覧
 
 - `ConsoleBar` : 推論結果をバーグラフで可視化
@@ -20,9 +22,9 @@ MaaiOutput (`output.py`) は MaAI の出力を扱うためのモジュールで�
 
 </br>
 
-### 基本的な使い方
+## 基本的な使い方
 
-#### バーグラフ表示
+### バーグラフ表示
 ```python
 from maai import MaaiOutput
 
@@ -31,7 +33,7 @@ result = {"x1": 0.7, "x2": 0.3, "t": 1.23}
 bar.update(result)
 ```
 
-#### GUIバーグラフ表示
+### GUIバーグラフ表示
 ```python
 from maai import MaaiOutput
 
@@ -40,7 +42,7 @@ result = {"x1": 0.7, "x2": 0.3, "t": 1.23}
 gui_bar.update(result)
 ```
 
-#### GUIプロット表示（時系列）
+### GUIプロット表示（時系列）
 ```python
 from maai import MaaiOutput
 
@@ -49,14 +51,14 @@ result = {"x1": [...], "x2": [...], "p_now": [...], "p_future": [...], "vad": [.
 gui_plot.update(result)
 ```
 
-#### TCP受信
+### TCP受信
 ```python
 receiver = MaaiOutput.TCPReceiver(ip="0.0.0.0", port=12345, mode="vap")
 receiver.start_process()
 result = receiver.get_result()
 ```
 
-#### TCP送信
+### TCP送信
 ```python
 transmitter = MaaiOutput.TCPTransmitter(ip="送信先IP", port=12345, mode="vap")
 transmitter.start_server()
