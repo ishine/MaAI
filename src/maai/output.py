@@ -127,6 +127,14 @@ class ConsoleBar:
             bar1 = bar1[::-1]
             bar2, val2 = _get_bar_for_value('x2', x2, self.bar_length // 2 - 1, "normal")
             print(f"x1 │ x2{' ' * 8}: {bar1} │ {bar2} ({val1:.4f}, {val2:.4f})")
+        
+        # vadがある場合はvad[0]をvad(x1)、vad[1]をvad(x2)として表示
+        if 'vad' in result:
+            vad1 = result['vad'][0]
+            vad2 = result['vad'][1]
+            result['vad(x1)'] = vad1
+            result['vad(x2)'] = vad2
+    
         # 各キーを動的に処理
         for key, value in result.items():
             if key == 't':
