@@ -222,6 +222,14 @@ def conv_bytearray_2_floatarray(barr):
         
     return arr
 
+def conv_bytearray_2_floatarray_short(barr):
+    arr = []
+    for i in range(0, len(barr), 4):
+        b = barr[i:i+4]
+        val = struct.unpack('<f', b)[0]
+        arr.append(val)
+    return arr
+
 #
 # VAP result -> Byte
 #

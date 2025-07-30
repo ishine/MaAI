@@ -13,7 +13,7 @@ from .models.vap import VapGPT
 from .models.vap_bc_2type import VapGPT_bc_2type
 from .models.vap_nod import VapGPT_nod
 from .models.config import VapConfig
-from .models.vap_prompt import VapGPT_prompt
+# from .models.vap_prompt import VapGPT_prompt
 
 class Maai():
     
@@ -36,9 +36,13 @@ class Maai():
             self.vap = VapGPT_nod(conf)
         
         elif mode == "vap_prompt":
+            from .models.vap_prompt import VapGPT_prompt
             self.vap = VapGPT_prompt(conf)
-
+        
         self.device = device
+
+        if self.device not in ["cpu", "cuda"]:
+            raise ValueError("Device must be 'cpu' or 'cuda'.")
 
         sd = load_vap_model(mode, frame_rate, context_len_sec, language, device, cache_dir, force_download)
         self.vap.load_encoder(cpc_model=cpc_model)
@@ -211,8 +215,8 @@ class Maai():
                 ave_proc_time = np.average(self.list_process_time_context)
                 num_process_frame = len(self.list_process_time_context) / (time.time() - self.last_interval_time)
                 self.last_interval_time = time.time()
-                
-                print('[VAP] Average processing time: %.5f [sec], #process/sec: %.3f' % (ave_proc_time, num_process_frame))
+
+                print(f'[{self.mode}] Average processing time: {ave_proc_time:.5f} [sec], #process/sec: {num_process_frame:.3f}')
                 self.list_process_time_context = []
             
             self.process_time_abs = time.time()

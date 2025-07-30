@@ -172,7 +172,7 @@ class Wav(Base):
             self._is_thread_started = True
 
 class TCPReceiver(Base):
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, audio_gain=1.0,recv_float32=False, client_mode=False):
         super().__init__()
         self.ip = ip
         self.port = port
@@ -180,6 +180,9 @@ class TCPReceiver(Base):
         self.addr = None
         self._is_thread_started_process = False
         self._is_thread_started_server = False
+        self.audio_gain = audio_gain
+        self.recv_float32 = recv_float32  # 4byte float受信オプション
+        self.client_mode = client_mode  # クライアントモードオプション
 
     def _server(self):
         while True:
@@ -198,24 +201,67 @@ class TCPReceiver(Base):
                 time.sleep(1)
                 continue
 
+    def _client(self):
+        while True:
+            if self.conn is not None:
+                time.sleep(0.1)
+                continue
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((self.ip, self.port))
+                self.conn = s
+                self.addr = (self.ip, self.port)
+                print('[IN] Connected to server', self.addr)
+            except Exception as e:
+                print('[IN] Client connect failed:', e)
+                time.sleep(1)
+                continue
+
     def _process(self):
+        import struct
         while True:
             try:
                 if self.conn is None:
                     time.sleep(0.1)
                     continue
-                size_recv = 8 * self.FRAME_SIZE
-                data = self.conn.recv(size_recv)
-                if len(data) < size_recv:
-                    while len(data) < size_recv:
-                        data_ = self.conn.recv(size_recv - len(data))
-                        if len(data_) == 0:
-                            break
-                        data += data_
-                if len(data) == 0:
-                    raise ConnectionError("Connection closed")
-                x1 = util.conv_bytearray_2_floatarray(data)
+                
+                # Float32受信オプションが有効な場合、4byte floatを受信
+                if self.recv_float32:
+                    size_recv = 4 * self.FRAME_SIZE
+                    # print(f"[IN] Receiving {size_recv} bytes of float32 data")
+                    data = self.conn.recv(size_recv)
+                    # print(f"[IN] Received {len(data)} bytes of float32 data")
+                    if len(data) < size_recv:
+                        while len(data) < size_recv:
+                            data_ = self.conn.recv(size_recv - len(data))
+                            if len(data_) == 0:
+                                break
+                            data += data_
+                    if len(data) == 0:
+                        raise ConnectionError("Connection closed")
+                    # 4byte float -> 8byte float変換
+                    x1_short = util.conv_bytearray_2_floatarray_short(data)
+                    x1 = [float(a) for a in x1_short]  # Convert to float list
+                
+                # 通常は8byte float受信
+                else:
+                    size_recv = 8 * self.FRAME_SIZE
+                    data = self.conn.recv(size_recv)
+                    if len(data) < size_recv:
+                        while len(data) < size_recv:
+                            data_ = self.conn.recv(size_recv - len(data))
+                            if len(data_) == 0:
+                                break
+                            data += data_
+                    if len(data) == 0:
+                        raise ConnectionError("Connection closed")
+                    x1 = util.conv_bytearray_2_floatarray(data)
+
+                if self.audio_gain != 1.0:
+                    x1 = [a * self.audio_gain for a in x1]
+                    
                 self._put_to_all_queues(x1)
+
             except Exception as e:
                 if self.addr is not None:
                     print('[IN] Disconnected by', self.addr)
@@ -233,8 +279,16 @@ class TCPReceiver(Base):
 
     def start_server(self):
         if not self._is_thread_started_server:
-            threading.Thread(target=self._server, daemon=True).start()
+            if self.client_mode:
+                threading.Thread(target=self._client, daemon=True).start()
+            else:
+                threading.Thread(target=self._server, daemon=True).start()
             self._is_thread_started_server = True
+    
+    def _send_data_manual(self, data):
+        if self.conn is None:
+            raise ConnectionError("No connection established. Call start_server() first.")
+        self.conn.send(data)
 
 class TCPTransmitter(Base):
     def __init__(self, ip, port, audio_gain=1.0, mic_device_index=0):
