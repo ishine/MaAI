@@ -19,6 +19,7 @@ It supports audio input via WAV files, microphone, and TCP communication.
 - `TCPReceiver`: Receive audio data via TCP
 - `TCPTransmitter`: Transmit microphone audio data via TCP
 - `Zero`: Generates silent (zero-filled) audio data (intended for temporarily filling system-side audio)
+- `Chunk` : Chunk input
 
 </br>
 
@@ -53,6 +54,12 @@ tcp_transmitter.start_process()
 ### Silent (Zero-filled) Input
 ```python
 zero_input = MaaiInput.Zero()
+```
+
+### Chunk Input
+```python
+mic_input = MaaiInput.Chunk()
+mic_input.put_chunk(mic_chunk)
 ```
 
 </br>

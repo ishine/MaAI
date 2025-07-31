@@ -19,6 +19,7 @@ WAVファイル、マイク、TCP通信による音声入力をサポートし�
 - `TCPReceiver` : TCP経由で音声データを受信
 - `TCPTransmitter` : TCP経由でマイク入力される音声データを送信
 - `Zero` : 無音（ゼロ埋め）データを生成（システム側の音声を一時的に埋めることを想定）
+- `Chunk` : チャンク入力
 
 </br>
 
@@ -53,6 +54,12 @@ tcp_transmitter.start_process()
 ### 無音（ゼロ埋め）入力
 ```python
 zero_input = MaaiInput.Zero()
+```
+
+### チャンク入力
+```python
+mic_input = MaaiInput.Chunk()
+mic_input.put_chunk(mic_chunk)
 ```
 
 </br>

@@ -380,3 +380,15 @@ class Zero(Base):
         if not self._is_thread_started_process:
             threading.Thread(target=self._process, daemon=True).start()
             self._is_thread_started_process = True
+
+
+class Chunk(Base):
+    def __init__(self):
+        super().__init__()
+
+    def put_chunk(self, chunk_data):
+        chunk_list = [float(x) for x in chunk_data]
+        self._put_to_all_queues(chunk_list)
+
+    def start_process(self):
+        pass

@@ -116,6 +116,7 @@ The `MaaiInput` class also provides flexible input options, supporting audio fro
 - WAV file input: `Wav` class 📁
 - Microphone input: `Mic` class 🎙️
 - TCP communication: `TCPReceiver` / `TCPTransmitter` classes 🌐
+- Chunk input: `Chunk` class 📦
 
 By using these classes, you can easily adapt the audio input method to your specific use case.
 
