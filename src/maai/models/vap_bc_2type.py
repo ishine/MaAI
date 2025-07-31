@@ -118,13 +118,9 @@ class VapGPT_bc_2type(nn.Module):
         out = self.ar(o1["x"], o2["x"])
 
         bc = self.bc_head(out["x"])
-        
-        p_bc_react = bc.softmax(dim=-1)[:, -1, 1]
-        p_bc_emo = bc.softmax(dim=-1)[:, -1, 2]
-        
-        # Get back to the CPU
-        p_bc_react = [p_bc_react.to('cpu')]
-        p_bc_emo = [p_bc_emo.to('cpu')]
+
+        p_bc_react = bc.softmax(dim=-1).to('cpu').tolist()[0][-1][1]
+        p_bc_emo = bc.softmax(dim=-1).to('cpu').tolist()[0][-1][2]
 
         ret = {"p_bc_react": p_bc_react, "p_bc_emo": p_bc_emo}
 

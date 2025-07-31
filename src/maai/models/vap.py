@@ -141,15 +141,12 @@ class VapGPT(nn.Module):
         )
         
         # Get back to the CPU
-        p_now = p_now.to('cpu')
-        p_future = p_future.to('cpu')
+        p_now = p_now.to('cpu').tolist()[0][-1]
+        p_future = p_future.to('cpu').tolist()[0][-1]
         
-        vad1 = vad1.sigmoid().to('cpu')[::,-1]
-        vad2 = vad2.sigmoid().to('cpu')[::,-1]
-        
-        result_p_now = p_now.tolist()[0][-1]
-        result_p_future = p_future.tolist()[0][-1]
+        vad1 = vad1.sigmoid().to('cpu').tolist()[0][-1][0]
+        vad2 = vad2.sigmoid().to('cpu').tolist()[0][-1][0]
 
-        ret = {"p_now": result_p_now, "p_future": result_p_future, "vad": [vad1, vad2]}
+        ret = {"p_now": p_now, "p_future": p_future, "vad": [vad1, vad2]}
 
         return ret

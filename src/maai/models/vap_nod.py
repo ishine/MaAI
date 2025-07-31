@@ -122,27 +122,17 @@ class VapGPT_nod(nn.Module):
         p_bc = self.bc_head(out["x"])
         nod = self.nod_head(out["x"])
         
-        p_bc = p_bc.sigmoid()[-1]
-        p_nod_short = nod.softmax(dim=-1)[:, -1, 1]
-        p_nod_long = nod.softmax(dim=-1)[:, -1, 2]
-        p_nod_long_p = nod.softmax(dim=-1)[:, -1, 3]
-        
-        # Get back to the CPU
-        p_bc = p_bc.to('cpu')
-        p_nod_short = p_nod_short.to('cpu')
-        p_nod_long = p_nod_long.to('cpu')
-        p_nod_long_p = p_nod_long_p.to('cpu')
-        
-        self.result_p_bc = p_bc#.tolist()[0][-1]
-        self.result_p_nod_short = [p_nod_short]#.tolist()[0][-1]
-        self.result_p_nod_long = [p_nod_long]#.tolist()[0][-1]
-        self.result_p_nod_long_p = [p_nod_long_p]#.tolist()[0][-1]
+        p_bc = p_bc.sigmoid().to('cpu').tolist()[0][-1][0]
+        nod_ = nod.softmax(dim=-1).to('cpu').tolist()[0][-1]
+        p_nod_short = nod_[1]
+        p_nod_long = nod_[2]
+        p_nod_long_p = nod_[3]
 
         ret = {
             "p_bc": p_bc,
-            "p_nod_short": self.result_p_nod_short,
-            "p_nod_long": self.result_p_nod_long,
-            "p_nod_long_p": self.result_p_nod_long_p
+            "p_nod_short": p_nod_short,
+            "p_nod_long": p_nod_long,
+            "p_nod_long_p": p_nod_long_p
         }
 
         return ret
