@@ -109,9 +109,13 @@ class Mic(Base):
                                   rate=self.SAMPLING_RATE,
                                   input=True,
                                   output=False,
-                                  input_device_index=self.mic_device_index)
+                                  input_device_index=self.mic_device_index,
+                                  start=False)
 
     def _read_mic(self):
+
+        self.stream.start_stream()
+        
         while True:
             d = self.stream.read(self.FRAME_SIZE, exception_on_overflow=False)
             d = np.frombuffer(d, dtype=np.float32)

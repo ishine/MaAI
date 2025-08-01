@@ -111,15 +111,39 @@ class Maai():
         self.result_dict_queue = queue.Queue()
     
     def worker(self):
+        
+        # Clear the queues at the start
+        # This is to ensure that the queues are empty before starting the processing loop
+        self._mic1_queue.queue.clear()
+        self._mic2_queue.queue.clear()
+        
         while True:
             x1 = self.mic1.get_audio_data(self._mic1_queue)
             x2 = self.mic2.get_audio_data(self._mic2_queue)
             self.process(x1, x2)
 
+            # Clear the queues if they are too large
+            if self._mic1_queue.qsize() > 10:
+                self._mic1_queue.queue.clear()
+                print("Cleared audio 1 queues due to overflow.")
+            if self._mic2_queue.qsize() > 10:
+                self._mic2_queue.queue.clear()
+                print("Cleared audio 2 queues due to overflow.")
+            
+            # print(self._mic1_queue.qsize(), self._mic2_queue.qsize())
+
+            # self._mic1_queue.queue.clear()
+            # self._mic2_queue.queue.clear()
+
     def start_process(self):
+
         self.mic1.start_process()
         self.mic2.start_process()
-        threading.Thread(target=self.worker, daemon=True).start()  
+        threading.Thread(target=self.worker, daemon=True).start()
+
+        # Queueを空にする
+        self._mic1_queue.queue.clear()
+        self._mic2_queue.queue.clear()
     
     def process(self, x1, x2):
         
@@ -127,9 +151,13 @@ class Maai():
 
         # Initialize buffer if empty
         if len(self.current_x1_audio) == 0:
-            self.current_x1_audio = np.zeros(self.frame_contxt_padding)
+            self.current_x1_audio = np.zeros(self.frame_contxt_padding, dtype=np.float32)
         if len(self.current_x2_audio) == 0:
-            self.current_x2_audio = np.zeros(self.frame_contxt_padding)
+            self.current_x2_audio = np.zeros(self.frame_contxt_padding, dtype=np.float32)
+        
+        # x1 = x1.astype(np.float32, copy=False)
+        # x2 = x2.astype(np.float32, copy=False)
+
         # Add to buffer
         self.current_x1_audio = np.concatenate([self.current_x1_audio, x1])
         self.current_x2_audio = np.concatenate([self.current_x2_audio, x2])
@@ -139,91 +167,103 @@ class Maai():
             return
 
         # Extract data for inference
-        x1_proc = self.current_x1_audio.copy()
-        x2_proc = self.current_x2_audio.copy()
+        x1_proc = self.current_x1_audio
+        x2_proc = self.current_x2_audio
 
         x1_dist = x1_proc[self.frame_contxt_padding:]
         x2_dist = x2_proc[self.frame_contxt_padding:]
 
         with torch.no_grad():
+            # Create tensors more efficiently with specified dtype and device
+            x1_ = torch.from_numpy(x1_proc).float().unsqueeze(0).unsqueeze(0)
+            x2_ = torch.from_numpy(x2_proc).float().unsqueeze(0).unsqueeze(0)
             
-            # Convert to tensors efficiently
-            x1_ = torch.from_numpy(x1_proc).float().view(1, 1, -1).to(self.device)
-            x2_ = torch.from_numpy(x2_proc).float().view(1, 1, -1).to(self.device)
+            # Move to device only once
+            if self.device != 'cpu':
+                x1_ = x1_.to(self.device, non_blocking=True)
+                x2_ = x2_.to(self.device, non_blocking=True)
 
             e1, e2 = self.vap.encode_audio(x1_, x2_)
             
             self.e1_context.append(e1)
             self.e2_context.append(e2)
             
+            # More efficient context management
             if len(self.e1_context) > self.audio_context_len:
-                self.e1_context = self.e1_context[-self.audio_context_len:]
+                self.e1_context.pop(0)  # Remove from front instead of slicing
             if len(self.e2_context) > self.audio_context_len:
-                self.e2_context = self.e2_context[-self.audio_context_len:]
+                self.e2_context.pop(0)
             
-            x1_context_ = torch.cat(self.e1_context, dim=1).to(self.device)
-            x2_context_ = torch.cat(self.e2_context, dim=1).to(self.device)
-
-            # o1 = self.vap.ar_channel(x1_context_, attention=False)  # ["x"]
-            # o2 = self.vap.ar_channel(x2_context_, attention=False)  # ["x"]
-            # out = self.vap.ar(o1["x"], o2["x"], attention=False)
-
-            # Outputs
-            if self.mode in ["vap", "vap_mc", "vap_prompt"]:
-
-                out = self.vap.forward(x1_context_, x2_context_)
-                
-                self.result_dict_queue.put({
-                    "t": time.time(),
-                    "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
-                    "p_now": copy.copy(out['p_now']), "p_future": copy.copy(out['p_future']),
-                    "vad": copy.copy(out['vad'])
-                })
-                
-            elif self.mode == "bc_2type":
-                
-                out = self.vap.forward(x1_context_, x2_context_)
-                
-                self.result_dict_queue.put({
-                    "t": time.time(),
-                    "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
-                    "p_bc_react": copy.copy(out['p_bc_react']),
-                    "p_bc_emo": copy.copy(out['p_bc_emo'])
-                })
+            x1_context_ = torch.cat(self.e1_context, dim=1)
+            x2_context_ = torch.cat(self.e2_context, dim=1)
             
-            elif self.mode == "nod":
-                
-                out = self.vap.forward(x1_context_, x2_context_)
+            # Move to device only if necessary
+            if self.device != 'cpu':
+                x1_context_ = x1_context_.to(self.device, non_blocking=True)
+                x2_context_ = x2_context_.to(self.device, non_blocking=True)
 
-                self.result_dict_queue.put({
-                    "t": time.time(),
-                    "x1": copy.copy(x1_dist), "x2": copy.copy(x2_dist),
-                    "p_bc": copy.copy(out['p_bc']),
-                    "p_nod_short": copy.copy(out['p_nod_short']),
-                    "p_nod_long": copy.copy(out['p_nod_long']),
-                    "p_nod_long_p": copy.copy(out['p_nod_long_p'])
-                })
-                
-            # self.result_last_time = time.time()
+            # Forward pass
+            out = self.vap.forward(x1_context_, x2_context_)
+            
+            # Pre-create result dict structure to avoid repeated key creation
+            result_dict = {
+                "t": time.time(),
+                "x1": x1_dist.copy(),  # Only copy when necessary
+                "x2": x2_dist.copy(),
+            }
+            
+            # Use dictionary mapping for mode-specific outputs (faster than if-elif chain)
+            mode_outputs = {
+                "vap": lambda: {
+                    "p_now": out['p_now'],
+                    "p_future": out['p_future'],
+                    "vad": out['vad']
+                },
+                "vap_mc": lambda: {
+                    "p_now": out['p_now'],
+                    "p_future": out['p_future'],
+                    "vad": out['vad']
+                },
+                "vap_prompt": lambda: {
+                    "p_now": out['p_now'],
+                    "p_future": out['p_future'],
+                    "vad": out['vad']
+                },
+                "bc_2type": lambda: {
+                    "p_bc_react": out['p_bc_react'],
+                    "p_bc_emo": out['p_bc_emo']
+                },
+                "nod": lambda: {
+                    "p_bc": out['p_bc'],
+                    "p_nod_short": out['p_nod_short'],
+                    "p_nod_long": out['p_nod_long'],
+                    "p_nod_long_p": out['p_nod_long_p']
+                }
+            }
+            
+            # Get mode-specific outputs
+            if self.mode in mode_outputs:
+                result_dict.update(mode_outputs[self.mode]())
+            
+            self.result_dict_queue.put(result_dict)
             
             time_process = time.time() - time_start
-            
-            # Calculate the average encoding time
             self.list_process_time_context.append(time_process)
             
+            # Performance monitoring (unchanged for clarity)
             if len(self.list_process_time_context) > self.CALC_PROCESS_TIME_INTERVAL:
-                ave_proc_time = np.average(self.list_process_time_context)
+                ave_proc_time = np.mean(self.list_process_time_context)  # np.mean is faster than np.average
                 num_process_frame = len(self.list_process_time_context) / (time.time() - self.last_interval_time)
                 self.last_interval_time = time.time()
 
                 print(f'[{self.mode}] Average processing time: {ave_proc_time:.5f} [sec], #process/sec: {num_process_frame:.3f}')
-                self.list_process_time_context = []
+                self.list_process_time_context.clear()  # clear() is faster than = []
             
             self.process_time_abs = time.time()
 
-        # Keep only the last samples in the buffer
-        self.current_x1_audio = self.current_x1_audio[-self.frame_contxt_padding:]
-        self.current_x2_audio = self.current_x2_audio[-self.frame_contxt_padding:]
+        # Keep only the last samples in the buffer (use views for efficiency)
+        self.current_x1_audio = self.current_x1_audio[-self.frame_contxt_padding:].copy()
+        self.current_x2_audio = self.current_x2_audio[-self.frame_contxt_padding:].copy()
     
     def get_result(self):
         return self.result_dict_queue.get()
