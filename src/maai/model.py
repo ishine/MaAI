@@ -123,13 +123,13 @@ class Maai():
             self.process(x1, x2)
 
             # Clear the queues if they are too large
-            if self._mic1_queue.qsize() > 10:
+            if self._mic1_queue.qsize() > 100:
                 self._mic1_queue.queue.clear()
-                print("Cleared audio 1 queues due to overflow.")
-            if self._mic2_queue.qsize() > 10:
+                print("[Warning] Audio queue (channel 1) overflow detected. Clearing audio queues.")
+            if self._mic2_queue.qsize() > 100:
                 self._mic2_queue.queue.clear()
-                print("Cleared audio 2 queues due to overflow.")
-            
+                print("[Warning] Audio queue (channel 2) overflow detected. Clearing audio queues.")
+
             # print(self._mic1_queue.qsize(), self._mic2_queue.qsize())
 
             # self._mic1_queue.queue.clear()

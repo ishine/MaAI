@@ -267,6 +267,9 @@ class GuiBar:
         # バーアーティストを保持してリアルタイム更新
         self.bars = None
 
+        import seaborn as sns
+        sns.set_theme(style="whitegrid")
+
     def update(self, result: Dict[str, Any]):
         """resultのキーと値をバーグラフで更新表示する"""
         labels = []
@@ -413,7 +416,7 @@ class GuiPlot:
                 self.data_buffer[key] = [list(buf1), list(buf2)]
                 ax.set_title('Voice Activity Detection (VAD)')
                 ax.set_xlabel('Frame')
-                ax.set_ylabel('VAD1 (上), VAD2 (下)')
+                ax.set_ylabel('VAD2  VAD1')
                 ax.set_ylim(-1, 1)
                 ax.set_xlim(0, self.MAX_CONTEXT_LEN)
                 ax.axhline(0, color='black', linestyle='--', linewidth=1)
