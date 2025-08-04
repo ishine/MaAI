@@ -7,7 +7,7 @@
 README: <a href="vap_bc_2type.md">English </a> | <a href="vap_bc_2type_JP.md">Japanese (日本語) </a>
 </p>
 
-`Maai` クラスの `mode` パラメータは `vap_bc_2type` に設定してください。
+`Maai` クラスの `mode` パラメータは `bc_2type` に設定してください。
 
 本モデルは2チャンネルの16kHz音声データを入力とし、ch1をユーザ、ch2をシステムの音声として想定しています。
 そして、システムの相槌（Backchannel, BC）を予測します。
@@ -37,7 +37,7 @@ from maai import Maai, MaaiInput
 mic = MaaiInput.Mic(mic_device_index=0)
 zero = MaaiInput.Zero()
 
-maai = Maai(mode="vap_bc_2type", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
+maai = Maai(mode="bc_2type", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
 maai.start_process()
 
 while True:

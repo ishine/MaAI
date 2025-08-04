@@ -7,7 +7,7 @@ Backchannel Prediction Model (2 Types of Timing)
 README: <a href="vap_bc_2type.md">English </a> | <a href="vap_bc_2type_JP.md">Japanese (日本語) </a>
 </p>
 
-Set the `mode` parameter of the `Maai` class to `vap_bc_2type`.
+Set the `mode` parameter of the `Maai` class to `bc_2type`.
 
 This model takes 2-channel 16kHz audio data as input, assuming ch1 as user audio and ch2 as system audio.
 It predicts system backchannels (BC).
@@ -37,7 +37,7 @@ from maai import Maai, MaaiInput
 mic = MaaiInput.Mic(mic_device_index=0)
 zero = MaaiInput.Zero()
 
-maai = Maai(mode="vap_bc_2type", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
+maai = Maai(mode="bc_2type", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
 maai.start_process()
 
 while True:
