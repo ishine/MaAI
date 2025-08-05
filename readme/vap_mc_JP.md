@@ -32,6 +32,25 @@ README: <a href="vap_mc.md">English </a> | <a href="vap_mc_JP.md">Japanese (日�
 - [ヒューマンロボット対話コーパス](https://aclanthology.org/2025.naacl-long.367/)
 - [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
 
+### 英語（`language=en`）
+
+本モデルは以下の英語データセットで学習されています：
+- [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
+- オンライン会話データセット
+
+### 英語（`language=ch`）
+
+本モデルは以下の中国語データセットで学習されています：
+- [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
+- オンライン会話データセット
+
+<!-- ### 3言語対応（日本語＋英語＋中国語）（`language=tri`）
+
+本モデルは以下の3言語データセットで学習されています：
+- [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
+- [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
+- [旅行代理店タスク対話コーパス](https://aclanthology.org/2022.lrec-1.619/) -->
+
 </br>
 
 ## 実装例
@@ -63,7 +82,35 @@ while True:
 
 | `language` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
+| jp | 5 | 3 |
+| jp | 5 | 5 |
+| jp | 10 | 3 |
 | jp | 10 | 5 |
+| jp | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| en | 5 | 3 |
+| en | 5 | 5 |
+| en | 10 | 3 |
+| en | 10 | 5 |
+| en | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| ch | 5 | 3 |
+| ch | 5 | 5 |
+| ch | 10 | 3 |
+| ch | 10 | 5 |
+| ch | 20 | 2.5 |
+
+<!-- | `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| tri | 5 | 3 |
+| tri | 5 | 5 |
+| tri | 10 | 3 |
+| tri | 10 | 5 |
+| tri | 20 | 2.5 | -->
 
 <br>
 

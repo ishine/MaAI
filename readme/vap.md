@@ -33,6 +33,13 @@ This model is trained on the following Japanese datasets:
 
 This model is trained on the following English dataset:
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
+- Online Conversation Dataset
+
+### Chinese (`language=ch`)
+
+This model is trained on the following Chinese dataset:
+- [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
+- Online Conversation Dataset
 
 ### Tri-lingual (JPN + ENG + CHN) (`language=tri`)
 
@@ -85,6 +92,14 @@ Please adjust these values according to your computing environment.
 | en | 10 | 3 |
 | en | 10 | 5 |
 | en | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| ch | 5 | 3 |
+| ch | 5 | 5 |
+| ch | 10 | 3 |
+| ch | 10 | 5 |
+| ch | 20 | 2.5 |
 
 | `language` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |

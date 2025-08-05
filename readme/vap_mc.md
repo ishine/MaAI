@@ -27,10 +27,29 @@ Currently, only Japanese is available, but English and Chinese are planned to be
 
 ### Japanese (`language=jp`)
 
-This model was trained on the following Japanese datasets:
-- [Travel Agency Task Dialogue Corpus](https://aclanthology.org/2022.lrec-1.619/)
-- [Human-Robot Dialogue Corpus](https://aclanthology.org/2025.naacl-long.367/)
+This model is trained on the following Japanese datasets:
+- [Travel Agency Task Dialogue](https://aclanthology.org/2022.lrec-1.619/)
+- [Human-Robot Dialogue](https://aclanthology.org/2025.naacl-long.367/)
 - [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
+
+### English (`language=en`)
+
+This model is trained on the following English dataset:
+- [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
+- Online Conversation Dataset
+
+### Chinese (`language=ch`)
+
+This model is trained on the following Chinese dataset:
+- [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
+- Online Conversation Dataset
+
+<!-- ### Tri-lingual (JPN + ENG + CHN) (`language=tri`)
+
+This model is trained on the following three-language datasets:
+- [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
+- [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
+- [Travel Agency Task Dialogue](https://aclanthology.org/2022.lrec-1.619/) -->
 
 </br>
 
@@ -63,7 +82,35 @@ Please adjust these values according to your computing environment.
 
 | `language` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
+| jp | 5 | 3 |
+| jp | 5 | 5 |
+| jp | 10 | 3 |
 | jp | 10 | 5 |
+| jp | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| en | 5 | 3 |
+| en | 5 | 5 |
+| en | 10 | 3 |
+| en | 10 | 5 |
+| en | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| ch | 5 | 3 |
+| ch | 5 | 5 |
+| ch | 10 | 3 |
+| ch | 10 | 5 |
+| ch | 20 | 2.5 |
+
+<!-- | `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| tri | 5 | 3 |
+| tri | 5 | 5 |
+| tri | 10 | 3 |
+| tri | 10 | 5 |
+| tri | 20 | 2.5 | -->
 
 <br>
 

@@ -32,6 +32,13 @@ README: <a href="vap.md">English </a> | <a href="vap_JP.md">Japanese (日本語)
 
 本モデルは以下の英語データセットで学習されています：
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
+- オンライン会話データセット
+
+### 英語（`language=ch`）
+
+本モデルは以下の中国語データセットで学習されています：
+- [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
+- オンライン会話データセット
 
 ### 3言語対応（日本語＋英語＋中国語）（`language=tri`）
 
@@ -84,6 +91,14 @@ while True:
 | en | 10 | 3 |
 | en | 10 | 5 |
 | en | 20 | 2.5 |
+
+| `language` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| ch | 5 | 3 |
+| ch | 5 | 5 |
+| ch | 10 | 3 |
+| ch | 10 | 5 |
+| ch | 20 | 2.5 |
 
 | `language` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
