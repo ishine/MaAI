@@ -43,6 +43,9 @@ class Maai():
 
         if self.device not in ["cpu", "cuda"]:
             raise ValueError("Device must be 'cpu' or 'cuda'.")
+        
+        # Store the initial state of the model to check for unchanged parameters
+        initial_state_dict = {name: param.clone() for name, param in self.vap.named_parameters()}
 
         sd = load_vap_model(mode, frame_rate, context_len_sec, language, device, cache_dir, force_download)
         self.vap.load_encoder(cpc_model=cpc_model)
@@ -58,6 +61,14 @@ class Maai():
         self.vap.encoder2.downsample[1].bias = nn.Parameter(sd['encoder.downsample.1.bias'])
         self.vap.encoder2.downsample[2].ln.weight = nn.Parameter(sd['encoder.downsample.2.ln.weight'])
         self.vap.encoder2.downsample[2].ln.bias = nn.Parameter(sd['encoder.downsample.2.ln.bias'])
+
+        # Check for parameters that were not updated from their initial values
+        for name, param in self.vap.named_parameters():
+            if name in initial_state_dict:
+                if torch.equal(param.data, initial_state_dict[name].data):
+                    # Exclude encoder parameters that are loaded separately
+                    if not name.startswith('encoder.'):
+                        print(f"Warning: Parameter '{name}' was not updated from its initial value.")
 
         self.vap.to(self.device)
         self.vap = self.vap.eval()
