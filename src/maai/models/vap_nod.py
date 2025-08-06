@@ -21,7 +21,7 @@ class VapGPT_nod(nn.Module):
         self.temp_elapse_time = []
 
         # Single channel
-        self.ar_channel = GPT(
+        self.self_attention = GPT(
             dim=conf.dim,
             dff_k=3,
             num_layers=conf.channel_layers,
@@ -31,7 +31,7 @@ class VapGPT_nod(nn.Module):
         )
 
         # Cross channel
-        self.ar = GPTStereo(
+        self.cross_attention = GPTStereo(
             dim=conf.dim,
             dff_k=3,
             num_layers=conf.cross_layers,
@@ -58,7 +58,7 @@ class VapGPT_nod(nn.Module):
         self.vap_head = nn.Linear(conf.dim, self.objective.n_classes)
 
         # For Nodding
-        self.nod_head = nn.Linear(conf.dim, 4)
+        self.gt_head = nn.Linear(conf.dim, 4)
         self.bc_head = nn.Linear(conf.dim, 1)
 
     def load_encoder(self, cpc_model):
@@ -115,12 +115,12 @@ class VapGPT_nod(nn.Module):
                 - p_nod_long_p (list[Tensor]): Probability of long nodding with preparation.
         """
         # Autoregressive
-        o1 = self.ar_channel(x1)  # ["x"]
-        o2 = self.ar_channel(x2)  # ["x"]
-        out = self.ar(o1["x"], o2["x"])
+        o1 = self.self_attention(x1)  # ["x"]
+        o2 = self.self_attention(x2)  # ["x"]
+        out = self.cross_attention(o1["x"], o2["x"])
 
         p_bc = self.bc_head(out["x"])
-        nod = self.nod_head(out["x"])
+        nod = self.gt_head(out["x"])
         
         p_bc = p_bc.sigmoid().to('cpu').tolist()[0][-1][0]
         nod_ = nod.softmax(dim=-1).to('cpu').tolist()[0][-1]
