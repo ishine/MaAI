@@ -293,6 +293,10 @@ class TCPReceiver(Base):
         if self.conn is None:
             raise ConnectionError("No connection established. Call start_server() first.")
         self.conn.send(data)
+    
+    def is_connected(self):
+        return self.conn is not None and self.addr is not None
+
 
 class TCPTransmitter(Base):
     def __init__(self, ip, port, audio_gain=1.0, mic_device_index=0):
