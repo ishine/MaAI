@@ -456,73 +456,58 @@ class GuiPlot:
         tab_colors = list(mcolors.TABLEAU_COLORS.values())
         p_keys = [k for k in self.keys if k.startswith('p_') and k not in ('p_now', 'p_future')]
         color_map = {k: tab_colors[i % len(tab_colors)] for i, k in enumerate(p_keys)}
-        th_map = {k: 0.5 for k in p_keys}
         for key in self.keys:
             if key not in result:
                 continue
             val = result[key]
-            if not isinstance(val, (int, float)):
-                val = np.squeeze(np.array(val))
             if key in ['x1', 'x2'] and key in self.lines:
                 buf = self.data_buffer[key]
-                if isinstance(val, (np.ndarray, list, tuple)) and len(val) > 1:
-                    val = val[-self.sample_rate // self.frame_rate:]
-                    buf = list(buf) + list(val)
-                    if len(buf) > self.MAX_CONTEXT_WAV_LEN:
-                        buf = buf[-self.MAX_CONTEXT_WAV_LEN:]
-                    self.data_buffer[key] = buf
-                    if draw:
-                        time_x = np.linspace(-self.shown_context_sec, 0, self.MAX_CONTEXT_WAV_LEN)
-                        self.lines[key].set_data(time_x, buf)
+                val = val[-self.sample_rate // self.frame_rate:]
+                buf = buf + list(val)
+                if len(buf) > self.MAX_CONTEXT_WAV_LEN:
+                    buf = buf[-self.MAX_CONTEXT_WAV_LEN:]
+                self.data_buffer[key] = buf
+                if draw:
+                    time_x = np.linspace(-self.shown_context_sec, 0, self.MAX_CONTEXT_WAV_LEN)
+                    self.lines[key].set_data(time_x, buf)
             elif (key == 'p_now' or key == 'p_future') and key in self.fills:
                 buf = self.data_buffer[key]
-                if isinstance(val, (np.ndarray, list, tuple)):
-                    buf = list(buf) + [float(val[0])] if np.array(val).ndim > 0 else buf + [float(val)]
-                    if len(buf) > self.MAX_CONTEXT_LEN:
-                        buf = buf[-self.MAX_CONTEXT_LEN:]
-                    self.data_buffer[key] = buf
-                    if draw:
-                        time_x = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
-                        ax = self.axes[key]
-                        arr = np.array(buf)
-                        fills = self.fills[key]
-                        for f in fills:
-                            if f is not None:
-                                f.remove()
-                        fill1 = ax.fill_between(time_x, y1=0.5, y2=arr, where=arr > 0.5, color='y', interpolate=True)
-                        fill2 = ax.fill_between(time_x, y1=arr, y2=0.5, where=arr < 0.5, color='b', interpolate=True)
-                        self.fills[key] = [fill1, fill2]
-            elif key.startswith('p_') and key in self.fills:
-                buf = self.data_buffer[key]
-                th = th_map.get(key, 0.5)
-                color = color_map.get(key, 'green')
-                if isinstance(val, (np.ndarray, list, tuple)):
-                    buf = list(buf) + [float(val[0])] if np.array(val).ndim > 0 else buf + [float(val)]
-                    if len(buf) > self.MAX_CONTEXT_LEN:
-                        buf = buf[-self.MAX_CONTEXT_LEN:]
-                    self.data_buffer[key] = buf
-                    if draw:
-                        time_x = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
-                        ax = self.axes[key]
-                        arr = np.array(buf)
-                        f = self.fills[key]
+                buf = buf + [float(val[0])]
+                if len(buf) > self.MAX_CONTEXT_LEN:
+                    buf = buf[-self.MAX_CONTEXT_LEN:]
+                self.data_buffer[key] = buf
+                if draw:
+                    time_x = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
+                    ax = self.axes[key]
+                    arr = np.array(buf)
+                    fills = self.fills[key]
+                    for f in fills:
                         if f is not None:
                             f.remove()
-                        fill = ax.fill_between(time_x, y1=0.0, y2=arr, color=color, interpolate=True)
-                        self.fills[key] = fill
+                    fill1 = ax.fill_between(time_x, y1=0.5, y2=arr, where=arr > 0.5, color='y', interpolate=True)
+                    fill2 = ax.fill_between(time_x, y1=arr, y2=0.5, where=arr < 0.5, color='b', interpolate=True)
+                    self.fills[key] = [fill1, fill2]
+            elif key.startswith('p_') and key in self.fills:
+                buf = self.data_buffer[key]
+                color = color_map.get(key, 'green')
+                buf = buf + [float(val)]
+                if len(buf) > self.MAX_CONTEXT_LEN:
+                    buf = buf[-self.MAX_CONTEXT_LEN:]
+                self.data_buffer[key] = buf
+                if draw:
+                    time_x = np.linspace(0, self.MAX_CONTEXT_LEN, self.MAX_CONTEXT_LEN)
+                    ax = self.axes[key]
+                    arr = np.array(buf)
+                    f = self.fills[key]
+                    if f is not None:
+                        f.remove()
+                    fill = ax.fill_between(time_x, y1=0.0, y2=arr, color=color, interpolate=True)
+                    self.fills[key] = fill
             elif key == 'vad' and key in self.fills:
                 buf1, buf2 = self.data_buffer[key]
                 vad1, vad2 = result[key]
-                vad1_arr = np.squeeze(np.array(vad1))
-                vad2_arr = np.squeeze(np.array(vad2))
-                if vad1_arr.ndim == 0:
-                    buf1 = list(buf1) + [float(vad1_arr)]
-                else:
-                    buf1 = list(buf1) + list(vad1_arr)
-                if vad2_arr.ndim == 0:
-                    buf2 = list(buf2) + [float(vad2_arr)]
-                else:
-                    buf2 = list(buf2) + list(vad2_arr)
+                buf1 = list(buf1) + [float(vad1)]
+                buf2 = list(buf2) + [float(vad2)]
                 if len(buf1) > self.MAX_CONTEXT_LEN:
                     buf1 = buf1[-self.MAX_CONTEXT_LEN:]
                 if len(buf2) > self.MAX_CONTEXT_LEN:
@@ -553,11 +538,11 @@ class GuiPlot:
                         self.axes[key].set_xlim(0, len(buf))
                         self.axes[key].relim()
                         self.axes[key].autoscale_view()
-            elif key in self.lines:
-                v = float(val)
-                self.data_buffer[key] = v
-                if draw:
-                    self.lines[key][0].set_height(v)
+                else:
+                    v = float(val)
+                    self.data_buffer[key] = v
+                    if draw:
+                        self.lines[key][0].set_height(v)
         if draw:
             self.fig.canvas.draw_idle()
             self.fig.canvas.flush_events()
