@@ -16,9 +16,9 @@ MaAI
 📄 README: <a href="README.md">English </a> | <a href="README_JP.md">Japanese (日本語) </a>
 </p>
 
-<b>MaAI</b>は（１）<b>ターンテイキング</b>、（２）<b>相槌</b>、（３）<b>頷き</b>をリアルタイムかつ連続的に予測する、最先端かつ軽量なソフトウェアです。
-英語・中国語・日本語に対応しており、今後も対応言語やふるまいの種類を拡大予定です。
-会話AI（対話システムやロボット等）向けに設計されており、2チャンネル（ユーザ・システム）または1チャンネル（ユーザのみ）の音声入力に対応します。🎙️
+<b>MaAI</b>は（１）<b>ターンテイキング</b>、（２）<b>相槌</b>、（３）<b>頷き</b>をリアルタイムかつ連続的に予測するソフトウェアです。
+日本語・英語・中国語に対応しており、今後も対応言語やふるまいの種類を拡大予定です。
+会話AI（対話システムやロボット等）向けに設計されており、2チャネル（ユーザ・システム）または1チャネル（ユーザのみ）の音声入力に対応します。🎙️
 軽量設計のため、CPUのみでも高速に動作します。⚡
 
 プロジェクトの名称の<b>MaAI</b>は、日本語の<b>間（ま）</b>や<b>間合い</b>に由来し、会話におけるタイミングや間合いの調整をAIで実現することを目指しています。
@@ -39,7 +39,7 @@ __デモ動画（YouTube）__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
 
 ## 🆕 新着情報
 
-- MaAIプロジェクトおよびリポジトリを公開しました！🚀（2025年7月24日）
+- MaAIプロジェクトおよびリポジトリを公開しました！🚀（2025年8月13日）
 
 <br>
 
@@ -55,7 +55,7 @@ pip install maai
 
 以下のように実行できます。🏃‍♂️
 タスク（mode）に応じたモデルやパラメータは自動でダウンロードされます。
-下記は１チャネル目はマイク入力（ユーザ）、２チャネル目は無音（システム）をターンテイキングモデル（VAP）に入力する例です。
+下記は、１チャネル目はマイク入力（ユーザ）、２チャネル目は無音（システム）をターンテイキングモデル（VAP）に入力する例です。
 
 ```python
 from maai import Maai, MaaiInput, MaaiOutput
@@ -130,19 +130,19 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
 
 ## 💡 実装例
 
-`test_scripts`ディレクトリにMaAIモデルの実装例があります。
+`example`ディレクトリにMaAIモデルの実装例があります。
 
 - ターンテイキング（VAP）
-    - [2wavファイル](test_scripts/test_vap_module_2wav.py) 🎧
-    - [2マイク入力](test_scripts/test_vap_module_2mic.py) 🎤
-    - [2マイク入力(TCP経由)](test_scripts/test_vap_module_2tcp.py) 🌐
-    - [1wavファイル と 1マイク入力](test_scripts/test_vap_module_wav_mic.py) 🎧🎤
+    - [2wavファイル](example/test_vap_module_2wav.py) 🎧
+    - [2マイク入力](example/test_vap_module_2mic.py) 🎤
+    - [2マイク入力(TCP経由)](example/test_vap_module_2tcp.py) 🌐
+    - [1wavファイル と 1マイク入力](example/test_vap_module_wav_mic.py) 🎧🎤
 
 - 相槌
-    - [1マイク入力 と 無音](test_scripts/test_vap_bc_2type_mic.py) 🎤
+    - [1マイク入力 と 無音](example/test_vap_bc_2type_mic.py) 🎤
 
 - 頷き
-    - [1wavファイル と 1マイク入力](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
+    - [1wavファイル と 1マイク入力](example/test_vap_nod_module_wav_mic.py) 🎧🎤
 
 <br>
 
