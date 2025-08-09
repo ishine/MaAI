@@ -20,9 +20,9 @@ The probability of each class is returned as a dictionary. However, "no backchan
 ## Supported Languages
 
 Currently, only Japanese is supported.
-Specify this with the `language` parameter of the `Maai` class.
+Specify this with the `lang` parameter of the `Maai` class.
 
-### Japanese (`language=jp`)
+### Japanese (`lang=jp`)
 
 This model is trained on the following Japanese dataset:
 - [Human-Robot Dialogue Corpus](https://aclanthology.org/2025.naacl-long.367/)
@@ -37,7 +37,7 @@ from maai import Maai, MaaiInput
 mic = MaaiInput.Mic(mic_device_index=0)
 zero = MaaiInput.Zero()
 
-maai = Maai(mode="bc_2type", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
+maai = Maai(mode="bc_2type", lang="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
 maai.start()
 
 while True:
@@ -54,7 +54,7 @@ while True:
 Available parameters are summarized below.
 `vap_process_rate` is the number of samples the model processes per second, and `context_len_sec` is the length of context (in seconds) input to the model.
 
-| `language` | `vap_process_rate` | `context_len_sec` |
+| `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | jp | 10 | 5 |
 

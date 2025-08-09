@@ -16,7 +16,7 @@ def test_vap():
 
     maai = Maai(
         mode="vap_prompt",
-        language="jp",
+        lang="jp",
         frame_rate=10,
         context_len_sec=5,
         audio_ch1=MaaiInput.Mic(),

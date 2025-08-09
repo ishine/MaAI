@@ -22,29 +22,29 @@ README: <a href="vap_mc.md">English </a> | <a href="vap_mc_JP.md">Japanese (日�
 ## 対応言語
 
 以下の言語に対応しています。
-`Maai` クラスの `language` パラメータで指定してください。
+`Maai` クラスの `lang` パラメータで指定してください。
 現時点では日本語のみですが、英語・中国語も追加予定です。
 
-### 日本語（`language=jp`）
+### 日本語（`lang=jp`）
 
 本モデルは以下の日本語データセットで学習されています：
 - [旅行代理店タスク対話コーパス](https://aclanthology.org/2022.lrec-1.619/)
 - [ヒューマンロボット対話コーパス](https://aclanthology.org/2025.naacl-long.367/)
 - [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
 
-### 英語（`language=en`）
+### 英語（`lang=en`）
 
 本モデルは以下の英語データセットで学習されています：
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
 - オンライン会話データセット
 
-### 英語（`language=ch`）
+### 英語（`lang=ch`）
 
 本モデルは以下の中国語データセットで学習されています：
 - [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
 - オンライン会話データセット
 
-<!-- ### 3言語対応（日本語＋英語＋中国語）（`language=tri`）
+<!-- ### 3言語対応（日本語＋英語＋中国語）（`lang=tri`）
 
 本モデルは以下の3言語データセットで学習されています：
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
@@ -61,7 +61,7 @@ from maai import Maai, MaaiInput
 wav1 = MaaiInput.Wav(wav_file_path="path_to_your_user_wav_file")
 wav2 = MaaiInput.Wav(wav_file_path="path_to_your_system_wav_file")
 
-maai = Maai(mode="vap_mc", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
+maai = Maai(mode="vap_mc", lang="jp", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
 
 maai.start()
 
@@ -80,7 +80,7 @@ while True:
 `vap_process_rate` はVAPモデルが1秒あたりに処理するサンプル数を指定し、`context_len_sec` はモデルへの入力となる文脈の長さ（秒）を表します。
 ご利用の計算環境に合わせて、これらの値を調整してください。
 
-| `language` | `vap_process_rate` | `context_len_sec` |
+| `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | jp | 5 | 3 |
 | jp | 5 | 5 |
@@ -88,7 +88,7 @@ while True:
 | jp | 10 | 5 |
 | jp | 20 | 2.5 |
 
-| `language` | `vap_process_rate` | `context_len_sec` |
+| `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | en | 5 | 3 |
 | en | 5 | 5 |
@@ -96,7 +96,7 @@ while True:
 | en | 10 | 5 |
 | en | 20 | 2.5 |
 
-| `language` | `vap_process_rate` | `context_len_sec` |
+| `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | ch | 5 | 3 |
 | ch | 5 | 5 |
@@ -104,7 +104,7 @@ while True:
 | ch | 10 | 5 |
 | ch | 20 | 2.5 |
 
-<!-- | `language` | `vap_process_rate` | `context_len_sec` |
+<!-- | `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | tri | 5 | 3 |
 | tri | 5 | 5 |

@@ -22,7 +22,7 @@ class Maai():
     
     CALC_PROCESS_TIME_INTERVAL = 100
 
-    def __init__(self, mode, frame_rate, context_len_sec, language: str = "jp", audio_ch1: Base = None, audio_ch2: Base = None, num_channels: int = 2, cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"), device: str = "cpu", cache_dir: str = None, force_download: bool = False):
+    def __init__(self, mode, frame_rate, context_len_sec, lang: str = "jp", audio_ch1: Base = None, audio_ch2: Base = None, num_channels: int = 2, cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"), device: str = "cpu", cache_dir: str = None, force_download: bool = False):
 
         conf = VapConfig()
         
@@ -47,7 +47,7 @@ class Maai():
         # Store the initial state of the model to check for unchanged parameters
         initial_state_dict = {name: param.clone() for name, param in self.vap.named_parameters()}
 
-        sd = load_vap_model(mode, frame_rate, context_len_sec, language, device, cache_dir, force_download)
+        sd = load_vap_model(mode, frame_rate, context_len_sec, lang, device, cache_dir, force_download)
         self.vap.load_encoder(cpc_model=cpc_model)
         self.vap.load_state_dict(sd, strict=False)
 

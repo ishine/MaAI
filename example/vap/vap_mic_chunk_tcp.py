@@ -42,7 +42,7 @@ def run_maai_with_mic_chunks():
     # MaAIの初期化
     maai = Maai(
         mode="vap",
-        language="jp",
+        lang="jp",
         frame_rate=10,
         context_len_sec=5,
         audio_ch1=tcp,

@@ -29,9 +29,9 @@ CG-CA Gene (c) 2023 by Nagoya Institute of Technology, Moonshot R&D Goal 1 Avata
 ## 対応言語
 
 現時点では日本語のみ対応しています。
-`Maai` クラスの `language` パラメータで指定してください。
+`Maai` クラスの `lang` パラメータで指定してください。
 
-### 日本語（`language=jp`）
+### 日本語（`lang=jp`）
 
 本モデルは以下の日本語データセットで学習されています：
 - [ヒューマンロボット対話コーパス]()
@@ -46,7 +46,7 @@ from maai import Maai, MaaiInput
 mic = MaaiInput.Mic(mic_device_index=0)
 zero = MaaiInput.Zero()
 
-maai = Maai(mode="nod", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero,device="cpu")
+maai = Maai(mode="nod", lang="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero,device="cpu")
 maai.start()
 
 while True:
@@ -64,7 +64,7 @@ while True:
 利用可能なパラメータを以下にまとめます。
 `vap_process_rate` はモデルが1秒あたりに処理するサンプル数、`context_len_sec` はモデルへの入力となる文脈の長さ（秒）です。
 
-| `language` | `vap_process_rate` | `context_len_sec` |
+| `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | jp | 5 | 3 |
 | jp | 5 | 5 |
