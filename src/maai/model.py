@@ -146,10 +146,10 @@ class Maai():
             # self._mic1_queue.queue.clear()
             # self._mic2_queue.queue.clear()
 
-    def start_process(self):
+    def start(self):
 
-        self.mic1.start_process()
-        self.mic2.start_process()
+        self.mic1.start()
+        self.mic2.start()
         threading.Thread(target=self.worker, daemon=True).start()
 
         # Queueを空にする

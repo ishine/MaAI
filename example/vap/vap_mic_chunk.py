@@ -2,13 +2,25 @@
 """
 VAPモデルのテストスクリプト
 マイクと0入力をチャンク入力してVAPモデルの動作を確認します
+
+Test script for the VAP model.
+This script verifies the operation of the VAP model by inputting chunks from a microphone and a zero-filled array.
 """
+
+import os
+import sys
 
 import queue
 import threading
 
 import numpy as np
 import pyaudio
+
+# For debugging purposes, you can uncomment the following line to add the src directory to the path.
+# This allows you to import modules from the src directory without pip installing the package.
+# Uncomment the line below if you need to run this script directly without installing the package.
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src/')))
 
 from maai import Maai, MaaiInput, MaaiOutput
 
@@ -29,7 +41,7 @@ def run_maai_with_mic_chunks():
         audio_ch2=zero_input,
         device="cpu",
     )
-    maai.start_process()
+    maai.start()
     maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
 
     # オーディオチャンクを格納するキュー

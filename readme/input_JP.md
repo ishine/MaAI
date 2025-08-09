@@ -16,10 +16,11 @@ WAVファイル、マイク、TCP通信による音声入力をサポートし�
 
 - `Mic` : マイク入力（リアルタイム）
 - `Wav` : WAVファイル入力
-- `TCPReceiver` : TCP経由で音声データを受信
-- `TCPTransmitter` : TCP経由でマイク入力される音声データを送信
+- `Tcp` : TCP経由で音声データを受信（サーバ）
+- `TcpMic` : TCP経由でマイク入力される音声データを送信（クライアント）
 - `Zero` : 無音（ゼロ埋め）データを生成（システム側の音声を一時的に埋めることを想定）
 - `Chunk` : チャンク入力
+- `TcpChunk` : TCP経由で音声データをチャンク送信（クライアント）
 
 </br>
 
@@ -41,14 +42,14 @@ mic2 = MaaiInput.Mic(mic_device_index=1)
 
 ### TCP入力
 ```python
-tcp_receiver = MaaiInput.TCPReceiver(ip="0.0.0.0", port=12345)
+tcp_receiver = MaaiInput.Tcp(ip="0.0.0.0", port=12345)
 tcp_receiver.start_server()
 ```
 
-### TCP送信
+### TCPマイク送信
 ```python
-tcp_transmitter = MaaiInput.TCPTransmitter(ip="送信先IP", port=12345, mic_device_index=0)
-tcp_transmitter.start_process()
+tcp_mic = MaaiInput.TcpMic(server_ip="送信先IP", port=12345, mic_device_index=0)
+tcp_mic.start()
 ```
 
 ### 無音（ゼロ埋め）入力
@@ -60,6 +61,13 @@ zero_input = MaaiInput.Zero()
 ```python
 mic_input = MaaiInput.Chunk()
 mic_input.put_chunk(mic_chunk)
+```
+
+### TCPチャンク送信
+
+```python
+tcp_chunk = MaaiInput.TcpChunk(server_ip="送信先IP", port=12345, mic_device_index=0)
+tcp_chunk.start()
 ```
 
 </br>
@@ -100,7 +108,7 @@ MaaiInput.available_mic_devices()
 
 - WAVファイルは16,000Hzのみ対応
 - TCP通信は2人分の音声データを1フレームで送受信
-- 各クラスは `start_process()` で非同期処理を開始
+- 各クラスは `start()` で非同期処理を開始
 
 ---
 

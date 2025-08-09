@@ -18,13 +18,13 @@ import threading
 # プロジェクトルートをパスに追加
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
-from maai import Maai, MaaiInput
+from maai import Maai, MaaiInput, MaaiOutput
 
 TH_S = 0.5
 TH_L = 0.5
 TH_L_P = 0.5
 
-wav_file_path1 = "../input/wav_sample/jpn_sumida_16k.wav"
+wav_file_path1 = "./wav_sample/jpn_sumida_16k.wav"
 
 frame_rate = 10
 context_len_sec = 5

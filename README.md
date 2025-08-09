@@ -14,7 +14,7 @@ MaAI
 </p>
 </h1>
 
-<p align="center">A <b>Real-time</b> and <b>Light-weight</b> Software for Generation of <b>Non-Linguistic</b> Behavior Generations for Conversational AIs</p>
+<p align="center">A <b>Real-time</b> and <b>Light-weight</b> Software for Generation of <b>Non-Linguistic</b> Behaviors in Conversational AIs</p>
 <p align="center">(Real-time Implementation of Voice Activity Projection)</p>
 <p align="center">
 📄 README: <a href="README.md">English </a> | <a href="README_JP.md">Japanese (日本語) </a>
@@ -72,7 +72,7 @@ zero = MaaiInput.Zero()
 maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
 maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
 
-maai.start_process()
+maai.start()
 while True:
     result = maai.get_result()
     maai_output_bar.update(result)
@@ -136,22 +136,25 @@ For more details, please refer to the following README files:
 
 ## 💡 Example Implementation
 
-You can find example implementations of MaAI models in the [test_scripts](test_scripts) directory of this repository.
-
+You can find example implementations of MaAI models in the [example](example) directory of this repository.
 - Turn-Taking (VAP)
-    - [With 2 wav file inputs](test_scripts/test_vap_module_2wav.py) 🎧
-    - [With 2 mic inputs](test_scripts/test_vap_module_2mic.py) 🎤
-    - [With 2 mic inputs via TCP networks](test_scripts/test_vap_module_2tcp.py) 🌐
-    - [With 1 wav file and 1 mic input](test_scripts/test_vap_module_wav_mic.py) 🎧🎤
+    - [With 1 mic input](example/vap/vap_mic.py) 🎤
+    - [With 2 mic inputs](example/vap/vap_2mic.py) 🎤🎤
+    - [With 1 mic and 1 wav file input](example/vap/vap_mic_wav.py) 🎤🎧
+    - [With 2 wav file inputs](example/vap/vap_2wav.py) 🎧🎧
+    - [With 1 mic chunk input](example/vap/vap_mic_chunk.py) 🎤
+    - [With 1 mic input via TCP](example/vap/vap_mic_tcp.py) 🎤🌐
+    - [With 2 wav file inputs and TCP output](example/vap/vap_2wav_output_tcp.py) 🎧🎧🌐
+    - [With 1 mic chunk input via TCP](example/vap/vap_mic_chunk_tcp.py) 🎤🌐
+
+- Noise-Robust Turn-Taking (VAP)
+    - [With 1 mic input](example/vap_mc/vap_mic.py) 🎤
 
 - Backchannel
-    - [With 1 mic input and silence](test_scripts/test_vap_bc_2type_mic.py) 🎤
+    - [With 1 mic input](example/bc_2type/bc_2type_mic.py) 🎤
 
 - Nodding
-    - [With 1 wav file and 1 mic input](test_scripts/test_vap_nod_module_wav_mic.py) 🎧🎤
-
-- Input/Output
- - TBA
+    - [With 1 mic input](example/nod/nod_mic.py) 🎤
 
 <br>
 

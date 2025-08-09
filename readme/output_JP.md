@@ -17,8 +17,8 @@ MaaiOutput (`output.py`) は MaAI の出力を扱うためのモジュールで�
 - `ConsoleBar` : 推論結果をバーグラフで可視化
 - `GuiBar` : 推論結果をGUIバーグラフで可視化
 - `GuiPlot` : 推論結果を時系列プロットで可視化
-- `TCPReceiver` : TCP経由で推論結果を受信
-- `TCPTransmitter` : TCP経由で推論結果を送信
+- `TcpReceiver` : TCP経由で推論結果を受信
+- `TcpTransmitter` : TCP経由で推論結果を送信
 
 </br>
 
@@ -53,14 +53,14 @@ gui_plot.update(result)
 
 ### TCP受信
 ```python
-receiver = MaaiOutput.TCPReceiver(ip="0.0.0.0", port=12345, mode="vap")
-receiver.start_process()
+receiver = MaaiOutput.TcpReceiver(ip="0.0.0.0", port=12345, mode="vap")
+receiver.start()
 result = receiver.get_result()
 ```
 
 ### TCP送信
 ```python
-transmitter = MaaiOutput.TCPTransmitter(ip="送信先IP", port=12345, mode="vap")
+transmitter = MaaiOutput.TcpTransmitter(ip="送信先IP", port=12345, mode="vap")
 transmitter.start_server()
 transmitter.update(result)
 ```
@@ -126,7 +126,7 @@ __データ構造（例: 10Hz = 1600サンプル/フレーム）
 
 - VAPモデルのフレームレートによって出力データサイズが変わります（例: 20Hzなら800サンプル）
 - TCP通信は1フレームごとに全データを送受信
-- 各クラスは `start_process()` または `start_server()` で非同期処理を開始
+- 各クラスは `start()` または `start_server()` で非同期処理を開始
 
 ---
 

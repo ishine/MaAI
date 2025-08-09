@@ -122,7 +122,7 @@ class Mic(Base):
             d = [float(a) for a in d]
             self._put_to_all_queues(d)
 
-    def start_process(self):
+    def start(self):
         if not self._is_thread_started:
             threading.Thread(target=self._read_mic, daemon=True).start()
             self._is_thread_started = True
@@ -170,13 +170,13 @@ class Wav(Base):
                 continue
             self._put_to_all_queues(data)
 
-    def start_process(self):
+    def start(self):
         if not self._is_thread_started:
             threading.Thread(target=self._read_wav, daemon=True).start()
             self._is_thread_started = True
 
-class TCPReceiver(Base):
-    def __init__(self, ip, port, audio_gain=1.0,recv_float32=False, client_mode=False):
+class Tcp(Base):
+    def __init__(self, ip='127.0.0.1', port=8501, audio_gain=1.0,recv_float32=False, client_mode=False):
         super().__init__()
         self.ip = ip
         self.port = port
@@ -276,7 +276,7 @@ class TCPReceiver(Base):
                 self.addr = None
                 continue
 
-    def start_process(self):
+    def start(self):
         if not self._is_thread_started_process:
             threading.Thread(target=self._process, daemon=True).start()
             self._is_thread_started_process = True
@@ -298,9 +298,9 @@ class TCPReceiver(Base):
         return self.conn is not None and self.addr is not None
 
 
-class TCPTransmitter(Base):
-    def __init__(self, ip, port, audio_gain=1.0, mic_device_index=0):
-        self.ip = ip
+class TcpMic(Base):
+    def __init__(self, server_ip='127.0.0.1', port=8501, audio_gain=1.0, mic_device_index=0):
+        self.ip = server_ip
         self.port = port
         self.p = pyaudio.PyAudio()
         self.audio_gain = audio_gain
@@ -348,9 +348,56 @@ class TCPTransmitter(Base):
             print('[CLIENT] Disconnected. Reconnecting...')
             time.sleep(0.5)
 
-    def start_process(self):
+    def start(self):
         threading.Thread(target=self._start_client, daemon=True).start()
 
+
+class TcpChunk(Base):
+    def __init__(self, server_ip='127.0.0.1', port=8501):
+        self.ip = server_ip
+        self.port = port
+        self.chunk_size = 1024
+        self.sock = None
+
+    def connect_server(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((self.ip, self.port))
+        print('[CLIENT] Connected to the server')
+
+    def _start_client(self):
+        while True:
+            try:
+                self.connect_server()
+                while True:
+                    try:
+                        data = self.sock.recv(self.chunk_size)
+                        if not data:
+                            break
+                        self._process_chunk(data)
+                    except Exception as e:
+                        print('[CLIENT] Receive error:', e)
+                        break
+            except Exception as e:
+                print('[CLIENT] Connect error:', e)
+                time.sleep(0.5)
+                continue
+            # 切断時はソケットを閉じて再接続ループへ
+            try:
+                if hasattr(self, 'sock') and self.sock is not None:
+                    self.sock.close()
+            except Exception:
+                pass
+            self.sock = None
+            print('[CLIENT] Disconnected. Reconnecting...')
+            time.sleep(0.5)
+
+    def start(self):
+        threading.Thread(target=self._start_client, daemon=True).start()
+    
+    def put_chunk(self, chunk_data):
+        if self.sock is not None:
+            data_sent = util.conv_floatarray_2_byte(chunk_data)
+            self.sock.sendall(data_sent)
 
 class Zero(Base):
     def __init__(self):
@@ -384,7 +431,7 @@ class Zero(Base):
                 #time.sleep(0.001)
                 continue
 
-    def start_process(self):
+    def start(self):
         if not self._is_thread_started_process:
             threading.Thread(target=self._process, daemon=True).start()
             self._is_thread_started_process = True
@@ -398,5 +445,5 @@ class Chunk(Base):
         chunk_list = [float(x) for x in chunk_data]
         self._put_to_all_queues(chunk_list)
 
-    def start_process(self):
+    def start(self):
         pass

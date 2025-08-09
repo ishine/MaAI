@@ -47,7 +47,7 @@ mic = MaaiInput.Mic(mic_device_index=0)
 zero = MaaiInput.Zero()
 
 maai = Maai(mode="nod", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero,device="cpu")
-maai.start_process()
+maai.start()
 
 while True:
     result = maai.get_result()
@@ -81,3 +81,16 @@ Available parameters are summarized below.
 ## 📚 Papers & References
 
 When publishing results using this model, please cite the following paper. 🙏
+
+Kazushi Kato, Koji Inoue, Divesh Lala, Keiko Ochi, Tatsuya Kawahara<br>
+__Real-time Generation of Various Types of Nodding for Avatar Attentive Listening System__<br>
+https://www.arxiv.org/abs/2507.23298<br>
+
+```
+@inproceedings{kato2025icmi,
+    author = {Kazushi Kato and Koji Inoue and Divesh Lala and Keiko Ochi and Tatsuya Kawahara},
+    title = {Real-time Generation of Various Types of Nodding for Avatar Attentive Listening System},
+    booktitle = {International Conference on Multimodal Interaction (ICMI)},
+    year = {2025},
+}
+```

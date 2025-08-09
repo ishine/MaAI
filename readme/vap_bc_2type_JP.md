@@ -38,7 +38,7 @@ mic = MaaiInput.Mic(mic_device_index=0)
 zero = MaaiInput.Zero()
 
 maai = Maai(mode="bc_2type", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
-maai.start_process()
+maai.start()
 
 while True:
     result = maai.get_result()

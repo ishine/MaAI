@@ -148,7 +148,7 @@ class ConsoleBar:
             print(f"{key:15}: {bar} ({value:.3f})")
         print("-" * (self.bar_length + 30))
 
-class TCPReceiver():
+class TcpReceiver:
     def __init__(self, ip, port, mode):
         self.ip = ip
         self.port = port
@@ -157,7 +157,7 @@ class TCPReceiver():
         self.result_queue = queue.Queue()
     
     def _bytearray_2_vapresult(self, data: bytes) -> Dict[str, Any]:
-        if self.mode in ['vap', 'vap_mc']:
+        if self.mode in ['vap', 'vap_mc', 'vap_prompt']:
             vap_result = util.conv_bytearray_2_vapresult(data)
         elif self.mode == 'bc_2type':
             vap_result = util.conv_bytearray_2_vapresult_bc_2type(data)
@@ -202,13 +202,13 @@ class TCPReceiver():
             print('[CLIENT] Disconnected. Reconnecting...')
             time.sleep(0.5)
 
-    def start_process(self):
+    def start(self):
         threading.Thread(target=self._start_client, daemon=True).start()
     
     def get_result(self):
         return self.result_queue.get()
 
-class TCPTransmitter:
+class TcpTransmitter:
     def __init__(self, ip, port, mode):
         self.ip = ip
         self.port = port

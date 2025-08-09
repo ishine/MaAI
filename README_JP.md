@@ -66,7 +66,7 @@ zero = MaaiInput.Zero()
 maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
 maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
 
-maai.start_process()
+maai.start()
 while True:
     result = maai.get_result()
     maai_output_bar.update(result)
@@ -133,16 +133,23 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
 `example`ディレクトリにMaAIモデルの実装例があります。
 
 - ターンテイキング（VAP）
-    - [2wavファイル](example/test_vap_module_2wav.py) 🎧
-    - [2マイク入力](example/test_vap_module_2mic.py) 🎤
-    - [2マイク入力(TCP経由)](example/test_vap_module_2tcp.py) 🌐
-    - [1wavファイル と 1マイク入力](example/test_vap_module_wav_mic.py) 🎧🎤
+    - [1マイク入力](example/vap/vap_mic.py) 🎤
+    - [2マイク入力](example/vap/vap_2mic.p) 🎤🎤
+    - [1マイク入力 と 1wavファイル入力](example/vap/vap_mic_wav.py) 🎤🎧
+    - [2wavファイル入力](example/vap/vap_2wav.py) 🎧🎧
+    - [1マイクチャンク入力](example/vap/vap_mic_chunk.py) 🎤
+    - [1マイクTCP経由入力](example/vap/vap_mic_tcp.py) 🎤🌐
+    - [2wavファイル入力 と TCP経由出力](example/vap/vap_2wav_output_tcp.py) 🎧🎧🌐
+    - [1マイクチャンクTCP経由入力](example/vap/vap_mic_chunk_tcp.py) 🎤🌐
+
+- ノイズロバストターンテイキング（VAP）
+    - [1マイク入力](example/vap_mc/vap_mic.py) 🎤
 
 - 相槌
-    - [1マイク入力 と 無音](example/test_vap_bc_2type_mic.py) 🎤
+    - [1マイク入力](example/bc_2type/bc_2type_mic.py) 🎤
 
 - 頷き
-    - [1wavファイル と 1マイク入力](example/test_vap_nod_module_wav_mic.py) 🎧🎤
+    - [1マイク入力](example/nod/bc_2type_mic.py) 🎤
 
 <br>
 

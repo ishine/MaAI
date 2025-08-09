@@ -16,10 +16,11 @@ It supports audio input via WAV files, microphone, and TCP communication.
 
 - `Mic`: Microphone input (real-time)
 - `Wav`: WAV file input
-- `TCPReceiver`: Receive audio data via TCP
-- `TCPTransmitter`: Transmit microphone audio data via TCP
+- `Tcp`: Receive audio data via TCP as a server
+- `TcpMic`: Transmit microphone audio data via TCP as a client
 - `Zero`: Generates silent (zero-filled) audio data (intended for temporarily filling system-side audio)
-- `Chunk` : Chunk input
+- `Chunk`: Chunk input
+- `TcpChunk`: Transmit audio data via TCP in chunks as a client
 
 </br>
 
@@ -39,16 +40,16 @@ mic1 = MaaiInput.Mic(mic_device_index=0)
 mic2 = MaaiInput.Mic(mic_device_index=1)
 ```
 
-### TCP Input
+### TCP Input (Server)
 ```python
-tcp_receiver = MaaiInput.TCPReceiver(ip="0.0.0.0", port=12345)
+tcp_receiver = MaaiInput.Tcp(ip="0.0.0.0", port=12345)
 tcp_receiver.start_server()
 ```
 
-### TCP Transmission
+### TCP Mic Transmission (Client)
 ```python
-tcp_transmitter = MaaiInput.TCPTransmitter(ip="Destination IP", port=12345, mic_device_index=0)
-tcp_transmitter.start_process()
+tcp_mic = MaaiInput.TcpMic(server_ip="Destination IP", port=12345, mic_device_index=0)
+tcp_mic.start()
 ```
 
 ### Silent (Zero-filled) Input
@@ -60,6 +61,12 @@ zero_input = MaaiInput.Zero()
 ```python
 mic_input = MaaiInput.Chunk()
 mic_input.put_chunk(mic_chunk)
+```
+
+### TCP Chunk Transmission (Client)
+```python
+tcp_chunk = MaaiInput.TcpChunk(server_ip="Destination IP", port=12345, mic_device_index=0)
+tcp_chunk.start()
 ```
 
 </br>
@@ -101,7 +108,7 @@ MaaiInput.available_mic_devices()
 
 - Only 16,000Hz WAV files are supported
 - TCP communication sends/receives audio data for two people per frame
-- Each class starts asynchronous processing with `start_process()`
+- Each class starts asynchronous processing with `start()`
 
 ---
 

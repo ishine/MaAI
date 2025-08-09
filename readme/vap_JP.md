@@ -59,7 +59,7 @@ wav2 = MaaiInput.Wav(wav_file_path="path_to_your_system_wav_file")
 
 maai = Maai(mode="vap", language="jp", frame_rate=10, context_len_sec=5, audio_ch1=wav1, audio_ch2=wav2, device="cpu")
 
-maai.start_process()
+maai.start()
 
 while True:
     result = maai.get_result()

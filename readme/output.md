@@ -17,8 +17,8 @@ It provides features to visualize inference results such as turn-taking, backcha
 - `ConsoleBar`: Visualizes inference results as bar graphs
 - `GuiBar`: Visualizes inference results as GUI bar graphs
 - `GuiPlot`: Visualizes inference results as time-series plots
-- `TCPReceiver`: Receives inference results via TCP
-- `TCPTransmitter`: Sends inference results via TCP
+- `TcpReceiver`: Receives inference results via TCP
+- `TcpTransmitter`: Sends inference results via TCP
 
 </br>
 
@@ -53,14 +53,14 @@ gui_plot.update(result)
 
 ### TCP Receiving
 ```python
-receiver = MaaiOutput.TCPReceiver(ip="0.0.0.0", port=12345, mode="vap")
-receiver.start_process()
+receiver = MaaiOutput.TcpReceiver(ip="0.0.0.0", port=12345, mode="vap")
+receiver.start()
 result = receiver.get_result()
 ```
 
 ### TCP Sending
 ```python
-transmitter = MaaiOutput.TCPTransmitter(ip="Destination IP", port=12345, mode="vap")
+transmitter = MaaiOutput.TcpTransmitter(ip="Destination IP", port=12345, mode="vap")
 transmitter.start_server()
 transmitter.update(result)
 ```
@@ -126,7 +126,7 @@ __Data Structure (Example: 10Hz = 1600 samples/frame)__
 
 - The output data size changes depending on the VAP model frame rate (e.g., 800 samples for 20Hz)
 - TCP communication sends/receives all data per frame
-- Each class starts asynchronous processing with `start_process()` or `start_server()`
+- Each class starts asynchronous processing with `start()` or `start_server()`
 
 ---
 
