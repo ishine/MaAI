@@ -67,6 +67,16 @@ transmitter.update(result)
 
 </br>
 
+## 可視化例
+### バーグラフ表示
+<img src="../img/ConsoleBar_example.png" width="300">
+
+### GUIバーグラフ表示
+<img src="../img/GuiBar_example.png" width="300">
+
+### GUIプロット表示
+<img src="../img/GuiPlot_example.png" width="450">
+
 ## TCP通信による出力データフォーマット
 
 各フレーム処理後にデータが送信されます。

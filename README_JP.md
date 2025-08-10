@@ -151,6 +151,11 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
 - 頷き
     - [1マイク入力](example/nod/bc_2type_mic.py) 🎤
 
+- 出力
+    - [コンソール動的出力](example/output/vap_2wav_ConsoleBar.py) 📊
+    - [GUIバーグラフ表示](example/output/vap_2wav_GuiBar.py) 🖼️
+    - [GUIプロット表示](example/output/vap_2wav_GuiPlot.py) 📈
+    - [TCP通信](example/output/vap_2wav_TCP.py) 🌐
 <br>
 
 ## 📚 論文・参考文献

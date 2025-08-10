@@ -67,6 +67,16 @@ transmitter.update(result)
 
 </br>
 
+## Example
+### Bar Graph Display
+<img src="../img/ConsoleBar_example.png" width="300">
+
+### GUI Bar Graph Display
+<img src="../img/GuiBar_example.png" width="300">
+
+### GUI Plot Display
+<img src="../img/GuiPlot_example.png" width="450">
+
 ## Output Data Format via TCP Communication
 
 Data is transmitted after each frame is processed.

@@ -156,6 +156,12 @@ You can find example implementations of MaAI models in the [example](example) di
 - Nodding
     - [With 1 mic input](example/nod/nod_mic.py) 🎤
 
+- Output
+    - [Console Dynamic Output](example/output/vap_2wav_ConsoleBar.py) 📊
+    - [GUI bar graph output](example/output/vap_2wav_GuiBar.py) 🖼️
+    - [GUI plot output](example/output/vap_2wav_GuiPlot.py) 📈
+    - [TCP communication](example/output/vap_2wav_TCP.py) 🌐
+
 <br>
 
 ## 📚 Publication
