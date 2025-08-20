@@ -36,11 +36,13 @@ def _draw_balance_bar(value: float, length: int = 30) -> str:
     value = max(0.0, min(1.0, value))
     diff = value - 0.5
     if diff > 0:
-        right = int(diff * 2 * max_len + 0.5)
-        return ' ' * max_len + '│' + '█' * right + ' ' * (max_len - right)
-    else:
-        left = int(-diff * 2 * max_len + 0.5)
+        # value > 0.5: ch1が話す確率が高い → 左側にバー
+        left = int(diff * 2 * max_len + 0.5)
         return ' ' * (max_len - left) + '█' * left + '│' + ' ' * max_len
+    else:
+        # value < 0.5: ch2が話す確率が高い → 右側にバー
+        right = int(-diff * 2 * max_len + 0.5)
+        return ' ' * max_len + '│' + '█' * right + ' ' * (max_len - right)
 
 
 def _rms(values: Union[List[float], tuple]) -> float:
