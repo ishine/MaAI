@@ -32,6 +32,7 @@ def _draw_symmetric_bar(value: float, length: int = 30) -> str:
 
 def _draw_balance_bar(value: float, length: int = 30) -> str:
     """0.5を中心としたバランスバーを描画"""
+    # 2チャネルの場合は1チャネル目のデータを渡すこと
     max_len = length // 2
     value = max(0.0, min(1.0, value))
     diff = value - 0.5
@@ -89,7 +90,7 @@ def _get_bar_for_value(key: str, value: Any, bar_length: int = 30, bar_type: str
             else:
                 return "N/A", 0.0
         elif len(value) == 2:
-            value = value[1] / (value[0] + value[1])
+            value = value[0] / (value[0] + value[1])
             return _draw_balance_bar(float(value), bar_length), float(value)
         else:
             return "N/A", 0.0
