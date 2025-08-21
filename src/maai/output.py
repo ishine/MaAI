@@ -32,15 +32,18 @@ def _draw_symmetric_bar(value: float, length: int = 30) -> str:
 
 def _draw_balance_bar(value: float, length: int = 30) -> str:
     """0.5を中心としたバランスバーを描画"""
+    # 2チャネルの場合は1チャネル目のデータを渡すこと
     max_len = length // 2
     value = max(0.0, min(1.0, value))
     diff = value - 0.5
     if diff > 0:
-        right = int(diff * 2 * max_len + 0.5)
-        return ' ' * max_len + '│' + '█' * right + ' ' * (max_len - right)
-    else:
-        left = int(-diff * 2 * max_len + 0.5)
+        # value > 0.5: ch1が話す確率が高い → 左側にバー
+        left = int(diff * 2 * max_len + 0.5)
         return ' ' * (max_len - left) + '█' * left + '│' + ' ' * max_len
+    else:
+        # value < 0.5: ch2が話す確率が高い → 右側にバー
+        right = int(-diff * 2 * max_len + 0.5)
+        return ' ' * max_len + '│' + '█' * right + ' ' * (max_len - right)
 
 
 def _rms(values: Union[List[float], tuple]) -> float:
@@ -87,8 +90,8 @@ def _get_bar_for_value(key: str, value: Any, bar_length: int = 30, bar_type: str
             else:
                 return "N/A", 0.0
         elif len(value) == 2:
-            value = value[1] / (value[0] + value[1])
-            return _draw_balance_bar(float(value), bar_length), float(value)
+            _value = value[0] / (value[0] + value[1])
+            return _draw_balance_bar(float(_value), bar_length), value
         else:
             return "N/A", 0.0
     elif isinstance(value, (int, float)):
@@ -137,15 +140,18 @@ class ConsoleBar:
     
         # 各キーを動的に処理
         for key, value in result.items():
-            if key == 't':
+            if key == 't' or key == 'vad':
                 continue
             # x1/x2は既に横並びで表示したのでスキップ
             if self.bar_type == "balance" and key in ['x1', 'x2']:
                 continue
             if not isinstance(value, (float, int)):
                 value = np.squeeze(np.array(value)).tolist()
-            bar, value = _get_bar_for_value(key, value, self.bar_length, self.bar_type)
-            print(f"{key:15}: {bar} ({value:.3f})")
+            bar, _value = _get_bar_for_value(key, value, self.bar_length, self.bar_type)
+            if type(_value) is float:
+                print(f"{key:15}: {bar} ({_value:.3f})")
+            elif type(_value) is list:
+                print(f"{key:15}: {bar} ({', '.join(f'{v:.3f}' for v in _value)})")
         print("-" * (self.bar_length + 30))
 
 class TcpReceiver:
