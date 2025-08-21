@@ -233,8 +233,8 @@ https://aclanthology.org/2025.naacl-long.367/<br>
 
 ## 📝 License
 
-The source code in this repository is licensed under the MIT license.
-The trained models are used for only academic purposes.
+The source code in this repository is licensed under the MIT License.
+For the trained models, please follow the license described in the README of each model or on Hugging Face repository.
 
 The pre-trained CPC model is from the original CPC project and please follow its specific license.
 Refer to the original repository at https://github.com/facebookresearch/CPC_audio for more details.

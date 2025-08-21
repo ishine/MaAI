@@ -28,6 +28,13 @@ README: <a href="vap.md">English </a> | <a href="vap_JP.md">Japanese (日本語)
 - [ヒューマンロボット対話コーパス](https://aclanthology.org/2025.naacl-long.367/)
 - [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
 
+### 日本語MITライセンス（`lang=jp_kyoto`）
+
+本モデルは以下の日本語データセットで学習されています：
+- [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
+
+また、このモデルはMITランセンスで公開されています。
+
 ### 英語（`lang=en`）
 
 本モデルは以下の英語データセットで学習されています：
@@ -46,6 +53,8 @@ README: <a href="vap.md">English </a> | <a href="vap_JP.md">Japanese (日本語)
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
 - [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
 - [旅行代理店タスク対話コーパス](https://aclanthology.org/2022.lrec-1.619/)
+- [ヒューマンロボット対話コーパス](https://aclanthology.org/2025.naacl-long.367/)
+- [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
 
 </br>
 
@@ -83,6 +92,14 @@ while True:
 | jp | 10 | 3 |
 | jp | 10 | 5 |
 | jp | 20 | 2.5 |
+
+| `lang` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
+| jp_kyoto | 5 | 3 |
+| jp_kyoto | 5 | 5 |
+| jp_kyoto | 10 | 3 |
+| jp_kyoto | 10 | 5 |
+| jp_kyoto | 20 | 2.5 |
 
 | `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |

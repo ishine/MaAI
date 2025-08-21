@@ -32,6 +32,11 @@ This model is trained on the following Japanese datasets:
 - [Human-Robot Dialogue](https://aclanthology.org/2025.naacl-long.367/)
 - [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
 
+### Japanese (MIT License) (`lang=jp_kyoto`)
+
+This model is trained on the following Japanese dataset:
+- [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
+
 ### English (`lang=en`)
 
 This model is trained on the following English dataset:
@@ -44,12 +49,14 @@ This model is trained on the following Chinese dataset:
 - [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
 - Online Conversation Dataset
 
-<!-- ### Tri-lingual (JPN + ENG + CHN) (`lang=tri`)
+### Tri-lingual (JPN + ENG + CHN) (`lang=tri`)
 
 This model is trained on the following three-language datasets:
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
 - [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
-- [Travel Agency Task Dialogue](https://aclanthology.org/2022.lrec-1.619/) -->
+- [Travel Agency Task Dialogue](https://aclanthology.org/2022.lrec-1.619/)
+- [Human-Robot Dialogue](https://aclanthology.org/2025.naacl-long.367/)
+- [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
 
 </br>
 
@@ -90,6 +97,14 @@ Please adjust these values according to your computing environment.
 
 | `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
+| jp_kyoto | 5 | 3 |
+| jp_kyoto | 5 | 5 |
+| jp_kyoto | 10 | 3 |
+| jp_kyoto | 10 | 5 |
+| jp_kyoto | 20 | 2.5 |
+
+| `lang` | `vap_process_rate` | `context_len_sec` |
+| --- | --- | --- |
 | en | 5 | 3 |
 | en | 5 | 5 |
 | en | 10 | 3 |
@@ -104,13 +119,13 @@ Please adjust these values according to your computing environment.
 | ch | 10 | 5 |
 | ch | 20 | 2.5 |
 
-<!-- | `lang` | `vap_process_rate` | `context_len_sec` |
+| `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
 | tri | 5 | 3 |
 | tri | 5 | 5 |
 | tri | 10 | 3 |
 | tri | 10 | 5 |
-| tri | 20 | 2.5 | -->
+| tri | 20 | 2.5 |
 
 <br>
 

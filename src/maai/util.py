@@ -6,9 +6,14 @@ repo_ids = {
     "vap_en": "maai-kyoto/vap_en",
     "vap_ch": "maai-kyoto/vap_ch",
     "vap_tri": "maai-kyoto/vap_tri",
+    "vap_jp_kyoto": "maai-kyoto/vap_jp_kyoto",
+
     "vap_mc_jp": "maai-kyoto/vap_mc_jp",
     "vap_mc_en": "maai-kyoto/vap_mc_en",
     "vap_mc_ch": "maai-kyoto/vap_mc_ch",
+    "vap_mc_tri": "maai-kyoto/vap_mc_tri",
+    "vap_mc_jp_kyoto": "maai-kyoto/vap_mc_jp_kyoto",
+
     "vap_bc_2type_jp": "maai-kyoto/vap_bc_2type_jp",
     # "vap_bc_jp_only_timing": "maai-kyoto/vap_bc_jp_only_timing",
     "vap_nod_jp": "maai-kyoto/vap_nod_jp",
@@ -34,9 +39,13 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
         elif language == "tri":
             repo_id = repo_ids["vap_tri"]
             file_path = f"vap_state_dict_tri_ecj_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
-        
+
+        elif language == "jp_kyoto":
+            repo_id = repo_ids["vap_jp_kyoto"]
+            file_path = f"vap_state_dict_jp_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+
         else:
-            supported_languages = ["jp", "en", "tri"]
+            supported_languages = ["jp", "en", "ch", "tri", "jp_kyoto"]
             raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
 
     elif mode == "vap_mc":
@@ -56,8 +65,12 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
             repo_id = repo_ids["vap_mc_tri"]
             file_path = f"vap_mc_state_dict_tri_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
         
+        elif language == "jp_kyoto":
+            repo_id = repo_ids["vap_mc_jp_kyoto"]
+            file_path = f"vap_mc_state_dict_jp_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+
         else:
-            supported_languages = ["jp", "en", "tri"]
+            supported_languages = ["jp", "en", "ch", "tri", "jp_kyoto"]
             raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
     
     elif mode == "bc_2type":
