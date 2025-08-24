@@ -29,6 +29,8 @@ This model is trained on the following Japanese datasets:
 - [Human-Robot Dialogue](https://aclanthology.org/2025.naacl-long.367/)
 - [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
 
+</br>
+
 ### Japanese (MIT License) (`lang=jp_kyoto`)
 
 This model is trained on the following Japanese dataset:
@@ -36,17 +38,23 @@ This model is trained on the following Japanese dataset:
 
 This model is also released under the MIT license.
 
+</br>
+
 ### English (`lang=en`)
 
 This model is trained on the following English dataset:
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
 - Online Conversation Dataset
 
+</br>
+
 ### Chinese (`lang=ch`)
 
 This model is trained on the following Chinese dataset:
 - [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
 - Online Conversation Dataset
+
+</br>
 
 ### Tri-lingual (JPN + ENG + CHN) (`lang=tri`)
 
