@@ -194,9 +194,22 @@ class Maai():
 
             e1, e2 = self.vap.encode_audio(x1_, x2_)
 
+            # self.vap_cache = None
             # Forward pass with cache
             out, self.vap_cache = self.vap.forward(e1, e2, cache=self.vap_cache)
-            
+
+            # Trim all cache data in self.vap_cache so that the second-to-last dimension is self.audio_context_len - 1
+            if self.vap_cache is not None:
+                for k, v in self.vap_cache.items():
+                    # vの型が「([tensor([[[[」のような場合（タプル内にテンソルのリストがある場合）に対応
+                    self.vap_cache[k] = tuple(
+                        [
+                            t[..., - (self.audio_context_len - 1):,:] if isinstance(t, torch.Tensor) and t.dim() >= 2 and t.shape[-2] > (self.audio_context_len - 1) else t
+                            for t in lst
+                        ] if isinstance(lst, list) else lst
+                        for lst in v
+                    )
+
             # Pre-create result dict structure to avoid repeated key creation
             result_dict = {
                 "t": time.time(),
