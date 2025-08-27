@@ -113,13 +113,11 @@ class Maai():
 
         self.process_time_abs = -1
 
-        self.e1_context = []
-        self.e2_context = []
-        
         self.list_process_time_context = []
         self.last_interval_time = time.time()
-        
+
         self.result_dict_queue = queue.Queue()
+        self.vap_cache = None
     
     def worker(self):
         
@@ -195,26 +193,9 @@ class Maai():
                 x2_ = x2_.to(self.device, non_blocking=True)
 
             e1, e2 = self.vap.encode_audio(x1_, x2_)
-            
-            self.e1_context.append(e1)
-            self.e2_context.append(e2)
-            
-            # More efficient context management
-            if len(self.e1_context) > self.audio_context_len:
-                self.e1_context.pop(0)  # Remove from front instead of slicing
-            if len(self.e2_context) > self.audio_context_len:
-                self.e2_context.pop(0)
-            
-            x1_context_ = torch.cat(self.e1_context, dim=1)
-            x2_context_ = torch.cat(self.e2_context, dim=1)
-            
-            # Move to device only if necessary
-            if self.device != 'cpu':
-                x1_context_ = x1_context_.to(self.device, non_blocking=True)
-                x2_context_ = x2_context_.to(self.device, non_blocking=True)
 
-            # Forward pass
-            out = self.vap.forward(x1_context_, x2_context_)
+            # Forward pass with cache
+            out, self.vap_cache = self.vap.forward(e1, e2, cache=self.vap_cache)
             
             # Pre-create result dict structure to avoid repeated key creation
             result_dict = {

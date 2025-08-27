@@ -99,29 +99,48 @@ class VapGPT_bc_2type(nn.Module):
     def vad_loss(self, vad_output, vad):
         return F.binary_cross_entropy_with_logits(vad_output, vad)
     
-    def forward(self, x1: Tensor, x2: Tensor) -> Tuple[Tensor, Tensor, list[Tensor]]:
+    def forward(
+        self,
+        x1: Tensor,
+        x2: Tensor,
+        cache: Optional[dict] = None,
+    ) -> Tuple[dict, dict]:
         """
         Forward pass for the VapGPT model.
-        
+
         Args:
             x1 (Tensor): Input audio embedded tensor for speaker 1.
             x2 (Tensor): Input audio embedded tensor for speaker 2.
+            cache (dict, optional): Cache of past keys/values.
 
         Returns:
-            dict: A dictionary containing:
-                - p_bc_react (list[Tensor]): Probability of reactive backchannel.
-                - p_bc_emo (list[Tensor]): Probability of emotional backchannel.
+            Tuple[dict, dict]: Model outputs and updated cache.
         """
-        # Autoregressive
-        o1 = self.ar_channel(x1)  # ["x"]
-        o2 = self.ar_channel(x2)  # ["x"]
-        out = self.ar(o1["x"], o2["x"])
+
+        if cache is None:
+            cache = {}
+
+        o1 = self.ar_channel(x1, past_kv=cache.get("ar1"))
+        o2 = self.ar_channel(x2, past_kv=cache.get("ar2"))
+        out = self.ar(
+            o1["x"],
+            o2["x"],
+            past_kv1=cache.get("cross1"),
+            past_kv2=cache.get("cross2"),
+        )
+
+        new_cache = {
+            "ar1": (o1["past_k"], o1["past_v"]),
+            "ar2": (o2["past_k"], o2["past_v"]),
+            "cross1": (out["past_k1"], out["past_v1"]),
+            "cross2": (out["past_k2"], out["past_v2"]),
+        }
 
         bc = self.bc_head(out["x"])
 
-        p_bc_react = bc.softmax(dim=-1).to('cpu').tolist()[0][-1][1]
-        p_bc_emo = bc.softmax(dim=-1).to('cpu').tolist()[0][-1][2]
+        p_bc_react = bc.softmax(dim=-1).to("cpu").tolist()[0][-1][1]
+        p_bc_emo = bc.softmax(dim=-1).to("cpu").tolist()[0][-1][2]
 
         ret = {"p_bc_react": p_bc_react, "p_bc_emo": p_bc_emo}
 
-        return ret
+        return ret, new_cache

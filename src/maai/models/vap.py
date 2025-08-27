@@ -102,24 +102,42 @@ class VapGPT(nn.Module):
     def vad_loss(self, vad_output, vad):
         return F.binary_cross_entropy_with_logits(vad_output, vad)
     
-    def forward(self, x1: Tensor, x2: Tensor) -> Tuple[Tensor, Tensor, list[Tensor]]:
+    def forward(
+        self,
+        x1: Tensor,
+        x2: Tensor,
+        cache: Optional[dict] = None,
+    ) -> Tuple[dict, dict]:
         """
         Forward pass for the VapGPT model.
-        
+
         Args:
             x1 (Tensor): Input audio embedded tensor for speaker 1.
             x2 (Tensor): Input audio embedded tensor for speaker 2.
-        
+            cache (dict, optional): Cache of past keys/values.
+
         Returns:
-            Tuple[Tensor, Tensor, List[Tensor]]: A tuple containing:
-                - p_now (Tensor): Probability of the next current speaker.
-                - p_future (Tensor): Probability of the future speaker.
-                - vad (list[Tensor]): List containing VAD outputs for both speakers.
+            Tuple[dict, dict]: Model outputs and updated cache.
         """
-        # Autoregressive
-        o1 = self.ar_channel(x1)  # ["x"]
-        o2 = self.ar_channel(x2)  # ["x"]
-        out = self.ar(o1["x"], o2["x"])
+
+        if cache is None:
+            cache = {}
+
+        o1 = self.ar_channel(x1, past_kv=cache.get("ar1"))
+        o2 = self.ar_channel(x2, past_kv=cache.get("ar2"))
+        out = self.ar(
+            o1["x"],
+            o2["x"],
+            past_kv1=cache.get("cross1"),
+            past_kv2=cache.get("cross2"),
+        )
+
+        new_cache = {
+            "ar1": (o1["past_k"], o1["past_v"]),
+            "ar2": (o2["past_k"], o2["past_v"]),
+            "cross1": (out["past_k1"], out["past_v1"]),
+            "cross2": (out["past_k2"], out["past_v2"]),
+        }
 
         # Outputs
         vad1 = self.va_classifier(o1["x"])
@@ -127,26 +145,26 @@ class VapGPT(nn.Module):
         logits = self.vap_head(out["x"])
 
         probs = logits.softmax(dim=-1)
-                
+
         p_now = self.objective.probs_next_speaker_aggregate(
             probs,
             from_bin=self.BINS_P_NOW[0],
-            to_bin=self.BINS_P_NOW[-1]
+            to_bin=self.BINS_P_NOW[-1],
         )
-        
+
         p_future = self.objective.probs_next_speaker_aggregate(
             probs,
             from_bin=self.BINS_PFUTURE[0],
-            to_bin=self.BINS_PFUTURE[1]
+            to_bin=self.BINS_PFUTURE[1],
         )
-        
+
         # Get back to the CPU
-        p_now = p_now.to('cpu').tolist()[0][-1]
-        p_future = p_future.to('cpu').tolist()[0][-1]
-        
-        vad1 = vad1.sigmoid().to('cpu').tolist()[0][-1][0]
-        vad2 = vad2.sigmoid().to('cpu').tolist()[0][-1][0]
+        p_now = p_now.to("cpu").tolist()[0][-1]
+        p_future = p_future.to("cpu").tolist()[0][-1]
+
+        vad1 = vad1.sigmoid().to("cpu").tolist()[0][-1][0]
+        vad2 = vad2.sigmoid().to("cpu").tolist()[0][-1][0]
 
         ret = {"p_now": p_now, "p_future": p_future, "vad": [vad1, vad2]}
 
-        return ret
+        return ret, new_cache

@@ -138,17 +138,26 @@ class VapGPT_prompt(nn.Module):
         # print("Embedding for channel 2:", self.embedding_ch2)
         # input("Press Enter to continue...")
 
-    def forward(self, x1: Tensor, x2: Tensor) -> Tuple[Tensor, Tensor, list[Tensor]]:
+    def forward(
+        self,
+        x1: Tensor,
+        x2: Tensor,
+        cache: Optional[dict] = None,
+    ) -> Tuple[dict, dict]:
         """
         Forward pass for the VapGPT model.
-        
+
         Args:
             x1 (Tensor): Input audio tensor for speaker 1.
             x2 (Tensor): Input audio tensor for speaker 2.
-        
+            cache (dict, optional): Cache of past keys/values.
+
         Returns:
-            Tuple[Tensor, Tensor, list[Tensor]]: Output tensors and additional information.
+            Tuple[dict, dict]: Output tensors and updated cache.
         """
+
+        if cache is None:
+            cache = {}
 
         prompt_a_seq = self.embedding_ch1.unsqueeze(1).repeat(1, x1.shape[1], 1)
         prompt_b_seq = self.embedding_ch2.unsqueeze(1).repeat(1, x2.shape[1], 1)
@@ -169,8 +178,8 @@ class VapGPT_prompt(nn.Module):
         x1_concat = self.prompt_dim_red1(x1_concat)
         x2_concat = self.prompt_dim_red1(x2_concat)
 
-        o1 = self.ar_channel(x1_concat)  # ["x"]
-        o2 = self.ar_channel(x2_concat)  # ["x"]
+        o1 = self.ar_channel(x1_concat, past_kv=cache.get("ar1"))
+        o2 = self.ar_channel(x2_concat, past_kv=cache.get("ar2"))
 
         # o1_red = self.prompt_dim_red1(o1["x"])
         # o2_red = self.prompt_dim_red1(o2["x"])
@@ -184,9 +193,19 @@ class VapGPT_prompt(nn.Module):
         o1_concat = self.prompt_dim_red2(o1_concat)
         o2_concat = self.prompt_dim_red2(o2_concat)
 
-        # print("o1_concat", o1_concat.shape)
-        # print("o2_concat", o2_concat.shape)
-        out = self.ar(o1_concat, o2_concat)
+        out = self.ar(
+            o1_concat,
+            o2_concat,
+            past_kv1=cache.get("cross1"),
+            past_kv2=cache.get("cross2"),
+        )
+
+        new_cache = {
+            "ar1": (o1["past_k"], o1["past_v"]),
+            "ar2": (o2["past_k"], o2["past_v"]),
+            "cross1": (out["past_k1"], out["past_v1"]),
+            "cross2": (out["past_k2"], out["past_v2"]),
+        }
 
         # Outputs
         vad1 = self.va_classifier(out["x1"])
@@ -218,4 +237,4 @@ class VapGPT_prompt(nn.Module):
 
         ret = {"p_now": p_now, "p_future": p_future, "vad": [vad1, vad2]}
 
-        return ret
+        return ret, new_cache
