@@ -23,8 +23,8 @@ MaAI
 <b>MaAI</b> is a state-of-the-art and light-weight software that can generate (predict) non-linguistic behaviors in real time and continuously.
 It supports essential interaction elements such as <b>(1) Turn-Taking</b>, <b>(2) Backchanneling</b>, and <b>(3) Head Nodding</b>.
 Currently available for English, Chinese, and Japanese languages, MaAI will continue to expand its language coverage and non-linguistic behavior repertoire in the future.
-Designed specifically for conversational AI, including spoken dialogue systems and interactive robots, MaAI handles audio input effectively in either two-channels (user-system) or single-channel (user-only) settings. 🎙️
-Thanks to its lightweight design, MaAI operates efficiently, even exclusively on CPU hardware. ⚡
+Designed specifically for conversational AI, including spoken dialogue systems and interactive robots, MaAI handles audio input effectively in either two-channels (user-system) or single-channel (user-only) settings🎙️
+Thanks to its lightweight design, MaAI operates efficiently, even exclusively on CPU hardware⚡
 
 The name <b>MaAI</b> is derived from the Japanese words <b>Ma(間)</b> or <b>Maai(間合い)</b>, which refer to the subtle timing and spacing that humans adjust using various modalities during interactions.  
 The <b>AI</b> in MaAI literally stands for Artificial Intelligence, reflecting the aim to develop AI technologies related to these interactional dynamics.
@@ -59,7 +59,7 @@ pip install maai
 
 > 💡 **Note:** By default, the CPU version of PyTorch will be installed. If you wish to run MaAI on a GPU, please install the GPU version of PyTorch that matches your CUDA environment before proceeding.
 
-You can run it as follows. 🏃‍♂️
+You can run it as follows🏃‍♂️
 The appropriate model for the task (mode) and parameters will be downloaded automatically.  
 Below is an example of using the turn-taking model (VAP) with the first channel as microphone input (user) and the second channel as silence (system).
 
@@ -166,7 +166,7 @@ You can find example implementations of MaAI models in the [example](example) di
 
 ## 📚 Publication
 
-Please cite the following paper, if you made any publications made with this repository. 🙏
+Please cite the following paper, if you made any publications made with this repository🙏
 
 Koji Inoue, Bing'er Jiang, Erik Ekstedt, Tatsuya Kawahara, Gabriel Skantze<br>
 __Real-time and Continuous Turn-taking Prediction Using Voice Activity Projection__<br>
