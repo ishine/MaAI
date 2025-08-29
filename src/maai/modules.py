@@ -272,7 +272,9 @@ class TransformerLayer(nn.Module):
         mask: Optional[torch.Tensor] = None,
         past_k: Optional[torch.Tensor] = None,
         past_v: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor], torch.Tensor, torch.Tensor]:
+        past_k_c: Optional[torch.Tensor] = None,
+        past_v_c: Optional[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor], torch.Tensor, torch.Tensor, Optional[torch.Tensor], Optional[torch.Tensor]]:
         """
         Using pre-layer-normalization: https://arxiv.org/pdf/2002.04745.pdf
         """
@@ -288,17 +290,19 @@ class TransformerLayer(nn.Module):
 
         # Cross-attention
         cross_attn_weights = None
+        k_c = None
+        v_c = None
         if self.cross_attention and src is not None:
             z = self.ln_src_attn(x)
             # https://nn.labml.ai/transformers/models.html#section-16
             # Don't normalize src... why?
-            cross_attn, cross_attn_weights, _, _ = self.mha_cross(
-                Q=z, K=src, V=src, mask=mask
+            cross_attn, cross_attn_weights, k_c, v_c = self.mha_cross(
+                Q=z, K=src, V=src, mask=mask, past_k=past_k_c, past_v=past_v_c
             )
             x = x + self.dropout(cross_attn)
 
         x = x + self.dropout(self.ffnetwork(self.ln_ffnetwork(x)))
-        return x, self_attn_weights, cross_attn_weights, k, v
+        return x, self_attn_weights, cross_attn_weights, k, v, k_c, v_c
 
 
 class TransformerStereoLayer(TransformerLayer):
@@ -311,16 +315,22 @@ class TransformerStereoLayer(TransformerLayer):
         past_v1: Optional[torch.Tensor] = None,
         past_k2: Optional[torch.Tensor] = None,
         past_v2: Optional[torch.Tensor] = None,
+        past_k1_c: Optional[torch.Tensor] = None,
+        past_v1_c: Optional[torch.Tensor] = None,
+        past_k2_c: Optional[torch.Tensor] = None,
+        past_v2_c: Optional[torch.Tensor] = None,
     ):
         # sa1w: self-attention-weights 1
         # ca1w: cross-attention-weights 1
-        z1, sa1w, ca1w, k1, v1 = super().forward(
-            x=x1, src=x2, mask=mask, past_k=past_k1, past_v=past_v1
+        z1, sa1w, ca1w, k1, v1, k1_c, v1_c = super().forward(
+            x=x1, src=x2, mask=mask, past_k=past_k1, past_v=past_v1,
+            past_k_c=past_k1_c, past_v_c=past_v1_c
         )
-        z2, sa2w, ca2w, k2, v2 = super().forward(
-            x=x2, src=x1, mask=mask, past_k=past_k2, past_v=past_v2
+        z2, sa2w, ca2w, k2, v2, k2_c, v2_c = super().forward(
+            x=x2, src=x1, mask=mask, past_k=past_k2, past_v=past_v2,
+            past_k_c=past_k2_c, past_v_c=past_v2_c
         )
-        return z1, z2, [sa1w, ca1w, sa2w, ca2w], k1, v1, k2, v2
+        return z1, z2, [sa1w, ca1w, sa2w, ca2w], k1, v1, k2, v2, k1_c, v1_c, k2_c, v2_c
 
 
 class GPT(nn.Module):
@@ -394,7 +404,7 @@ class GPT(nn.Module):
         for i, layer in enumerate(self.layers):
             pk = past_k[i] if past_k is not None else None
             pv = past_v[i] if past_v is not None else None
-            x, self_attn_weights, _, k, v = layer(x, past_k=pk, past_v=pv)
+            x, self_attn_weights, _, k, v, _, _ = layer(x, past_k=pk, past_v=pv)
             new_past_k.append(k)
             new_past_v.append(v)
             if attention:
@@ -436,6 +446,8 @@ class GPTStereo(GPT):
         attention: bool = False,
         past_kv1: Optional[Tuple[list, list]] = None,
         past_kv2: Optional[Tuple[list, list]] = None,
+        past_kv1_c: Optional[Tuple[list, list]] = None,
+        past_kv2_c: Optional[Tuple[list, list]] = None,
     ) -> Dict[str, torch.Tensor]:
 
         self_attn_a = []
@@ -447,13 +459,20 @@ class GPTStereo(GPT):
             past_kv1 = (len(self.layers) * [None], len(self.layers) * [None])
         if past_kv2 is None:
             past_kv2 = (len(self.layers) * [None], len(self.layers) * [None])
+        if past_kv1_c is None:
+            past_kv1_c = (len(self.layers) * [None], len(self.layers) * [None])
+        if past_kv2_c is None:
+            past_kv2_c = (len(self.layers) * [None], len(self.layers) * [None])
 
         past_k1, past_v1 = past_kv1
         past_k2, past_v2 = past_kv2
+        past_k1_c, past_v1_c = past_kv1_c
+        past_k2_c, past_v2_c = past_kv2_c
         new_pk1, new_pv1, new_pk2, new_pv2 = [], [], [], []
+        new_pk1_c, new_pv1_c, new_pk2_c, new_pv2_c = [], [], [], []
 
         for i, layer in enumerate(self.layers):
-            x1, x2, attn_list, k1, v1, k2, v2 = layer(
+            x1, x2, attn_list, k1, v1, k2, v2, k1_c, v1_c, k2_c, v2_c = layer(
                 x1=x1,
                 x2=x2,
                 mask=None,
@@ -461,11 +480,19 @@ class GPTStereo(GPT):
                 past_v1=past_v1[i] if past_v1 is not None else None,
                 past_k2=past_k2[i] if past_k2 is not None else None,
                 past_v2=past_v2[i] if past_v2 is not None else None,
+                past_k1_c=past_k1_c[i] if past_k1_c is not None else None,
+                past_v1_c=past_v1_c[i] if past_v1_c is not None else None,
+                past_k2_c=past_k2_c[i] if past_k2_c is not None else None,
+                past_v2_c=past_v2_c[i] if past_v2_c is not None else None,
             )
             new_pk1.append(k1)
             new_pv1.append(v1)
             new_pk2.append(k2)
             new_pv2.append(v2)
+            new_pk1_c.append(k1_c)
+            new_pv1_c.append(v1_c)
+            new_pk2_c.append(k2_c)
+            new_pv2_c.append(v2_c)
             if attention:
                 # [sa1w, ca1w, sa2w, ca2w] = attn_list
                 self_attn_a.append(attn_list[0])
@@ -482,6 +509,10 @@ class GPTStereo(GPT):
             "past_v1": new_pv1,
             "past_k2": new_pk2,
             "past_v2": new_pv2,
+            "past_k1_c": new_pk1_c,
+            "past_v1_c": new_pv1_c,
+            "past_k2_c": new_pk2_c,
+            "past_v2_c": new_pv2_c,
         }
 
         if attention:

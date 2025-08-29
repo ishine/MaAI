@@ -130,6 +130,8 @@ class VapGPT(nn.Module):
             o2["x"],
             past_kv1=cache.get("cross1"),
             past_kv2=cache.get("cross2"),
+            past_kv1_c=cache.get("cross1_c"),
+            past_kv2_c=cache.get("cross2_c"),
         )
 
         new_cache = {
@@ -137,6 +139,8 @@ class VapGPT(nn.Module):
             "ar2": (o2["past_k"], o2["past_v"]),
             "cross1": (out["past_k1"], out["past_v1"]),
             "cross2": (out["past_k2"], out["past_v2"]),
+            "cross1_c": (out["past_k1_c"], out["past_v1_c"]),
+            "cross2_c": (out["past_k2_c"], out["past_v2_c"]),
         }
 
         # Outputs
