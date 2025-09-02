@@ -22,7 +22,21 @@ class Maai():
     
     CALC_PROCESS_TIME_INTERVAL = 100
 
-    def __init__(self, mode, frame_rate, context_len_sec, lang: str = "jp", audio_ch1: Base = None, audio_ch2: Base = None, num_channels: int = 2, cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"), device: str = "cpu", cache_dir: str = None, force_download: bool = False):
+    def __init__(
+        self,
+        mode,
+        frame_rate: int = 10,
+        context_len_sec: int = 5,
+        lang: str = "jp",
+        audio_ch1: Base = None,
+        audio_ch2: Base = None,
+        num_channels: int = 2,
+        cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"),
+        device: str = "cpu",
+        cache_dir: str = None,
+        force_download: bool = False,
+        use_kv_cache: bool = True
+    ):
 
         conf = VapConfig()
         
@@ -113,10 +127,15 @@ class Maai():
 
         self.process_time_abs = -1
 
+        self.e1_full = []
+        self.e2_full = []
+
         self.list_process_time_context = []
         self.last_interval_time = time.time()
 
         self.result_dict_queue = queue.Queue()
+
+        self.use_kv_cache = use_kv_cache
         self.vap_cache = None
     
     def worker(self):
@@ -196,26 +215,52 @@ class Maai():
 
             # self.vap_cache = None
             # Forward pass with cache
-            out, self.vap_cache = self.vap.forward(e1, e2, cache=self.vap_cache)
 
-            ## Trim all cache data in self.vap_cache so that the second-to-last dimension is self.audio_context_len - 1
-            if self.vap_cache is not None:
-                new_cache = {}
-                for key, (k_list, v_list) in self.vap_cache.items():
-                    new_k_list = []
-                    new_v_list = []
-                    for t in k_list:
-                        if isinstance(t, torch.Tensor) and t.dim() >= 3:
-                            new_k_list.append(t[..., -(self.audio_context_len - 1) :, :])
-                        else:
-                            new_k_list.append(t)
-                    for t in v_list:
-                        if isinstance(t, torch.Tensor) and t.dim() >= 3:
-                            new_v_list.append(t[..., -(self.audio_context_len - 1) :, :])
-                        else:
-                            new_v_list.append(t)
-                    new_cache[key] = (new_k_list, new_v_list)
-                self.vap_cache = new_cache
+            # Full model
+            if self.use_kv_cache == False:
+                
+                self.e1_full.append(e1)
+                self.e2_full.append(e2)
+            
+                # More efficient context management
+                if len(self.e1_full) > self.audio_context_len:
+                    self.e1_full.pop(0)  # Remove from front instead of slicing
+                if len(self.e2_full) > self.audio_context_len:
+                    self.e2_full.pop(0)
+                
+                x1_full_ = torch.cat(self.e1_full, dim=1)
+                x2_full_ = torch.cat(self.e2_full, dim=1)
+                
+                # Move to device only if necessary
+                if self.device != 'cpu':
+                    x1_full_ = x1_full_.to(self.device, non_blocking=True)
+                    x2_full_ = x2_full_.to(self.device, non_blocking=True)
+
+                out, _ = self.vap.forward(x1_full_, x2_full_, cache=None)
+
+            # User KV cache
+            elif self.use_kv_cache == True:
+
+                out, self.vap_cache = self.vap.forward(e1, e2, cache=self.vap_cache)
+
+                ## Trim all cache data in self.vap_cache so that the second-to-last dimension is self.audio_context_len - 1
+                if self.vap_cache is not None:
+                    new_cache = {}
+                    for key, (k_list, v_list) in self.vap_cache.items():
+                        new_k_list = []
+                        new_v_list = []
+                        for t in k_list:
+                            if isinstance(t, torch.Tensor) and t.dim() >= 3:
+                                new_k_list.append(t[..., -(self.audio_context_len - 1) :, :])
+                            else:
+                                new_k_list.append(t)
+                        for t in v_list:
+                            if isinstance(t, torch.Tensor) and t.dim() >= 3:
+                                new_v_list.append(t[..., -(self.audio_context_len - 1) :, :])
+                            else:
+                                new_v_list.append(t)
+                        new_cache[key] = (new_k_list, new_v_list)
+                    self.vap_cache = new_cache
 
             # Pre-create result dict structure to avoid repeated key creation
             result_dict = {
