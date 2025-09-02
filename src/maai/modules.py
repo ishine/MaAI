@@ -402,8 +402,8 @@ class GPT(nn.Module):
         new_past_v = []
 
         for i, layer in enumerate(self.layers):
-            pk = past_k[i] if past_k is not None else None
-            pv = past_v[i] if past_v is not None else None
+            pk = past_k[i]
+            pv = past_v[i]
             x, self_attn_weights, _, k, v, _, _ = layer(x, past_k=pk, past_v=pv)
             new_past_k.append(k)
             new_past_v.append(v)
@@ -476,14 +476,14 @@ class GPTStereo(GPT):
                 x1=x1,
                 x2=x2,
                 mask=None,
-                past_k1=past_k1[i] if past_k1 is not None else None,
-                past_v1=past_v1[i] if past_v1 is not None else None,
-                past_k2=past_k2[i] if past_k2 is not None else None,
-                past_v2=past_v2[i] if past_v2 is not None else None,
-                past_k1_c=past_k1_c[i] if past_k1_c is not None else None,
-                past_v1_c=past_v1_c[i] if past_v1_c is not None else None,
-                past_k2_c=past_k2_c[i] if past_k2_c is not None else None,
-                past_v2_c=past_v2_c[i] if past_v2_c is not None else None,
+                past_k1=past_k1[i],
+                past_v1=past_v1[i],
+                past_k2=past_k2[i],
+                past_v2=past_v2[i],
+                past_k1_c=past_k1_c[i],
+                past_v1_c=past_v1_c[i],
+                past_k2_c=past_k2_c[i],
+                past_v2_c=past_v2_c[i],
             )
             new_pk1.append(k1)
             new_pv1.append(v1)
