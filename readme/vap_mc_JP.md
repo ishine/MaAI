@@ -93,9 +93,15 @@ while True:
 | --- | --- | --- |
 | jp | 5 | 3 |
 | jp | 5 | 5 |
+| jp | 5 | 10 |
+| jp | 5 | 20 |
 | jp | 10 | 3 |
 | jp | 10 | 5 |
+| jp | 10 | 10 |
+| jp | 10 | 20 |
 | jp | 20 | 2.5 |
+| jp | 20 | 10 |
+| jp | 20 | 20 |
 
 | `lang` | `vap_process_rate` | `context_len_sec` |
 | --- | --- | --- |
