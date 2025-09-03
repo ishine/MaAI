@@ -45,6 +45,7 @@ __Demo video on YouTube__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
 
 ## 🆕 Update
 
+- Computational efficiency is improved in the long-context models (September 3rd, 2025)
 - We launched the MaAI project and repository here! 🚀  (August 13th, 2025)
 
 <br>
