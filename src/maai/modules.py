@@ -71,11 +71,14 @@ class MultiHeadAttention(nn.Module):
         return mask
 
     def mask_scores(self, qk: torch.Tensor, mask=None):
-        T = qk.size(-1)
+        T_total = qk.size(-1)
         if mask is None:
             mask = MultiHeadAttention.prepare_causal_mask(
-                T, device=qk.device, dtype=qk.dtype
+                T_total, device=qk.device, dtype=qk.dtype
             )
+        # When using cached keys/values the query length may be shorter
+        T_query = qk.size(-2)
+        mask = mask[..., -T_query:, :]
         qk = qk.masked_fill(mask == 0, float("-inf"))
         return qk
 
@@ -85,6 +88,8 @@ class MultiHeadAttention(nn.Module):
         K: torch.Tensor,
         V: torch.Tensor,
         mask: Optional[torch.Tensor] = None,
+        past_k: Optional[torch.Tensor] = None,
+        past_v: Optional[torch.Tensor] = None,
     ):
         # batch size, sequence length, embedding dimensionality (n_embd)
         B, T, D = Q.size()
@@ -94,20 +99,25 @@ class MultiHeadAttention(nn.Module):
         q = self.unstack_heads(self.query(Q))  # (B, heads, T, D_head)
         v = self.unstack_heads(self.value(V))  # (B, heads, T, D_head)
 
+        if past_k is not None:
+            k = torch.cat([past_k, k], dim=2)
+        if past_v is not None:
+            v = torch.cat([past_v, v], dim=2)
+
         # QK
-        att = self.get_scores(q, k) * self.scale  #  (B, nh, T, T)
+        att = self.get_scores(q, k) * self.scale  #  (B, nh, T_new, T_total)
         att = self.mask_scores(att, mask)
         att = F.softmax(att, dim=-1)
 
         # Softmax, dropout, values
-        y = self.attn_drop(att) @ v  # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs)
+        y = self.attn_drop(att) @ v  # (B, nh, T_new, hs)
 
         # re-assemble all head outputs side by side
         y = self.stack_heads(y)
 
         # output projection
         y = self.resid_drop(self.proj(y))
-        return y, att
+        return y, att, k, v
 
 
 class MultiHeadAttentionAlibi(MultiHeadAttention):
@@ -188,22 +198,23 @@ class MultiHeadAttentionAlibi(MultiHeadAttention):
         return alibi
 
     def mask_scores(self, qk: torch.Tensor, mask=None):
-        T = qk.size(-1)
+        T_total = qk.size(-1)
         if mask is None:
-            if self.mask is None or self.mask.shape[-1] < T:
-                mask = self.get_alibi_mask(T, device=qk.device, dtype=qk.dtype)
+            if self.mask is None or self.mask.shape[-1] < T_total:
+                mask = self.get_alibi_mask(T_total, device=qk.device, dtype=qk.dtype)
                 if self.context_limit > 0:
                     for j in range(mask.shape[2]):
                         del_mask_start = 0
                         del_mask_end = max(0, j - self.context_limit + 1)
                         for n in range(del_mask_start, del_mask_end):
                             mask[..., j, n] = float("-inf")
-                
+
                 self.mask = mask
             else:
-                mask = self.mask[..., :T, :T]
-            # print(mask)
-            # print("mask: ", tuple(mask.shape))
+                mask = self.mask[..., :T_total, :T_total]
+
+        T_query = qk.size(-2)
+        mask = mask[..., -T_query:, :]
 
         # add aLiBi-mask to qk (see Figure 3.)
         # Addition/translation does not effect softmax (over each row)
@@ -259,31 +270,39 @@ class TransformerLayer(nn.Module):
         x: torch.Tensor,
         src: Optional[torch.Tensor] = None,
         mask: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
+        past_k: Optional[torch.Tensor] = None,
+        past_v: Optional[torch.Tensor] = None,
+        past_k_c: Optional[torch.Tensor] = None,
+        past_v_c: Optional[torch.Tensor] = None,
+    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor], torch.Tensor, torch.Tensor, Optional[torch.Tensor], Optional[torch.Tensor]]:
         """
         Using pre-layer-normalization: https://arxiv.org/pdf/2002.04745.pdf
         """
 
         # Self-attention
         z = self.ln_self_attn(x)
-        self_attn, self_attn_weights = self.mha(Q=z, K=z, V=z, mask=mask)
+        self_attn, self_attn_weights, k, v = self.mha(
+            Q=z, K=z, V=z, mask=mask, past_k=past_k, past_v=past_v
+        )
 
         # Residual
         x = x + self.dropout(self_attn)
 
         # Cross-attention
         cross_attn_weights = None
+        k_c = None
+        v_c = None
         if self.cross_attention and src is not None:
             z = self.ln_src_attn(x)
             # https://nn.labml.ai/transformers/models.html#section-16
             # Don't normalize src... why?
-            cross_attn, cross_attn_weights = self.mha_cross(
-                Q=z, K=src, V=src, mask=mask
+            cross_attn, cross_attn_weights, k_c, v_c = self.mha_cross(
+                Q=z, K=src, V=src, mask=mask, past_k=past_k_c, past_v=past_v_c
             )
             x = x + self.dropout(cross_attn)
 
         x = x + self.dropout(self.ffnetwork(self.ln_ffnetwork(x)))
-        return x, self_attn_weights, cross_attn_weights
+        return x, self_attn_weights, cross_attn_weights, k, v, k_c, v_c
 
 
 class TransformerStereoLayer(TransformerLayer):
@@ -292,12 +311,26 @@ class TransformerStereoLayer(TransformerLayer):
         x1: torch.Tensor,
         x2: torch.Tensor,
         mask: Optional[torch.Tensor] = None,
+        past_k1: Optional[torch.Tensor] = None,
+        past_v1: Optional[torch.Tensor] = None,
+        past_k2: Optional[torch.Tensor] = None,
+        past_v2: Optional[torch.Tensor] = None,
+        past_k1_c: Optional[torch.Tensor] = None,
+        past_v1_c: Optional[torch.Tensor] = None,
+        past_k2_c: Optional[torch.Tensor] = None,
+        past_v2_c: Optional[torch.Tensor] = None,
     ):
         # sa1w: self-attention-weights 1
         # ca1w: cross-attention-weights 1
-        z1, sa1w, ca1w = super().forward(x=x1, src=x2, mask=mask)
-        z2, sa2w, ca2w = super().forward(x=x2, src=x1, mask=mask)
-        return z1, z2, [sa1w, ca1w, sa2w, ca2w]
+        z1, sa1w, ca1w, k1, v1, k1_c, v1_c = super().forward(
+            x=x1, src=x2, mask=mask, past_k=past_k1, past_v=past_v1,
+            past_k_c=past_k1_c, past_v_c=past_v1_c
+        )
+        z2, sa2w, ca2w, k2, v2, k2_c, v2_c = super().forward(
+            x=x2, src=x1, mask=mask, past_k=past_k2, past_v=past_v2,
+            past_k_c=past_k2_c, past_v_c=past_v2_c
+        )
+        return z1, z2, [sa1w, ca1w, sa2w, ca2w], k1, v1, k2, v2, k1_c, v1_c, k2_c, v2_c
 
 
 class GPT(nn.Module):
@@ -354,16 +387,30 @@ class GPT(nn.Module):
             torch.nn.init.ones_(module.weight)
 
     def forward(
-        self, x: torch.Tensor, attention: bool = False
+        self,
+        x: torch.Tensor,
+        attention: bool = False,
+        past_kv: Optional[Tuple[list, list]] = None,
     ) -> Dict[str, torch.Tensor]:
         all_attention = []
 
-        for layer in self.layers:
-            x, self_attn_weights, _ = layer(x)
+        if past_kv is None:
+            past_kv = (len(self.layers) * [None], len(self.layers) * [None])
+        past_k, past_v = past_kv
+
+        new_past_k = []
+        new_past_v = []
+
+        for i, layer in enumerate(self.layers):
+            pk = past_k[i]
+            pv = past_v[i]
+            x, self_attn_weights, _, k, v, _, _ = layer(x, past_k=pk, past_v=pv)
+            new_past_k.append(k)
+            new_past_v.append(v)
             if attention:
                 all_attention.append(self_attn_weights)
 
-        ret = {"x": x}
+        ret = {"x": x, "past_k": new_past_k, "past_v": new_past_v}
 
         if attention:
             self_attn_weights = torch.stack(all_attention, dim=1)
@@ -393,15 +440,59 @@ class GPTStereo(GPT):
         self.combinator = Combinator(dim=self.dim, activation="GELU")
 
     def forward(
-        self, x1: torch.Tensor, x2: torch.Tensor, attention: bool = False
+        self,
+        x1: torch.Tensor,
+        x2: torch.Tensor,
+        attention: bool = False,
+        past_kv1: Optional[Tuple[list, list]] = None,
+        past_kv2: Optional[Tuple[list, list]] = None,
+        past_kv1_c: Optional[Tuple[list, list]] = None,
+        past_kv2_c: Optional[Tuple[list, list]] = None,
     ) -> Dict[str, torch.Tensor]:
 
         self_attn_a = []
         self_attn_b = []
         cross_attn_a = []
         cross_attn_b = []
-        for layer in self.layers:
-            x1, x2, attn_list = layer(x1=x1, x2=x2)
+
+        if past_kv1 is None:
+            past_kv1 = (len(self.layers) * [None], len(self.layers) * [None])
+        if past_kv2 is None:
+            past_kv2 = (len(self.layers) * [None], len(self.layers) * [None])
+        if past_kv1_c is None:
+            past_kv1_c = (len(self.layers) * [None], len(self.layers) * [None])
+        if past_kv2_c is None:
+            past_kv2_c = (len(self.layers) * [None], len(self.layers) * [None])
+
+        past_k1, past_v1 = past_kv1
+        past_k2, past_v2 = past_kv2
+        past_k1_c, past_v1_c = past_kv1_c
+        past_k2_c, past_v2_c = past_kv2_c
+        new_pk1, new_pv1, new_pk2, new_pv2 = [], [], [], []
+        new_pk1_c, new_pv1_c, new_pk2_c, new_pv2_c = [], [], [], []
+
+        for i, layer in enumerate(self.layers):
+            x1, x2, attn_list, k1, v1, k2, v2, k1_c, v1_c, k2_c, v2_c = layer(
+                x1=x1,
+                x2=x2,
+                mask=None,
+                past_k1=past_k1[i],
+                past_v1=past_v1[i],
+                past_k2=past_k2[i],
+                past_v2=past_v2[i],
+                past_k1_c=past_k1_c[i],
+                past_v1_c=past_v1_c[i],
+                past_k2_c=past_k2_c[i],
+                past_v2_c=past_v2_c[i],
+            )
+            new_pk1.append(k1)
+            new_pv1.append(v1)
+            new_pk2.append(k2)
+            new_pv2.append(v2)
+            new_pk1_c.append(k1_c)
+            new_pv1_c.append(v1_c)
+            new_pk2_c.append(k2_c)
+            new_pv2_c.append(v2_c)
             if attention:
                 # [sa1w, ca1w, sa2w, ca2w] = attn_list
                 self_attn_a.append(attn_list[0])
@@ -410,7 +501,19 @@ class GPTStereo(GPT):
                 cross_attn_b.append(attn_list[3])
 
         x = self.combinator(x1, x2)
-        ret = {"x": x, "x1": x1, "x2": x2}
+        ret = {
+            "x": x,
+            "x1": x1,
+            "x2": x2,
+            "past_k1": new_pk1,
+            "past_v1": new_pv1,
+            "past_k2": new_pk2,
+            "past_v2": new_pv2,
+            "past_k1_c": new_pk1_c,
+            "past_v1_c": new_pv1_c,
+            "past_k2_c": new_pk2_c,
+            "past_v2_c": new_pv2_c,
+        }
 
         if attention:
             # B, num_layers, num_heads, N, N
