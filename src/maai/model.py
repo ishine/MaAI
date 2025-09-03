@@ -213,11 +213,8 @@ class Maai():
 
             e1, e2 = self.vap.encode_audio(x1_, x2_)
 
-            # self.vap_cache = None
-            # Forward pass with cache
-
             # Full model
-            if self.use_kv_cache == False:
+            if not self.use_kv_cache:
                 
                 self.e1_full.append(e1)
                 self.e2_full.append(e2)
@@ -239,7 +236,7 @@ class Maai():
                 out, _ = self.vap.forward(x1_full_, x2_full_, cache=None)
 
             # User KV cache
-            elif self.use_kv_cache == True:
+            elif self.use_kv_cache:
 
                 out, self.vap_cache = self.vap.forward(e1, e2, cache=self.vap_cache)
 
