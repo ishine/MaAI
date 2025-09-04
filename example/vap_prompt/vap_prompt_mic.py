@@ -6,7 +6,7 @@ import sys
 import os
 
 # プロジェクトルートをパスに追加
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src/')))
 
 from maai import Maai, MaaiInput, MaaiOutput
 
@@ -28,7 +28,7 @@ def test_vap():
     maai.set_prompt_ch1("テンポよく発話し、相手の発言が終わるとすぐに返答してください。発言回数を多めに、会話をリードするようにしてください。")
     maai.set_prompt_ch2("発話前に少し間を取り、考えてから丁寧に話し始めてください。応答は急がず、落ち着いたテンポを意識してください。")
 
-    maai.start_process()
+    maai.start()
 
     while True:
         result = maai.get_result()
