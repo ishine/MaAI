@@ -12,7 +12,7 @@ from maai import Maai, MaaiInput, MaaiOutput
 
 def test_vap():
 
-    output = MaaiOutput.GuiPlot()
+    output = MaaiOutput.GuiBar()
 
     maai = Maai(
         mode="vap_prompt",
