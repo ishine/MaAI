@@ -400,11 +400,16 @@ class TcpChunk(Base):
             self.sock.sendall(data_sent)
 
 class Zero(Base):
-    def __init__(self):
+    def __init__(self, white_noise=False):
         super().__init__()
         self.max_queue_size = 10
         self._is_thread_started_process = False
         self.data_added = [0.] * self.FRAME_SIZE  # Initialize with zeros
+        self.white_noise = white_noise
+
+        if self.white_noise:
+            print("Zero input with white noise is enabled.")
+            self.data_added = np.random.normal(0, 0.0005, self.FRAME_SIZE).astype(np.float32).tolist()
 
         # self.subscribe()  # Subscribe to the queue to ensure it exists
 
@@ -415,6 +420,7 @@ class Zero(Base):
     def _process(self):
 
         # data_added = [0.] * self.FRAME_SIZE  # Initialize with zeros
+        count = 0
         while True:
             try:
                 # print(self._get_queue_size())
@@ -425,6 +431,12 @@ class Zero(Base):
                 # print(len([0.] * self.FRAME_SIZE))
                 self._put_to_all_queues(self.data_added)
                 # print('added zero data')
+
+                if self.white_noise:
+                    count += 1
+                    if count % 10 == 0:
+                        self.data_added = np.random.normal(0, 0.0005, self.FRAME_SIZE).astype(np.float32).tolist()
+                        count = 0
 
             except Exception as e:
                 print('[ZERO] Error:', e)
