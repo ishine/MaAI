@@ -68,6 +68,11 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
         elif language == "jp_kyoto":
             repo_id = repo_ids["vap_mc_jp_kyoto"]
             file_path = f"vap_mc_state_dict_jp_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
+        # For test
+        if language == "jp_test":
+            repo_id = "maai-kyoto/test"
+            file_path = "vap_mc_test_20250912.pt"
 
         else:
             supported_languages = ["jp", "en", "ch", "tri", "jp_kyoto"]
