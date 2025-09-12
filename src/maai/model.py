@@ -35,7 +35,8 @@ class Maai():
         device: str = "cpu",
         cache_dir: str = None,
         force_download: bool = False,
-        use_kv_cache: bool = True
+        use_kv_cache: bool = True,
+        local_model = None,
     ):
 
         conf = VapConfig()
@@ -61,7 +62,12 @@ class Maai():
         # Store the initial state of the model to check for unchanged parameters
         initial_state_dict = {name: param.clone() for name, param in self.vap.named_parameters()}
 
-        sd = load_vap_model(mode, frame_rate, context_len_sec, lang, device, cache_dir, force_download)
+        if local_model is None:
+            sd = load_vap_model(mode, frame_rate, context_len_sec, lang, device, cache_dir, force_download)
+        else:
+            print("Loading model from local file:", local_model)
+            sd = torch.load(local_model, map_location="cpu")
+        
         self.vap.load_encoder(cpc_model=cpc_model)
         self.vap.load_state_dict(sd, strict=False)
 
