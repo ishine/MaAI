@@ -409,7 +409,7 @@ class Zero(Base):
 
         if self.white_noise:
             print("Zero input with white noise is enabled.")
-            self.data_added = np.random.normal(0, 0.0005, self.FRAME_SIZE).astype(np.float32).tolist()
+            self.data_added = np.random.normal(0, 0.00001, self.FRAME_SIZE).astype(np.float32).tolist()
 
         # self.subscribe()  # Subscribe to the queue to ensure it exists
 
@@ -435,7 +435,7 @@ class Zero(Base):
                 if self.white_noise:
                     count += 1
                     if count % 10 == 0:
-                        self.data_added = np.random.normal(0, 0.0005, self.FRAME_SIZE).astype(np.float32).tolist()
+                        self.data_added = np.random.normal(0, 0.00001, self.FRAME_SIZE).astype(np.float32).tolist()
                         count = 0
 
             except Exception as e:

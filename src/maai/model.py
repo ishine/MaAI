@@ -26,7 +26,7 @@ class Maai():
         self,
         mode,
         frame_rate: int = 10,
-        context_len_sec: int = 5,
+        context_len_sec: int = 20,
         lang: str = "jp",
         audio_ch1: Base = None,
         audio_ch2: Base = None,
