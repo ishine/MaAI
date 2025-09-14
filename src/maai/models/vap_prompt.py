@@ -120,19 +120,21 @@ class VapGPT_prompt(nn.Module):
     def vad_loss(self, vad_output, vad):
         return F.binary_cross_entropy_with_logits(vad_output, vad)
     
-    def set_prompt_ch1(self, prompt: str):
+    def set_prompt_ch1(self, prompt: str, device: torch.device = torch.device('cpu')):
 
         embedding_ch1_ = self.prompt_embedding_model.encode([prompt], normalize_embeddings=True)[0]
         self.embedding_ch1 = torch.tensor(embedding_ch1_).unsqueeze(0)
+        self.embedding_ch1 = self.embedding_ch1.to(device=device, non_blocking=True)
 
         # print("Embedding for channel 1 set:", self.embedding_ch1.shape)
         # print("Embedding for channel 1:", self.embedding_ch1)
         # input("Press Enter to continue...")
 
-    def set_prompt_ch2(self, prompt: str):
+    def set_prompt_ch2(self, prompt: str, device: torch.device = torch.device('cpu')):
 
         embedding_ch2_ = self.prompt_embedding_model.encode([prompt], normalize_embeddings=True)[0]
         self.embedding_ch2 = torch.tensor(embedding_ch2_).unsqueeze(0)
+        self.embedding_ch2 = self.embedding_ch2.to(device=device, non_blocking=True)
 
         # print("Embedding for channel 2 set:", self.embedding_ch2.shape)
         # print("Embedding for channel 2:", self.embedding_ch2)

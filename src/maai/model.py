@@ -40,6 +40,13 @@ class Maai():
     ):
 
         conf = VapConfig()
+
+        # Middle size model
+        if "middle" in lang:
+            conf.dim = 256
+            conf.channel_layers = 2
+            conf.cross_layers = 6
+            conf.num_heads = 8
         
         if mode in ["vap", "vap_mc"]:
             self.vap = VapGPT(conf)
@@ -339,8 +346,8 @@ class Maai():
         if self.mode != "vap_prompt":
             raise ValueError("This method is only available for the 'vap_prompt' mode.")
         
-        self.vap.set_prompt_ch1(prompt)
-    
+        self.vap.set_prompt_ch1(prompt, self.device)
+
     def set_prompt_ch2(self, prompt: str):
         """
         Set the prompt text for speaker 2. This method is only available for the 'vap_prompt' mode.
@@ -352,5 +359,4 @@ class Maai():
         if self.mode != "vap_prompt":
             raise ValueError("This method is only available for the 'vap_prompt' mode.")
         
-        self.vap.set_prompt_ch2(prompt)
-    
+        self.vap.set_prompt_ch2(prompt, self.device)
