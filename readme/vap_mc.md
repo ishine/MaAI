@@ -84,54 +84,16 @@ while True:
 ## Parameters
 
 The available parameters are summarized below.
-`vap_process_rate` specifies the number of samples the VAP model processes per second, and `context_len_sec` represents the length of the context (in seconds) input to the model.
-Please adjust these values according to your computing environment.
+`frame_rate` specifies the number of samples the VAP model processes per second.
+Please adjust this value according to your computing environment.
 
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| jp | 5 | 3 |
-| jp | 5 | 5 |
-| jp | 5 | 10 |
-| jp | 5 | 20 |
-| jp | 10 | 3 |
-| jp | 10 | 5 |
-| jp | 10 | 10 |
-| jp | 10 | 20 |
-| jp | 20 | 2.5 |
-| jp | 20 | 10 |
-| jp | 20 | 20 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| jp_kyoto | 5 | 3 |
-| jp_kyoto | 5 | 5 |
-| jp_kyoto | 10 | 3 |
-| jp_kyoto | 10 | 5 |
-| jp_kyoto | 20 | 2.5 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| en | 5 | 3 |
-| en | 5 | 5 |
-| en | 10 | 3 |
-| en | 10 | 5 |
-| en | 20 | 2.5 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| ch | 5 | 3 |
-| ch | 5 | 5 |
-| ch | 10 | 3 |
-| ch | 10 | 5 |
-| ch | 20 | 2.5 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| tri | 5 | 3 |
-| tri | 5 | 5 |
-| tri | 10 | 3 |
-| tri | 10 | 5 |
-| tri | 20 | 2.5 |
+| `lang` | `frame_rate` |
+| --- | --- |
+| jp | 5, 10, 20 |
+| jp_kyoto | 5, 10, 20 |
+| en | 5, 10, 20 |
+| ch | 5, 10, 20 |
+| tri | 5, 10, 20 |
 
 <br>
 

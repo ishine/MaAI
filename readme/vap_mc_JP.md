@@ -86,54 +86,16 @@ while True:
 ## パラメータ
 
 利用可能なパラメータを以下にまとめます。
-`vap_process_rate` はVAPモデルが1秒あたりに処理するサンプル数を指定し、`context_len_sec` はモデルへの入力となる文脈の長さ（秒）を表します。
-ご利用の計算環境に合わせて、これらの値を調整してください。
+`frame_rate` はVAPモデルが1秒あたりに処理するサンプル数を指定します。
+ご利用の計算環境に合わせて、この値を調整してください。
 
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| jp | 5 | 3 |
-| jp | 5 | 5 |
-| jp | 5 | 10 |
-| jp | 5 | 20 |
-| jp | 10 | 3 |
-| jp | 10 | 5 |
-| jp | 10 | 10 |
-| jp | 10 | 20 |
-| jp | 20 | 2.5 |
-| jp | 20 | 10 |
-| jp | 20 | 20 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| jp_kyoto | 5 | 3 |
-| jp_kyoto | 5 | 5 |
-| jp_kyoto | 10 | 3 |
-| jp_kyoto | 10 | 5 |
-| jp_kyoto | 20 | 2.5 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| en | 5 | 3 |
-| en | 5 | 5 |
-| en | 10 | 3 |
-| en | 10 | 5 |
-| en | 20 | 2.5 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| ch | 5 | 3 |
-| ch | 5 | 5 |
-| ch | 10 | 3 |
-| ch | 10 | 5 |
-| ch | 20 | 2.5 |
-
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| tri | 5 | 3 |
-| tri | 5 | 5 |
-| tri | 10 | 3 |
-| tri | 10 | 5 |
-| tri | 20 | 2.5 |
+| `lang` | `frame_rate` |
+| --- | --- |
+| jp | 5, 10, 20 |
+| jp_kyoto | 5, 10, 20 |
+| en | 5, 10, 20 |
+| ch | 5, 10, 20 |
+| tri | 5, 10, 20 |
 
 <br>
 

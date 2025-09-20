@@ -19,16 +19,16 @@ def test():
     wav1 = MaaiInput.Wav(wav_file_path="../wav_sample/jpn_inoue_16k.wav")
     wav2 = MaaiInput.Wav(wav_file_path="../wav_sample/jpn_sumida_16k.wav")
 
-    output = MaaiOutput.GuiPlot()
+    output = MaaiOutput.ConsoleBar()
 
     maai = Maai(
         mode="vap",
         lang="jp",
         frame_rate=10,
-        context_len_sec=5,
         audio_ch1=wav1,
         audio_ch2=wav2,
-        device="cpu"
+        device="cpu",
+        local_model="C:\\Users\\inoue\\Desktop\\state_dict_maai\\vap_mc_state_dict_jp_10hz_5000msec_zero_arg.pt"
     )
 
     maai.start()

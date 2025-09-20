@@ -64,8 +64,8 @@ from maai import Maai, MaaiInput, MaaiOutput
 mic = MaaiInput.Mic()
 zero = MaaiInput.Zero() 
 
-maai = Maai(mode="vap", lang="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero, device="cpu")
-maai_output_bar = MaaiOutput.ConsoleBar(bar_type="balance")
+maai = Maai(mode="vap", lang="jp", frame_rate=10, audio_ch1=mic, audio_ch2=zero, device="cpu")
+maai_output_bar = MaaiOutput.ConsoleBar()
 
 maai.start()
 while True:

@@ -25,14 +25,14 @@ class Maai():
     def __init__(
         self,
         mode,
+        lang: str,
+        audio_ch1: Base,
+        audio_ch2: Base,
         frame_rate: int = 10,
         context_len_sec: int = 20,
-        lang: str = "jp",
-        audio_ch1: Base = None,
-        audio_ch2: Base = None,
-        num_channels: int = 2,
-        cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"),
         device: str = "cpu",
+        # num_channels: int = 2,
+        cpc_model: str = os.path.expanduser("~/.cache/cpc/60k_epoch4-d0f474de.pt"),
         cache_dir: str = None,
         force_download: bool = False,
         use_kv_cache: bool = True,
@@ -41,12 +41,12 @@ class Maai():
 
         conf = VapConfig()
 
-        # Middle size model
-        if "middle" in lang:
-            conf.dim = 256
-            conf.channel_layers = 2
-            conf.cross_layers = 6
-            conf.num_heads = 8
+        # # Middle size model
+        # if "middle" in lang:
+        #     conf.dim = 256
+        #     conf.channel_layers = 2
+        #     conf.cross_layers = 6
+        #     conf.num_heads = 8
         
         if mode in ["vap", "vap_mc"]:
             self.vap = VapGPT(conf)
