@@ -150,6 +150,10 @@ class Maai():
 
         self.use_kv_cache = use_kv_cache
         self.vap_cache = None
+        
+        # Thread control
+        self._stop_event = threading.Event()
+        self._worker_thread = None
     
     def worker(self):
         
@@ -158,9 +162,13 @@ class Maai():
         self._mic1_queue.queue.clear()
         self._mic2_queue.queue.clear()
         
-        while True:
+        while not self._stop_event.is_set():
             x1 = self.mic1.get_audio_data(self._mic1_queue)
             x2 = self.mic2.get_audio_data(self._mic2_queue)
+
+            if self._stop_event.is_set() or x1 is None or x2 is None:
+                break
+
             self.process(x1, x2)
 
             # Clear the queues if they are too large
@@ -180,11 +188,37 @@ class Maai():
 
         self.mic1.start()
         self.mic2.start()
-        threading.Thread(target=self.worker, daemon=True).start()
+        self._stop_event.clear()
+        self._worker_thread = threading.Thread(target=self.worker, daemon=True)
+        self._worker_thread.start()
 
         # Queueを空にする
         self._mic1_queue.queue.clear()
         self._mic2_queue.queue.clear()
+    
+    def stop(self, wait: bool = True, timeout: float = 2.0):
+        """
+        Safely stop the background processing thread.
+        Args:
+            wait (bool): If True, wait for the thread to finish.
+            timeout (float): Max seconds to wait when joining.
+        """
+        self._stop_event.set()
+        # Unblock blocking gets by pushing sentinels
+        try:
+            self._mic1_queue.put(None)
+            self._mic2_queue.put(None)
+        except Exception:
+            pass
+        if wait and self._worker_thread is not None and self._worker_thread.is_alive():
+            self._worker_thread.join(timeout=timeout)
+        
+        # Best-effort queue cleanup
+        try:
+            self._mic1_queue.queue.clear()
+            self._mic2_queue.queue.clear()
+        except Exception:
+            pass
     
     def process(self, x1, x2):
         
