@@ -46,7 +46,7 @@ from maai import Maai, MaaiInput
 mic = MaaiInput.Mic(mic_device_index=0)
 zero = MaaiInput.Zero()
 
-maai = Maai(mode="nod", lang="jp", frame_rate=10, context_len_sec=5, audio_ch1=mic, audio_ch2=zero,device="cpu")
+maai = Maai(mode="nod", lang="jp", frame_rate=10, audio_ch1=mic, audio_ch2=zero,device="cpu")
 maai.start()
 
 while True:
@@ -61,20 +61,13 @@ while True:
 
 ## Parameters
 
-Available parameters are summarized below.
-`vap_process_rate` is the number of samples the model processes per second, and `context_len_sec` is the length of context (in seconds) input to the model.
+The available parameters are summarized below.
+`frame_rate` specifies the number of samples the VAP model processes per second.
+Please adjust this value according to your computing environment.
 
-| `lang` | `vap_process_rate` | `context_len_sec` |
-| --- | --- | --- |
-| jp | 5 | 3 |
-| jp | 5 | 5 |
-| jp | 5 | 10 |
-| jp | 10 | 3 |
-| jp | 10 | 5 |
-| jp | 10 | 10 |
-| jp | 20 | 3 |
-| jp | 20 | 5 |
-| jp | 20 | 10 |
+| `lang` | `frame_rate` |
+| --- | --- |
+| jp | 5, 10, 20 |
 
 <br>
 
