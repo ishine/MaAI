@@ -16,7 +16,8 @@ class VapGPT_prompt(nn.Module):
     BINS_P_NOW = [0, 1]
     BINS_PFUTURE = [2, 3]
 
-    prompt_model_name = "sbintuitions/sarashina-embedding-v1-1b"
+    # prompt_model_name = "sbintuitions/sarashina-embedding-v1-1b"
+    prompt_model_name = "cl-nagoya/ruri-v3-pt-30m"
 
     def __init__(self, conf: Optional[VapConfig] = None):
         
@@ -73,7 +74,9 @@ class VapGPT_prompt(nn.Module):
         self.prompt_dim_red2 = nn.Linear(self.conf.dim + self.conf.dim_prompt_2, self.conf.dim)
 
         # Initialize the embedding model for prompts
+        print("Loading prompt embedding model:", self.prompt_model_name)
         self.prompt_embedding_model = SentenceTransformer(self.prompt_model_name)
+        print("Prompt embedding model loaded.")
 
         # Initialize the prompt embeddings
         self.set_prompt_ch1("テンポよく発話し、相手の発言が終わるとすぐに返答してください。発言回数を多めに、会話をリードするようにしてください。")

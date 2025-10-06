@@ -14,15 +14,17 @@ def test_vap():
 
     output = MaaiOutput.ConsoleBar()
 
+    print("Initializing MaAI with VapGPT model and prompt control...")
     maai = Maai(
         mode="vap_prompt",
         lang="jp",
         frame_rate=10,
-        context_len_sec=5,
+        context_len_sec=20,
         audio_ch1=MaaiInput.Mic(),
         audio_ch2=MaaiInput.Zero(),
         device="cpu"
     )
+    print("MaAI initialized.")
 
     # Set prompts for channel 1 and channel 2
     maai.set_prompt_ch1("テンポよく発話し、相手の発言が終わるとすぐに返答してください。発言回数を多めに、会話をリードするようにしてください。")
