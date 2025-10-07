@@ -34,7 +34,8 @@ class VapConfig:
     lang_cond: int = 0
 
     # For prompt
-    dim_prompt: int = 1792
+    # dim_prompt: int = 1792
+    dim_prompt: int = 256
     dim_prompt_2: int = 256
 
     @staticmethod
