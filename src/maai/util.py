@@ -30,7 +30,7 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
         
         elif language == "en":
             repo_id = repo_ids["vap_en"]
-            file_path = f"vap_state_dict_eng_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+            file_path = f"vap_state_dict_en_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
         
         elif language == "ch":
             repo_id = repo_ids["vap_ch"]
@@ -55,7 +55,7 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
         
         elif language == "en":
             repo_id = repo_ids["vap_mc_en"]
-            file_path = f"vap_mc_state_dict_eng_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+            file_path = f"vap_mc_state_dict_en_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
         
         elif language == "ch":
             repo_id = repo_ids["vap_mc_ch"]
