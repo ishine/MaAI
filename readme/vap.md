@@ -72,6 +72,8 @@ This model is trained on the following Chinese dataset:
 
 This model is also released under the MIT license.
 
+</br>
+
 ### Tri-lingual (JPN + ENG + CHN) (`lang=tri`)
 
 This model is trained on the following three-language datasets:
