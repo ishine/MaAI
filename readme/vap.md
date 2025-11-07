@@ -17,7 +17,7 @@ Both outputs are returned as dictionaries.
 
 </br>
 
-## Language
+## Supported Languages
 
 The following languages are supported.
 Specify the language using the `lang` parameter of the `Maai` class.
@@ -48,6 +48,15 @@ This model is trained on the following English dataset:
 
 </br>
 
+### English (MIT License) (`lang=en_kyoto`)
+
+This model is trained on the following English dataset:
+- Online Conversation Dataset
+
+This model is also released under the MIT license.
+
+</br>
+
 ### Chinese (`lang=ch`)
 
 This model is trained on the following Chinese dataset:
@@ -55,6 +64,13 @@ This model is trained on the following Chinese dataset:
 - Online Conversation Dataset
 
 </br>
+
+### Chinese (MIT License) (`lang=ch_kyoto`)
+
+This model is trained on the following Chinese dataset:
+- Online Conversation Dataset
+
+This model is also released under the MIT license.
 
 ### Tri-lingual (JPN + ENG + CHN) (`lang=tri`)
 
@@ -65,6 +81,14 @@ This model is trained on the following three-language datasets:
 - [Human-Robot Dialogue](https://aclanthology.org/2025.naacl-long.367/)
 - [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
 
+</br>
+
+### Tri-lingual (JPN + ENG + CHN, MIT License) (`lang=tri_kyoto`)
+
+This model is trained on the following three-language dataset:
+- [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
+
+This model is also released under the MIT license.
 
 </br>
 
@@ -100,10 +124,13 @@ Please adjust this value according to your computing environment.
 | jp | 5, 10, 20 |
 | jp_kyoto | 5, 10, 20 |
 | en | 5, 10, 20 |
+| en_kyoto | 5, 10, 20 |
 | ch | 5, 10, 20 |
+| ch_kyoto | 5, 10, 20 |
 | tri | 5, 10, 20 |
+| tri_kyoto | 5, 10, 20 |
 
-<br>
+</br>
 
 ## 📚 Publication
 

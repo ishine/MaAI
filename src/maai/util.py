@@ -7,12 +7,18 @@ repo_ids = {
     "vap_ch": "maai-kyoto/vap_ch",
     "vap_tri": "maai-kyoto/vap_tri",
     "vap_jp_kyoto": "maai-kyoto/vap_jp_kyoto",
+    "vap_en_kyoto": "maai-kyoto/vap_en_kyoto",
+    "vap_ch_kyoto": "maai-kyoto/vap_ch_kyoto",
+    "vap_tri_kyoto": "maai-kyoto/vap_tri_kyoto",
 
     "vap_mc_jp": "maai-kyoto/vap_mc_jp",
     "vap_mc_en": "maai-kyoto/vap_mc_en",
     "vap_mc_ch": "maai-kyoto/vap_mc_ch",
     "vap_mc_tri": "maai-kyoto/vap_mc_tri",
     "vap_mc_jp_kyoto": "maai-kyoto/vap_mc_jp_kyoto",
+    "vap_mc_en_kyoto": "maai-kyoto/vap_mc_en_kyoto",
+    "vap_mc_ch_kyoto": "maai-kyoto/vap_mc_ch_kyoto",
+    "vap_mc_tri_kyoto": "maai-kyoto/vap_mc_tri_kyoto",
 
     "vap_bc_2type_jp": "maai-kyoto/vap_bc_2type_jp",
     # "vap_bc_jp_only_timing": "maai-kyoto/vap_bc_jp_only_timing",
@@ -43,9 +49,21 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
         elif language == "jp_kyoto":
             repo_id = repo_ids["vap_jp_kyoto"]
             file_path = f"vap_state_dict_jp_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
-
+        
+        elif language == "en_kyoto":
+            repo_id = repo_ids["vap_en_kyoto"]
+            file_path = f"vap_state_dict_en_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
+        elif language == "ch_kyoto":
+            repo_id = repo_ids["vap_ch_kyoto"]
+            file_path = f"vap_state_dict_ch_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
+        elif language == "tri_kyoto":
+            repo_id = repo_ids["vap_tri_kyoto"]
+            file_path = f"vap_state_dict_tri_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
         else:
-            supported_languages = ["jp", "en", "ch", "tri", "jp_kyoto"]
+            supported_languages = ["jp", "en", "ch", "tri", "jp_kyoto", "en_kyoto", "ch_kyoto", "tri_kyoto"]
             raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
 
     elif mode == "vap_mc":
@@ -69,13 +87,20 @@ def load_vap_model(mode: str, frame_rate: int, context_len_sec: float, language:
             repo_id = repo_ids["vap_mc_jp_kyoto"]
             file_path = f"vap_mc_state_dict_jp_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
         
-        # For test
-        elif language == "jp_test":
-            repo_id = "maai-kyoto/test"
-            file_path = "vap_mc_test_20250912.pt"
+        elif language == "en_kyoto":
+            repo_id = repo_ids["vap_mc_en_kyoto"]
+            file_path = f"vap_mc_state_dict_en_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
+        elif language == "ch_kyoto":
+            repo_id = repo_ids["vap_mc_ch_kyoto"]
+            file_path = f"vap_mc_state_dict_ch_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
+        
+        elif language == "tri_kyoto":
+            repo_id = repo_ids["vap_mc_tri_kyoto"]
+            file_path = f"vap_mc_state_dict_tri_kyoto_{frame_rate}hz_{int(context_len_sec*1000)}msec.pt"
 
         else:
-            supported_languages = ["jp", "en", "ch", "tri", "jp_kyoto"]
+            supported_languages = ["jp", "en", "ch", "tri", "jp_kyoto", "en_kyoto", "ch_kyoto", "tri_kyoto"]
             raise ValueError(f"Invalid language: {language}. Mode {mode} supports languages are: {supported_languages}")
     
     elif mode == "bc_2type":

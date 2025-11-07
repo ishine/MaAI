@@ -32,10 +32,14 @@ This model is trained on the following Japanese datasets:
 - [Human-Robot Dialogue](https://aclanthology.org/2025.naacl-long.367/)
 - [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
 
+</br>
+
 ### Japanese (MIT License) (`lang=jp_kyoto`)
 
 This model is trained on the following Japanese dataset:
 - [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
+
+</br>
 
 ### English (`lang=en`)
 
@@ -43,11 +47,33 @@ This model is trained on the following English dataset:
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
 - Online Conversation Dataset
 
+</br>
+
+### English (MIT License) (`lang=en_kyoto`)
+
+This model is trained on the following English dataset:
+- Online Conversation Dataset
+
+This model is also released under the MIT license.
+
+</br>
+
 ### Chinese (`lang=ch`)
 
 This model is trained on the following Chinese dataset:
 - [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
 - Online Conversation Dataset
+
+</br>
+
+### Chinese (MIT License) (`lang=ch_kyoto`)
+
+This model is trained on the following Chinese dataset:
+- Online Conversation Dataset
+
+This model is also released under the MIT license.
+
+</br>
 
 ### Tri-lingual (JPN + ENG + CHN) (`lang=tri`)
 
@@ -57,6 +83,15 @@ This model is trained on the following three-language datasets:
 - [Travel Agency Task Dialogue](https://aclanthology.org/2022.lrec-1.619/)
 - [Human-Robot Dialogue](https://aclanthology.org/2025.naacl-long.367/)
 - [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
+
+</br>
+
+### Tri-lingual (JPN + ENG + CHN, MIT License) (`lang=tri_kyoto`)
+
+This model is trained on the following three-language dataset:
+- [Online Conversation Dataset](https://www.arxiv.org/abs/2506.21191)
+
+This model is also released under the MIT license.
 
 </br>
 
@@ -92,10 +127,13 @@ Please adjust this value according to your computing environment.
 | jp | 5, 10, 20 |
 | jp_kyoto | 5, 10, 20 |
 | en | 5, 10, 20 |
+| en_kyoto | 5, 10, 20 |
 | ch | 5, 10, 20 |
+| ch_kyoto | 5, 10, 20 |
 | tri | 5, 10, 20 |
+| tri_kyoto | 5, 10, 20 |
 
-<br>
+</br>
 
 ## 📚 Papers and References
 

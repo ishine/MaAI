@@ -32,6 +32,8 @@ README: <a href="vap_mc.md">English </a> | <a href="vap_mc_JP.md">Japanese (日�
 - [ヒューマンロボット対話コーパス](https://aclanthology.org/2025.naacl-long.367/)
 - [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
 
+</br>
+
 ### 日本語MITライセンス（`lang=jp_kyoto`）
 
 本モデルは以下の日本語データセットで学習されています：
@@ -39,17 +41,41 @@ README: <a href="vap_mc.md">English </a> | <a href="vap_mc_JP.md">Japanese (日�
 
 また、このモデルはMITランセンスで公開されています。
 
+</br>
+
 ### 英語（`lang=en`）
 
 本モデルは以下の英語データセットで学習されています：
 - [Switchboard corpus](https://catalog.ldc.upenn.edu/LDC97S62)
 - オンライン会話データセット
 
-### 英語（`lang=ch`）
+</br>
+
+### 英語MITライセンス（`lang=en_kyoto`）
+
+本モデルは以下の英語データセットで学習されています：
+- オンライン会話データセット
+
+また、このモデルはMITランセンスで公開されています。
+
+</br>
+
+### 中国語（`lang=ch`）
 
 本モデルは以下の中国語データセットで学習されています：
 - [HKUST Mandarin Telephone Speech](https://catalog.ldc.upenn.edu/LDC2005S15)
 - オンライン会話データセット
+
+</br>
+
+### 中国語MITライセンス（`lang=ch_kyoto`）
+
+本モデルは以下の中国語データセットで学習されています：
+- オンライン会話データセット
+
+また、このモデルはMITランセンスで公開されています。
+
+</br>
 
 ### 3言語対応（日本語＋英語＋中国語）（`lang=tri`）
 
@@ -59,6 +85,15 @@ README: <a href="vap_mc.md">English </a> | <a href="vap_mc_JP.md">Japanese (日�
 - [旅行代理店タスク対話コーパス](https://aclanthology.org/2022.lrec-1.619/)
 - [ヒューマンロボット対話コーパス](https://aclanthology.org/2025.naacl-long.367/)
 - [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
+
+</br>
+
+### 3言語対応（日本語＋英語＋中国語、MITライセンス）（`lang=tri_kyoto`）
+
+本モデルは以下の3言語データセットで学習されています：
+- [オンライン会話データセット](https://www.arxiv.org/abs/2506.21191)
+
+また、このモデルはMITランセンスで公開されています。
 
 </br>
 
@@ -94,10 +129,13 @@ while True:
 | jp | 5, 10, 20 |
 | jp_kyoto | 5, 10, 20 |
 | en | 5, 10, 20 |
+| en_kyoto | 5, 10, 20 |
 | ch | 5, 10, 20 |
+| ch_kyoto | 5, 10, 20 |
 | tri | 5, 10, 20 |
+| tri_kyoto | 5, 10, 20 |
 
-<br>
+</br>
 
 ## 📚 論文・参考文献
 
