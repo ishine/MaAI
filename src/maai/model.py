@@ -10,6 +10,7 @@ import os
 from .input import Base
 from .util import load_vap_model
 from .models.vap import VapGPT
+from .models.vap_bc import VapGPT_bc
 from .models.vap_bc_2type import VapGPT_bc_2type
 from .models.vap_nod import VapGPT_nod
 from .models.config import VapConfig
@@ -50,6 +51,9 @@ class Maai():
         
         if mode in ["vap", "vap_mc"]:
             self.vap = VapGPT(conf)
+        
+        elif mode == "bc":
+            self.vap = VapGPT_bc(conf)
         
         elif mode == "bc_2type":
             self.vap = VapGPT_bc_2type(conf)
@@ -329,6 +333,9 @@ class Maai():
                     "p_now": out['p_now'],
                     "p_future": out['p_future'],
                     "vad": out['vad']
+                },
+                "bc": lambda: {
+                    "p_bc": out['p_bc']
                 },
                 "bc_2type": lambda: {
                     "p_bc_react": out['p_bc_react'],
