@@ -26,6 +26,17 @@ CG-CA Gene (c) 2023 by Nagoya Institute of Technology, Moonshot R&D Goal 1 Avata
 
 </br>
 
+## Motion Samples
+
+Sample motion files for each nodding type are available in `example/nod/motions`.
+The files are provided in the following two formats: 
+- `.csv` : Time series data of pitch, yaw, and roll angles (degree) at 30fps
+- `.vmd` : Motion file format for [MMDAgent](https://mmdagent-ex.dev/)
+
+For each nodding type, both one and two nodding are available in each type.
+
+</br>
+
 ## Supported Languages
 
 Currently, only Japanese is supported.

@@ -26,6 +26,17 @@ CG-CA Gene (c) 2023 by Nagoya Institute of Technology, Moonshot R&D Goal 1 Avata
 
 </br>
 
+## モーションサンプル
+
+各形態のモーションサンプルファイルが `example/nod/motions` にあります。
+以下の2形式で提供しています:
+- `.csv` : pitch / yaw / roll 角度（度数）の30fps時系列データ
+- `.vmd` : [MMDAgent](https://mmdagent-ex.dev/) 用のモーションファイル形式
+
+各頷き形態に対して、それぞれ1回頷きと2回頷きのモーションサンプルが利用可能です。
+
+</br>
+
 ## 対応言語
 
 現時点では日本語のみ対応しています。
