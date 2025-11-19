@@ -98,8 +98,9 @@ The turn-taking model uses the original VAP as is and predicts which participant
 
 Backchannels are short listener responses such as `yeah` and `oh`, that are also related to turn-taking.
 
+- [VAP-based Backchannel Prediction Model - Timing](readme/vap_bc.md)
 - [VAP-based Backchannel Prediction Model - Timing for Two types](readme/vap_bc_2type.md)
-- [VAP-based Backchannel Prediction Model - Timing Only] (In Preparation ...)
+
 
 ### Nodding
 
@@ -152,6 +153,7 @@ You can find example implementations of MaAI models in the [example](example) di
     - [With 1 mic input](example/vap_mc/vap_mic.py) 🎤
 
 - Backchannel
+    - [With 1 mic input](example/bc/bc_mic.py) 🎤
     - [With 1 mic input](example/bc_2type/bc_2type_mic.py) 🎤
 
 - Nodding

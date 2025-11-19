@@ -92,8 +92,9 @@ while True:
 
 相槌は「うん」「はい」などの短い聞き手反応で、ターンテイキングとも関連します。
 
+- [VAPベースの相槌予測モデル - タイミング](readme/vap_bc_JP.md)
 - [VAPベースの相槌予測モデル - 2種類のタイミング](readme/vap_bc_2type_JP.md)
-- [VAPベースの相槌予測モデル - タイミングのみ]  (準備中)
+
 
 ### 頷き
 
@@ -147,6 +148,7 @@ MaAIモデルへの入力は、`Maai`クラスインスタンスの`process`メ�
     - [1マイク入力](example/vap_mc/vap_mic.py) 🎤
 
 - 相槌
+    - [1マイク入力](example/bc/bc_mic.py) 🎤
     - [1マイク入力](example/bc_2type/bc_2type_mic.py) 🎤
 
 - 頷き
