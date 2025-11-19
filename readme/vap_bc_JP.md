@@ -7,7 +7,7 @@
 README: <a href="vap_bc.md">English </a> | <a href="vap_bc_JP.md">Japanese (日本語) </a>
 </p>
 
-`Maai` クラスの `mode` パラメータは `bc_2type` に設定してください。
+`Maai` クラスの `mode` パラメータは `bc` に設定してください。
 
 入力は2チャンネルの16kHz音声データが必要です（ch1がユーザ音声、ch2がシステム音声を想定）。
 システムの相槌タイミングを予測します。
