@@ -45,7 +45,7 @@ __Demo video on YouTube__ (https://www.youtube.com/watch?v=-uwB6yl2WtI)
 
 ## 🆕 Update
 
-- [Backchannel prection model](readme/vap_bc.md) supporting three languages (English, Chinese, and Japanese) is now available (November 19th, 2025)
+- [Backchannel prediction model](readme/vap_bc.md) supporting three languages (English, Chinese, and Japanese) is now available (November 19th, 2025)
 - Computational efficiency is improved in the long-context models (September 3rd, 2025)
 - We launched the MaAI project and repository here! 🚀  (August 13th, 2025)
 
