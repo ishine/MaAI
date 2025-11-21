@@ -76,10 +76,10 @@ Please adjust this value according to your computing environment.
 
 | `lang` | `frame_rate` |
 | --- | --- |
-| jp | 10 |
-| en | 10 |
-| ch | 10 |
-| tri | 10 |
+| jp | 5, 10, 20 |
+| en | 5, 10, 20 |
+| ch | 5, 10, 20 |
+| tri | 5, 10, 20 |
 
 </br>
 
