@@ -7,7 +7,7 @@ Backchannel Prediction Model (Timing)
 README: <a href="vap_bc.md">English </a> | <a href="vap_bc_JP.md">Japanese (日本語) </a>
 </p>
 
-Set the `mode` parameter of the `Maai` class to `bc_2type`.
+Set the `mode` parameter of the `Maai` class to `bc`.
 
 This model takes 2-channel 16kHz audio data as input, assuming ch1 as user audio and ch2 as system audio.
 It predicts system backchannel timings.
